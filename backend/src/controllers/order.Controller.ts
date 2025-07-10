@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as orderService from '../services/orderService';
+import * as orderService from '../services/order.Service';
 import { AuthRequest } from '../middlewares/authMiddlewares';
 
 export const createOrder = async (req: AuthRequest, res: Response) => {

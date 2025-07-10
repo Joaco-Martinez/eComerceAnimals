@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../db/db';
-import { sendNotificationEmail } from '../services/notificacionController';
+import { sendNotificationEmail } from '../services/notificacion.service';
 
 // Define AuthRequest interface if not already defined elsewhere
 interface AuthRequest extends Request {

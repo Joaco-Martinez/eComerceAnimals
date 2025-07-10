@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as cartService from '../services/cartService';
+import * as cartService from '../services/cart.Service';
 import { AuthRequest } from '../middlewares/authMiddlewares';
 
 export const getCart = async (req: AuthRequest, res: Response) => {

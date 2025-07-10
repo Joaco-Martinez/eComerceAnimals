@@ -26,7 +26,7 @@ const CartCheckout = () => {
 
     try {
       const initPoint = await mercadoPagoService.createCheckout(order);
-      window.location.href = initPoint; // Redirige al Checkout Pro
+      window.location.href = initPoint; 
     } catch (error) {
       console.error("Error creando la preferencia de pago:", error);
     }
