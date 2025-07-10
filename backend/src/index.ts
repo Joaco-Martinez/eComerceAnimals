@@ -2,16 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from "morgan";
-import productsRoutes from './routes/products.Routes';
+import productRoutes from './routes/products.Routes';
 import { prisma } from './db/db';
 import userRoutes from './routes/user.Routes';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/Auth.Routes';
 import cartRoutes from './routes/cart.Routes';
-import paymentsRouter from './routes/mercadoPago.routes';
+import paymentsRouter from './routes/mercadoPago.Routes';
 import orderRoutes from './routes/order.Routes';
 
-import mercadoPagoRoutes from "./routes/mercadoPago.routes";
+import mercadoPagoRoutes from "./routes/mercadoPago.Routes";
 import { swaggerUiHandler, swaggerUiSetup } from './swaggerConfig';
 dotenv.config();
 
@@ -34,7 +34,7 @@ app.use('/api', swaggerUiHandler, swaggerUiSetup);
 app.use('/payments', paymentsRouter);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
-app.use('/products', productsRoutes);
+app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)

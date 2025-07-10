@@ -1,42 +1,53 @@
 import { prisma } from '../db/db';
 
-export const getAllProducts = async () => {
-  return await prisma.product.findMany();
-};
+export const getAllProducts = () => prisma.product.findMany({
+  include: { category: true, images: true }
+});
 
-export const getProductById = async (id: number) => {
-  return await prisma.product.findUnique({ where: { id } });
-};
+export const getProductById = (id: number) => prisma.product.findUnique({
+  where: { id },
+  include: { category: true, images: true }
+});
 
 export const createProduct = async (data: {
   name: string;
   description: string;
   price: number;
   stock: number;
-  image: string;
-  categoryId: number; // Use categoryId to connect to existing category
+  weight?: number;
+  size?: string;
+  color?: string;
+  categoryId: number;
+  sku?: string;
+  images?: string[];
 }) => {
-  const { categoryId, ...productData } = data;
-  return await prisma.product.create({
+  const { images = [], ...productData } = data;
+
+  return prisma.product.create({
     data: {
       ...productData,
-      category: {
-        connect: { id: categoryId }
-      }
-    }
+      images: {
+        create: images.map(url => ({ url })),
+      },
+    },
+    include: {
+      category: true,
+      images: true,
+    },
   });
 };
 
-export const updateProduct = async (id: number, data: Partial<{
+export const updateProduct = (id: number, data: Partial<{
   name: string;
   description: string;
   price: number;
   stock: number;
-  image: string;
-}>) => {
-  return await prisma.product.update({ where: { id }, data });
-};
+  weight: number;
+  size: string;
+  color: string;
+  categoryId: number;
+  sku: string;
+  isActive: boolean;
+}>) => prisma.product.update({ where: { id }, data });
 
-export const deleteProduct = async (id: number) => {
-  return await prisma.product.delete({ where: { id } });
-};
+export const deleteProduct = (id: number) => prisma.product.delete({ where: { id } });

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as productController from '../controllers/products.Controller';
-import { authMiddleware } from '../middlewares/authMiddlewares';
+import upload from '../middlewares/upload';
 
 const router = Router();
 
@@ -8,7 +8,7 @@ const router = Router();
  * @swagger
  * tags:
  *   name: Products
- *   description: Gestión de productos
+ *   description: Operaciones sobre productos
  */
 
 /**
@@ -20,14 +20,8 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Lista de productos
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
  */
-router.get('/', productController.getAllProducts);
+router.get('/', productController.getAll);
 
 /**
  * @swagger
@@ -45,103 +39,124 @@ router.get('/', productController.getAllProducts);
  *     responses:
  *       200:
  *         description: Producto encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
  *       404:
  *         description: Producto no encontrado
  */
-router.get('/:id', productController.getProduct);
+router.get('/:id', productController.getById);
 
 /**
  * @swagger
  * /products:
  *   post:
- *     summary: Crear un nuevo producto (requiere autenticación)
+ *     summary: Crear un nuevo producto (con imágenes)
  *     tags: [Products]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/ProductInput'
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - price
+ *               - stock
+ *               - categoryId
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: integer
+ *               weight:
+ *                 type: number
+ *               size:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               sku:
+ *                 type: string
+ *               categoryId:
+ *                 type: integer
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
  *     responses:
  *       201:
- *         description: Producto creado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         description: Datos inválidos
- *       401:
- *         description: No autorizado
+ *         description: Producto creado
  */
-router.post('/', authMiddleware, productController.createProduct);
+router.post('/', upload.array('images'), productController.create);
 
 /**
  * @swagger
  * /products/{id}:
  *   put:
- *     summary: Actualizar un producto (requiere autenticación)
+ *     summary: Actualizar un producto
  *     tags: [Products]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del producto a actualizar
+ *         description: ID del producto
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ProductInput'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: integer
+ *               weight:
+ *                 type: number
+ *               size:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               sku:
+ *                 type: string
+ *               categoryId:
+ *                 type: integer
  *     responses:
  *       200:
- *         description: Producto actualizado correctamente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         description: Datos inválidos
- *       401:
- *         description: No autorizado
+ *         description: Producto actualizado
  *       404:
  *         description: Producto no encontrado
  */
-router.put('/:id', authMiddleware, productController.updateProduct);
+router.put('/:id', productController.update);
 
 /**
  * @swagger
  * /products/{id}:
  *   delete:
- *     summary: Eliminar un producto (requiere autenticación)
+ *     summary: Eliminar un producto
  *     tags: [Products]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del producto a eliminar
+ *         description: ID del producto
  *     responses:
  *       204:
- *         description: Producto eliminado exitosamente
- *       401:
- *         description: No autorizado
+ *         description: Producto eliminado correctamente
  *       404:
  *         description: Producto no encontrado
  */
-router.delete('/:id', authMiddleware, productController.deleteProduct);
+router.delete('/:id', productController.remove);
 
 export default router;

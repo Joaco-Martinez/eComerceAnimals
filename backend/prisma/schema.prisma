@@ -77,16 +77,19 @@ model Product {
   description String
   price       Float
   stock       Int
+  weight      Float?
+  size        String?
+  color       String?
   sku         String?
   isActive    Boolean      @default(true)
   images      Image[]
   category    Category     @relation(fields: [categoryId], references: [id])
   categoryId  Int
   reviews     Review[]
-  cartItems   CartItem[]   // Added relation to CartItem
+  cartItems   CartItem[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  orderItems OrderItem[]
+  orderItems  OrderItem[]
 }
 
 model Image {

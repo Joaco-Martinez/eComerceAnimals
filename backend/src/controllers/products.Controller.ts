@@ -1,53 +1,50 @@
 import { Request, Response } from 'express';
 import * as productService from '../services/product.Service';
 
-export const getAllProducts = async (_req: Request, res: Response) => {
-  try {
-    const products = await productService.getAllProducts();
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al obtener productos' });
-  }
+export const getAll = async (req: Request, res: Response) => {
+  const products = await productService.getAllProducts();
+  res.json(products);
 };
 
-export const getProduct = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const product = await productService.getProductById(id);
-    if (!product) return res.status(404).json({ message: 'Producto no encontrado' });
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al obtener producto' });
-  }
+export const getById = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const product = await productService.getProductById(id);
+  if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+  res.json(product);
 };
 
-export const createProduct = async (req: Request, res: Response) => {
-  try {
-    const { name, description, price, stock, image, categoryId } = req.body;
-    const newProduct = await productService.createProduct({ name, description, price, stock, image, categoryId });
-    res.status(201).json(newProduct);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al crear producto' });
-  }
+export const create = async (req: Request, res: Response) => {
+  const {
+    name, description, price, stock, weight, size, color, categoryId, sku
+  } = req.body;
+
+  const files = req.files as Express.Multer.File[] | undefined;
+  const imageUrls = files?.map(file => file.path) || [];
+
+  const newProduct = await productService.createProduct({
+    name,
+    description,
+    price: parseFloat(price),
+    stock: parseInt(stock),
+    weight: weight ? parseFloat(weight) : undefined,
+    size,
+    color,
+    categoryId: parseInt(categoryId),
+    sku,
+    images: imageUrls,
+  });
+
+  res.status(201).json(newProduct);
 };
 
-export const updateProduct = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const data = req.body;
-    const updated = await productService.updateProduct(id, data);
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al actualizar producto' });
-  }
+export const update = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const updatedProduct = await productService.updateProduct(id, req.body);
+  res.json(updatedProduct);
 };
 
-export const deleteProduct = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    await productService.deleteProduct(id);
-    res.status(204).send();
-  } catch (err) {
-    res.status(500).json({ message: 'Error al eliminar producto' });
-  }
+export const remove = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  await productService.deleteProduct(id);
+  res.status(204).send();
 };
