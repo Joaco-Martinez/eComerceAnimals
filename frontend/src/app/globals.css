@@ -1,8 +1,20 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+
+@font-face {
+  font-family: 'Chatime';
+  src: url('../../public/fonts/chatime-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+h4 {
+  font-family: 'Chatime', sans-serif !important;
 }
 
 @theme inline {
@@ -24,3 +36,4 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+

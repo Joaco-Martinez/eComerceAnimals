@@ -1,7 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 // components/Navbar.tsx
+import "../../app/globals.css";
 import { useState } from "react";
+import SliderArriba from "../../components/sliderArriba/SliderArriba";
 import Link from "next/link";
 export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -9,20 +11,41 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-[#978e8e] antialiased">
-      <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0 py-4">
+    <>
+    <SliderArriba />
+    <nav className=" antialiased">
+      <div className="max-w-screen-xl  px-4 mx-auto 2xl:px-0 py-4">
         <div className="flex items-center justify-between">
+                     {/* MOBILE MENU */}
+          <button
+              type="button"
+              className="inline-flex lg:hidden items-center justify-center p-2 rounded-md text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <svg
+                className="w-7 h-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeWidth={2} strokeLinecap="round" d="M5 7h14M5 12h14M5 17h14" />
+              </svg>
+            </button>
+          
           {/* LOGO + LINKS */}
           <div className="flex items-center space-x-8">
-            <div className="shrink-0">
+            <div className="shrink-0 flex items-center ">
               <Link href="/" title="">
                 <img
-                  className="block w-auto h-8 "
-                  src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/pet_logo_round_fyvwei"
+                  className="block w-auto h-15 "
+                  src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/punky_pet_isotipo_2_png_eerwev"
                   alt="logo"
                 />
                 
               </Link>
+              <h4 className="font-chatime text-3xl text-[#918283] ">
+                Punky Pet
+              </h4>
             </div>
 
             <ul className="hidden lg:flex items-center gap-6 md:gap-8 py-3">
@@ -49,7 +72,7 @@ export default function Navbar() {
                 className="inline-flex items-center p-2 rounded-lg text-sm font-medium text-white  hover:bg-[#44332c] cursor-pointer"
               >
                 <svg
-                  className="w-5 h-5 lg:me-1"
+                  className="w-7 h-7 lg:me-1"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -124,7 +147,7 @@ export default function Navbar() {
                 className="inline-flex items-center p-2 rounded-lg text-sm font-medium text-white hover:bg-[#44332c] cursor-pointer"
               >
                 <svg
-                  className="w-5 h-5 me-1"
+                  className="w-7 h-7 me-1"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -134,7 +157,7 @@ export default function Navbar() {
                     d="M7 17v1a1 1 0 001 1h8a1 1 0 001-1v-1a3 3 0 00-3-3h-4a3 3 0 00-3 3Zm8-9a3 3 0 11-6 0 3 3 0 016 0Z"
                   />
                 </svg>
-                Account
+                
               </button>
 
               {userOpen && (
@@ -170,21 +193,8 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* MOBILE MENU */}
-            <button
-              type="button"
-              className="inline-flex lg:hidden items-center justify-center p-2 rounded-md text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeWidth={2} strokeLinecap="round" d="M5 7h14M5 12h14M5 17h14" />
-              </svg>
-            </button>
+
+            
           </div>
         </div>
 
@@ -211,5 +221,7 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+    </>
+
   );
 }
