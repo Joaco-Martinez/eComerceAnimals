@@ -12,6 +12,12 @@ enum Role {
   admin
 }
 
+enum PetType {
+  dog
+  cat
+  both
+}
+
 enum DiscountType {
   percentage
   fixed
@@ -81,10 +87,12 @@ model Product {
   size        String?
   color       String?
   sku         String?
+   petType     PetType      @default(both)
   isActive    Boolean      @default(true)
   images      Image[]
   category    Category     @relation(fields: [categoryId], references: [id])
   categoryId  Int
+  stockNotifications StockNotification[]
   reviews     Review[]
   cartItems   CartItem[]
   createdAt   DateTime     @default(now())
@@ -106,7 +114,14 @@ model Category {
   image       String?
   products    Product[]
 }
-
+model StockNotification {
+  id         Int      @id @default(autoincrement())
+  email      String
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  Int
+  notified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
 model Cart {
   id        Int         @id @default(autoincrement())
   userId    Int         @unique

@@ -41,6 +41,27 @@ const options = {
         },
         required: ['addressId', 'items'],
       },
+       Category: {
+        type: "object",
+        properties: {
+          id: {
+            type: "integer",
+            example: 1,
+          },
+          name: {
+            type: "string",
+            example: "Smartphones",
+          },
+          description: {
+            type: "string",
+            example: "Celulares de última generación",
+          },
+          image: {
+            type: "string",
+            example: "https://miweb.com/images/smartphones.jpg",
+          },
+        },
+      },
       Order: {
         type: 'object',
         properties: {

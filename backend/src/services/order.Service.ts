@@ -81,6 +81,17 @@ export const createOrderFromCart = async (
     });
   }
 
+  for (const item of cart.items) {
+    await prisma.product.update({
+      where: { id: item.productId },
+      data: {
+        stock: {
+          decrement: item.quantity,
+        },
+      },
+    });
+  }
+
   // Vaciamos carrito
   await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
 

@@ -1,5 +1,5 @@
 'use client'; // si estás en Next.js 13+
-
+import "../../app/globals.css";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
@@ -7,7 +7,7 @@ import { Autoplay } from 'swiper/modules';
 
 export default function TopSlider() {
   return (
-    <div className="w-full h-14 bg-[#2C4B4D] text-[#F1F1F1] font-montserrat">
+    <div className="w-full h-12 bg-[#2C4B4D] text-[#F1F1F1] text-">
       <Swiper
         modules={[Autoplay]}
         autoplay={{ delay: 3500 }}
@@ -15,19 +15,20 @@ export default function TopSlider() {
         className="h-full"
       >
         <SwiperSlide>
-          <div className="h-full flex items-center justify-center  text-2xl ">
-            20% OFF por transferencia
-          </div>
+          <h5 className="h-full flex items-center justify-center   ">
+            <span className="font-bold mr-2">20% OFF </span>
+            <span>por transferencia</span>
+          </h5>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="h-full flex items-center justify-center text-2xl ">
+          <h5 className="h-full flex items-center justify-center  ">
             Lo mejor para tu pet
-          </div>
+          </h5>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="h-full flex items-center justify-center   text-2xl ">
+          <h5 className="h-full flex items-center justify-center   ">
             Envíos gratis a todo el país 
-          </div>
+          </h5>
         </SwiperSlide>
       </Swiper>
     </div>

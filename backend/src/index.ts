@@ -10,15 +10,16 @@ import authRoutes from './routes/Auth.Routes';
 import cartRoutes from './routes/cart.Routes';
 import paymentsRouter from './routes/mercadoPago.Routes';
 import orderRoutes from './routes/order.Routes';
-
+import categoryRoutes from "./routes/category.Routes";
 import mercadoPagoRoutes from "./routes/mercadoPago.Routes";
 import { swaggerUiHandler, swaggerUiSetup } from './swaggerConfig';
+import stockNotificationRoutes from "./routes/stockNotification.Routes";
 dotenv.config();
 
 export const app = express();
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3001', 
+  origin: true, 
   credentials: true
 }));
 app.use(express.json());
@@ -38,8 +39,9 @@ app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.use("/categories", categoryRoutes);
+app.use("/stock-notifications", stockNotificationRoutes);
+const PORT = parseInt(process.env.PORT || '3000', 10);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
