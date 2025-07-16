@@ -40,16 +40,15 @@ export const createProduct = async (data: {
   price: number;
   stock: number;
   weight?: number;
-  size?: string;
-  color?: string;
+  size?: string[]; // <-- array
+  color?: string[]; // <-- array
   categoryId: number;
   sku?: string;
-  images?: Express.Multer.File[]; // ahora son archivos multer
+  images?: Express.Multer.File[];
   petType: 'dog' | 'cat' | 'both';
 }) => {
   const { images = [], ...productData } = data;
 
-  // Subir imágenes a Cloudinary
   const uploadedImagesUrls: string[] = [];
   for (const file of images) {
     const result = await cloudinary.uploader.upload(file.path, {
@@ -58,7 +57,6 @@ export const createProduct = async (data: {
     uploadedImagesUrls.push(result.secure_url);
   }
 
-  // Crear producto con URLs de Cloudinary
   return prisma.product.create({
     data: {
       ...productData,
@@ -72,18 +70,21 @@ export const createProduct = async (data: {
     },
   });
 };
-export const updateProduct = (id: number, data: Partial<{
-  name?: string;
-  description?: string;
-  price?: number;
-  stock?: number;
-  weight?: number;
-  size?: string;
-  color?: string;
-  categoryId?: number;
-  sku?: string;
-  isActive?: boolean;
-  petType: 'dog' | 'cat' | 'both';
-}>) => prisma.product.update({ where: { id }, data });
+export const updateProduct = (
+  id: number,
+  data: Partial<{
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    weight: number;
+    size: string[];  // <-- array
+    color: string[]; // <-- array
+    categoryId: number;
+    sku: string;
+    isActive: boolean;
+    petType: 'dog' | 'cat' | 'both';
+  }>
+) => prisma.product.update({ where: { id }, data });
 
 export const deleteProduct = (id: number) => prisma.product.delete({ where: { id } });

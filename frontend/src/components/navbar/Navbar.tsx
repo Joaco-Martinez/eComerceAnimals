@@ -4,7 +4,7 @@ import "../../app/globals.css";
 import { useState } from "react";
 import SliderArriba from "../sliderArriba/SliderArriba";
 import Link from "next/link";
-import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -25,14 +25,7 @@ export default function Navbar() {
               className="inline-flex lg:hidden items-center justify-center p-2 rounded-md text-[#E0DED1]"
               onClick={() => setMenuOpen(!menuOpen)}
               >
-              <svg
-                className="w-7 h-7"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                >
-                <path strokeWidth={2} strokeLinecap="round" d="M5 7h14M5 12h14M5 17h14" />
-              </svg>
+              <Image src="/icons/menu.png" alt="Menu" width={20} height={20} />
             </button>
 
               {/* LOGO + NOMBRE */}
@@ -64,26 +57,60 @@ export default function Navbar() {
 
             {/* ACCIONES (CARRITO, FAVORITOS, USER) */}
             <div className="flex items-center  lg:gap-2">
+              
+              {/* USUARIO */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserOpen(!userOpen)}
+                  className="inline-flex items-center p-2 rounded-lg text-[#E0DED1]"
+                >
+                <Image src="/icons/perfil.png" alt="User" width={22} height={25} />
+                </button>
+
+                {/* USER MENU */}
+                {userOpen && (
+                  <div className="absolute right-0 z-10 mt-2 w-56 rounded-lg bg-white dark:bg-gray-700 shadow divide-y divide-gray-100 dark:divide-gray-600">
+                    <ul className="p-2 text-sm text-gray-900 dark:text-white">
+                      {[
+                        "My Account",
+                        "My Orders",
+                        "Settings",
+                        "Favourites",
+                        "Delivery Addresses",
+                        "Billing Data",
+                      ].map((item) => (
+                        <li key={item}>
+                          <a
+                            href="#"
+                            className="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                          >
+                            {item}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="p-2">
+                      <a
+                        href="#"
+                        className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                      >
+                        Sign Out
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* FAVORITOS */}
+              <button className="text-[#E0DED1]">
+                <Image src="/icons/like.png" alt="Favoritos" width={22} height={25} />
+              </button>
               {/* CARRITO */}
               <div className="relative">
                 <button
                   onClick={() => setCartOpen(!cartOpen)}
                   className="inline-flex items-center p-2 rounded-lg text-[#E0DED1]"
                 >
-                  <svg
-                    className="w-7 h-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 4h1.5L9 16h8m-8 0a2 2 0 100 4 2 2 0 000-4m8 0a2 2 0 100 4 2 2 0 000-4M7.312 7H19l-1.25 6.5H8.5"
-                    />
-                  </svg>
+                  <Image src="/icons/carrito.png" alt="Carrito" width={20.1} height={20} />
                   <span className="hidden sm:flex ml-1">My Cart</span>
                 </button>
 
@@ -126,64 +153,8 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
+              
 
-              {/* FAVORITOS */}
-              <button className="text-[#E0DED1]">
-                <HeartOutline className="w-6 h-6" />
-              </button>
-
-              {/* USUARIO */}
-              <div className="relative">
-                <button
-                  onClick={() => setUserOpen(!userOpen)}
-                  className="inline-flex items-center p-2 rounded-lg text-[#E0DED1]"
-                >
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeWidth={2}
-                      d="M7 17v1a1 1 0 001 1h8a1 1 0 001-1v-1a3 3 0 00-3-3h-4a3 3 0 00-3 3Zm8-9a3 3 0 11-6 0 3 3 0 016 0Z"
-                    />
-                  </svg>
-                </button>
-
-                {/* USER MENU */}
-                {userOpen && (
-                  <div className="absolute right-0 z-10 mt-2 w-56 rounded-lg bg-white dark:bg-gray-700 shadow divide-y divide-gray-100 dark:divide-gray-600">
-                    <ul className="p-2 text-sm text-gray-900 dark:text-white">
-                      {[
-                        "My Account",
-                        "My Orders",
-                        "Settings",
-                        "Favourites",
-                        "Delivery Addresses",
-                        "Billing Data",
-                      ].map((item) => (
-                        <li key={item}>
-                          <a
-                            href="#"
-                            className="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                          >
-                            {item}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="p-2">
-                      <a
-                        href="#"
-                        className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                      >
-                        Sign Out
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
@@ -193,7 +164,7 @@ export default function Navbar() {
               <ul className="space-y-3 text-sm font-medium text-gray-900 dark:text-white">
                 {navItems.map((item) => (
                   <li key={item}>
-                    <a href="#" className="hover:text-primary-700 dark:hover:text-primary-500">
+                    <a href="/productos" className="hover:text-primary-700 dark:hover:text-primary-500">
                       {item}
                     </a>
                   </li>

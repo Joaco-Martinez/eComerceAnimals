@@ -64,8 +64,8 @@ export const create = async (req: Request, res: Response) => {
       price: parseFloat(price),
       stock: parseInt(stock),
       weight: weight ? parseFloat(weight) : undefined,
-      size,
-      color,
+      size: size ? JSON.parse(size) : [], // <-- espera un string tipo '["S", "M"]'
+      color: color ? JSON.parse(color) : [], // <-- igual
       categoryId: parseInt(categoryId),
       sku,
       images: files || [],
@@ -82,16 +82,27 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const data = req.body;
+    const {
+      name, description, price, stock, weight, size, color, categoryId, sku, petType
+    } = req.body;
 
-    if (data.petType && !validPetTypes.includes(data.petType)) {
+    if (petType && !validPetTypes.includes(petType)) {
       return res.status(400).json({ error: `petType debe ser uno de: ${validPetTypes.join(', ')}` });
     }
 
-    // Si vienen imágenes nuevas por multer, manejalas aparte (opcional)
-    // Aquí se asume que imágenes se actualizan por otro endpoint o no se manejan ahora
+    const updatedProduct = await productService.updateProduct(id, {
+      name,
+      description,
+      price: price ? parseFloat(price) : undefined,
+      stock: stock ? parseInt(stock) : undefined,
+      weight: weight ? parseFloat(weight) : undefined,
+      size: size ? JSON.parse(size) : undefined, // <-- aquí también
+      color: color ? JSON.parse(color) : undefined,
+      categoryId: categoryId ? parseInt(categoryId) : undefined,
+      sku,
+      petType,
+    });
 
-    const updatedProduct = await productService.updateProduct(id, data);
     res.json(updatedProduct);
   } catch (error) {
     console.error('Error actualizando producto:', error);

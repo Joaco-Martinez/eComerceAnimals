@@ -13,10 +13,8 @@ export default function InstagramFeed() {
     <div className="w-full">
       <iframe
         src="http://lightwidget.com/widgets/bc831e37baf55a549e6d9b89bbc0bce7.html"
-        scrolling="no"
-        allowTransparency={true}
-        className="lightwidget-widget"
         style={{ width: "100%", border: "0", overflow: "hidden" }}
+        className="lightwidget-widget"
       ></iframe>
     </div>
   );

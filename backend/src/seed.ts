@@ -4,6 +4,14 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+function getRandomSubset<T>(array: T[]): T[] {
+  const subset = [];
+  const length = Math.floor(Math.random() * array.length) + 1;
+  const shuffled = array.sort(() => 0.5 - Math.random());
+  for (let i = 0; i < length; i++) subset.push(shuffled[i]);
+  return [...new Set(subset)];
+}
+
 async function main() {
   const password = await bcrypt.hash('123456', 10);
 
@@ -37,7 +45,7 @@ async function main() {
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/Premium-Cordero-RP-75kg-Perfil-2-OLD-1_kealtl"
   ];
 
-  // Crear categorías únicas con imagen
+  // Crear categorías
   const categoryNames = [
     "Alimentos ", "Juguetes ", "Accesorios ", "Camas ",
     "Indumentaria ", "Snacks ", "Salud ", " Antipulgas",
@@ -47,31 +55,50 @@ async function main() {
   ];
 
   await prisma.category.createMany({
-  data: categoryNames.map((name, i) => ({
-    name,
-    description: `Productos de la categoría ${name}`,
-    image: categoryImages[i % categoryImages.length], // usa "image" si ese es el campo
-  })),
-  skipDuplicates: true,
-});
-
-  // Obtener las categorías recién creadas
-  const categories = await prisma.category.findMany();
-
-  // Crear productos relacionados a las categorías
-  const productData = categories.map((cat, i) => ({
-    name: `Producto ${i + 1} - ${cat.name}`,
-    description: `Este es un producto relacionado con la categoría ${cat.name.toLowerCase()}.`,
-    price: 1000 + i * 100,
-    stock: 15 + i,
-    categoryId: cat.id,
-  }));
-
-  await prisma.product.createMany({
-    data: productData,
+    data: categoryNames.map((name, i) => ({
+      name,
+      description: `Productos de la categoría ${name}`,
+      image: categoryImages[i % categoryImages.length],
+    })),
+    skipDuplicates: true,
   });
 
-  console.log("✅ Seeder completado con 20 categorías y 20 productos con imágenes en categorías.");
+  const categories = await prisma.category.findMany();
+
+  const sizes = ["S", "M", "L", "XL"];
+  const colors = ["Rojo", "Azul", "Verde", "Negro", "Blanco", "Amarillo"];
+
+  const productImages = [
+    "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/images_2_leasda",
+    "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/2520714_l_im1qzs",
+    "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/images_1_bhkdxp",
+    "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/71XRDqMQQvL._AC_SL1500__zb9gx4",
+  ];
+
+  for (const [i, cat] of categories.entries()) {
+    await prisma.product.create({
+      data: {
+        name: `Producto ${i + 1} - ${cat.name.trim()}`,
+        description: `Este es un producto relacionado con la categoría ${cat.name.toLowerCase().trim()}.`,
+        price: 1000 + i * 100,
+        stock: 15 + i,
+        weight: 0.2 + i * 0.1,
+        size: getRandomSubset(sizes),
+        color: getRandomSubset(colors),
+        sku: `SKU-${Math.random().toString(36).substring(2, 8).toUpperCase()}-${i + 1}`,
+        categoryId: cat.id,
+        images: {
+          create: [
+            { url: productImages[i % productImages.length] },
+            { url: productImages[(i + 1) % productImages.length] },
+            { url: productImages[(i + 2) % productImages.length] },
+          ],
+        },
+      },
+    });
+  }
+
+  console.log("✅ Seeder completado con 20 categorías y 20 productos con imágenes, SKU, tamaños y colores.");
 }
 
 main()

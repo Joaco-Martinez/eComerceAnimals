@@ -84,8 +84,8 @@ model Product {
   price       Float
   stock       Int
   weight      Float?
-  size        String?
-  color       String?
+  size        String[] 
+  color       String[] 
   sku         String?
    petType     PetType      @default(both)
   isActive    Boolean      @default(true)

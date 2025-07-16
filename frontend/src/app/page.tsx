@@ -4,7 +4,8 @@ import ShopNow from "@/components/ShopNow/ShopNow";
 import { SliderCategories } from "@/components/sliderCategories/SliderCategories";
 import { SeccionPerrosYGatos } from "@/components/seccionPerrosYGatos/seccionPerrosYGatos";
 import InstagramFeed from "@/components/redes/redes";
-
+import RedesSociales from "@/components/RedesSociales/RedesSociales";
+import SliderProductosDestacados from "@/components/sliderProductosDestacados/sliderProductosDestacados";
 export default function Home() {
   return (
     <main>
@@ -27,6 +28,17 @@ export default function Home() {
       <div className="my-2"></div>  {/* Separation between sections */}
 
     <SeccionPerrosYGatos />
+
+      <div className="my-2"></div>  {/* Separation between sections */}
+
+    <SliderProductosDestacados />
+
+      <div className="my-2"></div>  {/* Separation between sections */}
+
+        <RedesSociales />
+
+      <div className="my-1"></div>  {/* Separation between sections */}
+
 
       <InstagramFeed />
       </section>
