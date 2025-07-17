@@ -20,7 +20,7 @@ export interface Address {
   isPrimary: boolean;
 }
 
-export interface AddressCreate extends Omit<Address, "id" | "userId"> {}
+export type AddressCreate = Omit<Address, "id" | "userId">;
 
 // User
 export interface User {
