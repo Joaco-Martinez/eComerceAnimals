@@ -3,7 +3,7 @@ import { prisma } from '../db/db';
 
 
 export const StockNotificationService = {
-  checkIfSubscribed: async (email: string, productId: number) => {
+  checkIfSubscribed: async (email: string, productId: string) => {
     return await prisma.stockNotification.findFirst({
       where: {
         email,
@@ -13,7 +13,7 @@ export const StockNotificationService = {
     });
   },
 
-  createSubscription: async (email: string, productId: number) => {
+  createSubscription: async (email: string, productId: string) => {
     return await prisma.stockNotification.create({
       data: {
         email,
@@ -22,7 +22,7 @@ export const StockNotificationService = {
     });
   },
 
-  getUnnotifiedSubscribers: async (productId: number) => {
+  getUnnotifiedSubscribers: async (productId: string) => {
     return await prisma.stockNotification.findMany({
       where: {
         productId,
@@ -31,7 +31,7 @@ export const StockNotificationService = {
     });
   },
 
-  markAsNotified: async (ids: number[]) => {
+  markAsNotified: async (ids: string[]) => {
     return await prisma.stockNotification.updateMany({
       where: {
         id: {

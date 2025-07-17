@@ -15,7 +15,7 @@ const CartCheckout = () => {
           id: "prod-2",
           title: "Bolso de transporte",
           quantity: 1,
-          unit_price: 3500,
+          unit_price: 366500,
         },
       ],
       metadata: {

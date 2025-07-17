@@ -36,7 +36,7 @@ export const updateItem = async (req: AuthRequest, res: Response) => {
 
 export const removeItem = async (req: AuthRequest, res: Response) => {
   try {
-    const productId = Number(req.params.productId);
+    const productId = (req.params.productId);
     await cartService.removeFromCart(req.userId!, productId);
     res.status(204).send();
   } catch (error) {

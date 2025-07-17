@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 export const getAllUsers = async () => prisma.user.findMany();
 
-export const updateUserPassword = async (id: number, newPassword: string) => {
+export const updateUserPassword = async (id: string, newPassword: string) => {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   return prisma.user.update({
     where: { id },
@@ -16,7 +16,7 @@ export const updateUserPassword = async (id: number, newPassword: string) => {
   });
 };
 
-export const deleteUser = async (id: number) =>
+export const deleteUser = async (id: string) =>
   prisma.user.delete({ where: { id } });
 
 export const generateResetCode = async (email: string) => {

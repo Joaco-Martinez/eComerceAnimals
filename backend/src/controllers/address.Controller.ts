@@ -22,7 +22,7 @@ export const AddressController = {
 
   async delete(req: Request, res: Response) {
     const userId = req.user.id;
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     await AddressService.delete(id, userId);
     res.status(204).end();
   },

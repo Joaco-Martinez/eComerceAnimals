@@ -6,7 +6,7 @@ import { getAllCategories } from "../../service/categorieService";
 import { useEffect, useState } from "react";
 import Loader from "../Loader/Loader";
 interface categories {
-  id: number;
+  id: string;
   name: string;
   image?: string;
 }

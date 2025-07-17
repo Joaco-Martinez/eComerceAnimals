@@ -1,4 +1,3 @@
-
 // Enums
 export type Role = "customer" | "admin";
 export type PetType = "dog" | "cat" | "both";
@@ -9,8 +8,8 @@ export type NotificationType = "order" | "promo" | "payment" | "system";
 
 // Address
 export interface Address {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   fullName: string;
   street: string;
   number: string;
@@ -24,7 +23,7 @@ export type AddressCreate = Omit<Address, "id" | "userId">;
 
 // User
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: Role;
@@ -41,15 +40,16 @@ export interface UserCreate {
   address: AddressCreate;
 }
 
+// ProductImage
 export interface ProductImage {
-  id: number;
+  id: string;
   url: string;
-  description: number;
+  description: string;
 }
 
 // Product
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -60,7 +60,7 @@ export interface Product {
   sku?: string;
   petType: PetType;
   isActive: boolean;
-  categoryId: number;
+  categoryId: string;
   createdAt: string;
   updatedAt: string;
   category: Category;
@@ -69,7 +69,7 @@ export interface Product {
 
 // Category
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   image?: string;
@@ -77,9 +77,9 @@ export interface Category {
 
 // Review
 export interface Review {
-  id: number;
-  userId: number;
-  productId: number;
+  id: string;
+  userId: string;
+  productId: string;
   comment: string;
   rating: number;
   createdAt: string;
@@ -87,7 +87,7 @@ export interface Review {
 
 // Coupon
 export interface Coupon {
-  id: number;
+  id: string;
   code: string;
   description?: string;
   discountType: DiscountType;
@@ -101,8 +101,8 @@ export interface Coupon {
 
 // Payment
 export interface Payment {
-  id: number;
-  orderId: number;
+  id: string;
+  orderId: string;
   amount: number;
   method: string;
   status: PaymentStatus;
@@ -111,19 +111,19 @@ export interface Payment {
 
 // OrderItem
 export interface OrderItem {
-  id: number;
-  orderId: number;
-  productId: number;
+  id: string;
+  orderId: string;
+  productId: string;
   quantity: number;
   unitPrice: number;
 }
 
 // Order
 export interface Order {
-  id: number;
-  userId: number;
-  addressId: number;
-  couponId?: number;
+  id: string;
+  userId: string;
+  addressId: string;
+  couponId?: string;
   items: OrderItem[];
   totalAmount: number;
   status: OrderStatus;
@@ -133,8 +133,8 @@ export interface Order {
 
 // Notification
 export interface Notification {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   title: string;
   message: string;
   type: NotificationType;
@@ -144,40 +144,40 @@ export interface Notification {
 
 // CartItem
 export interface CartItem {
-  id: number;
-  cartId: number;
-  productId: number;
+  id: string;
+  cartId: string;
+  productId: string;
   quantity: number;
 }
 
 // Cart
 export interface Cart {
-  id: number;
-  userId: number;
+  id: string;
+  userId?: string;
   items: CartItem[];
   updatedAt: string;
 }
 
 // StockNotification
 export interface StockNotification {
-  id: number;
+  id: string;
   email: string;
-  productId: number;
+  productId: string;
   notified: boolean;
   createdAt: string;
 }
 
 // Image
 export interface Image {
-  id: number;
+  id: string;
   url: string;
-  productId: number;
+  productId: string;
 }
 
 // UserCoupon
 export interface UserCoupon {
-  id: number;
-  userId: number;
-  couponId: number;
+  id: string;
+  userId: string;
+  couponId: string;
   usedAt: string;
 }

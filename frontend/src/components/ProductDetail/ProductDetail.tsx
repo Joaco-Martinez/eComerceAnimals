@@ -6,20 +6,20 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
 interface ProductImage {
-  id: number;
+  id: string;
   url: string;
   productId: number;
 }
 
 interface Category {
-  id: number;
+  id: string;
   name: string;
   description: string;
   image: string;
 }
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -30,7 +30,7 @@ interface Product {
   sku: string;
   petType: string;
   isActive: boolean;
-  categoryId: number;
+  categoryId: string;
   createdAt: string;
   updatedAt: string;
   category: Category;
@@ -55,7 +55,7 @@ const ProductDetail = ({ product }: Props) => {
     value.toLocaleString("es-AR", { minimumFractionDigits: 0 });
 
   return (
-    <div className="max-w-[370px] mx-auto bg-white rounded-t-3xl font-sans overflow-hidden shadow-md">
+    <div className="max-w-[370px] mx-auto bg-white rounded-t-3xl   overflow-hidden shadow-md">
       {/* CABECERA */}
       <div className="bg-gradient-to-t from-[#d2d2d2] via-white to-[#d2d2d2] relative">
         <div className="px-4 py-2 text-sm text-white/90">
@@ -95,8 +95,8 @@ const ProductDetail = ({ product }: Props) => {
       </div>
 
       {/* CONTENIDO */}
-      <div className="bg-white rounded-t-3xl px-5 pt-4 pb-6 relative">
-        <div className="flex justify-between items-start mb-3">
+      <div className="bg-white rounded-t-3xl  pt-4  relative">
+        <div className="flex justify-between items-start px-4 mb-3">
           <h1 className="text-[18px] font-bold text-[#333]">{product.name}</h1>
           <button>
             <Image
@@ -109,7 +109,7 @@ const ProductDetail = ({ product }: Props) => {
           </button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 px-4">
           <p className="text-sm font-semibold text-[#2C4B4D]">
             Opciones de Color
           </p>
@@ -129,7 +129,7 @@ const ProductDetail = ({ product }: Props) => {
           </div>
         </div>
 
-        <div className="text-right mb-4">
+        <div className="text-right mb-4 px-4">
           <p className="text-sm  text-[#918283]">
             ${format(originalPrice)}
           </p>
@@ -147,17 +147,17 @@ const ProductDetail = ({ product }: Props) => {
           </div>
         </div>
 
-        <div className="text-sm text-[#C4BFAB] mb-4 leading-relaxed">
+        <div className="text-sm text-[#C4BFAB] mb-4 leading-relaxed px-4">
           <p className="font-semibold mb-1">Descripción</p>
           <p>{product.description}</p>
         </div>
           
-          <div className="flex justify-between items-center align-center mb-4 pt-10">
+          <div className="flex justify-between items-center align-center  pt-10">
         <div
           className="flex items-center mb-4 cursor-pointer"
           onClick={() => setShowDetails(!showDetails)}
           >
-          <div className="text-[#918283] text-xl">
+          <div className="text-[#918283] text-xl px-4">
             {showDetails ? (
               <ChevronDown className="w-7 h-7 text-[#918283]" />
             ) : (
@@ -180,17 +180,6 @@ const ProductDetail = ({ product }: Props) => {
                 <Image src="/icons/size.svg" alt="Tamaño" width={24} height={24} />
               </div>
               <p>{product.size?.[0] || "Tamaño único"}</p>
-            </div>
-            <div className="flex  items-start">
-              <div className="w-8 h-8 mb-1 flex items-center justify-start">
-                <Image
-                  src="/icons/brush.svg"
-                  alt="Cerdas"
-                  width={24}
-                  height={24}
-                />
-              </div>
-              <p>{product.stock}</p>
             </div>
             <div className="flex  items-start">
               <div className="w-8 h-8 mb-1 flex items-center justify-start">

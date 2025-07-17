@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "../components/navbar/Navbar";
 import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
 import { AuthProvider } from '../context/authContext';
+import { AnonCartProvider } from '../context/anonCartContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
+        <AnonCartProvider>
         <Navbar /> 
         {children}
         <Toaster />
         <WhatsappLink />
+        </AnonCartProvider>
         </AuthProvider>
       </body>
     </html>

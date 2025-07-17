@@ -2,7 +2,7 @@ import { FC } from "react";
 import Image from "next/image";
 
 export interface ProductImage {
-  id: number;
+  id: string;
   url: string;
   productId: number;
 }

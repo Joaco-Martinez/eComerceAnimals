@@ -1,4 +1,3 @@
-// prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -38,7 +37,6 @@ async function main() {
     },
   });
 
-  // Fotos para categorías (pueden repetirse)
   const categoryImages = [
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/pngtree-kids-toys-png-image_13394244_kmyer4",
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/pngtree-pets-accessories-pet-accessory-veterinary-png-image_6063863_iixn2o",
@@ -46,11 +44,11 @@ async function main() {
   ];
 
   const categoryNames = [
-    "Alimentos ", "Juguetes ", "Accesorios ", "Camas ",
-    "Indumentaria ", "Snacks ", "Salud ", " Antipulgas",
-    "Shampoo ", "Collares ", "Transportadoras", "Bebederos",
-    "Cepillos ", "Invierno", "Botas ", "Pelotas ",
-    "Mordedores", "Correas ", "Premios ", "Galletitas"
+    "Alimentos", "Juguetes", "Accesorios", "Camas",
+    "Indumentaria", "Snacks", "Salud", "Antipulgas",
+    "Shampoo", "Collares", "Transportadoras", "Bebederos",
+    "Cepillos", "Invierno", "Botas", "Pelotas",
+    "Mordedores", "Correas", "Premios", "Galletitas"
   ];
 
   await prisma.category.createMany({
@@ -80,9 +78,9 @@ async function main() {
   for (const [i, cat] of categories.entries()) {
     await prisma.product.create({
       data: {
-        name: `Producto ${i + 1} - ${cat.name.trim()}`,
-        description: `Este es un producto relacionado con la categoría ${cat.name.toLowerCase().trim()}.`,
-        price: 10000 + i * 500, // ⬅️ Asegura precio mínimo de 5 dígitos (10.000+)
+        name: `Producto ${i + 1} - ${cat.name}`,
+        description: `Este es un producto relacionado con la categoría ${cat.name.toLowerCase()}.`,
+        price: 10000 + i * 500,
         stock: 15 + i,
         weight: 0.2 + i * 0.1,
         size: getRandomSubset(sizes),
@@ -100,7 +98,7 @@ async function main() {
     });
   }
 
-  console.log("✅ Seeder completado con 20 categorías y productos con precios desde $10.000.");
+  console.log("✅ Seeder completado con 20 categorías y productos usando UUID.");
 }
 
 main()

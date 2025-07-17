@@ -40,7 +40,7 @@ export const getByPetAndCategory = async (req: Request, res: Response) => {
 };
 
 export const getById = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const product = await productService.getProductById(id);
   if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
   res.json(product);
@@ -66,7 +66,7 @@ export const create = async (req: Request, res: Response) => {
       weight: weight ? parseFloat(weight) : undefined,
       size: size ? JSON.parse(size) : [], // <-- espera un string tipo '["S", "M"]'
       color: color ? JSON.parse(color) : [], // <-- igual
-      categoryId: parseInt(categoryId),
+      categoryId: categoryId,
       sku,
       images: files || [],
       petType,
@@ -81,7 +81,7 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const {
       name, description, price, stock, weight, size, color, categoryId, sku, petType
     } = req.body;
@@ -98,7 +98,7 @@ export const update = async (req: Request, res: Response) => {
       weight: weight ? parseFloat(weight) : undefined,
       size: size ? JSON.parse(size) : undefined, // <-- aquí también
       color: color ? JSON.parse(color) : undefined,
-      categoryId: categoryId ? parseInt(categoryId) : undefined,
+      categoryId: categoryId ? categoryId : undefined,
       sku,
       petType,
     });
@@ -111,7 +111,7 @@ export const update = async (req: Request, res: Response) => {
 };
 
 export const remove = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   await productService.deleteProduct(id);
   res.status(204).send();
 };

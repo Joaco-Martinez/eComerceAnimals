@@ -1,8 +1,8 @@
 import { prisma } from '../db/db';
 
 export const createOrderFromCart = async (
-  userId: number,
-  addressId: number,
+  userId: string,
+  addressId: string,
   couponCode?: string
 ) => {
   // Verificamos carrito
@@ -98,7 +98,7 @@ export const createOrderFromCart = async (
   return order;
 };
 
-export const getUserOrders = async (userId: number) => {
+export const getUserOrders = async (userId: string) => {
   return await prisma.order.findMany({
     where: { userId },
     include: {

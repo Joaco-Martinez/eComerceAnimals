@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "@/components/CardProduct/CardProduct";
 import { getAllProducts } from "@/service/productService";
 import LogicaSearchbar from "@/components/LogicaSearchbar/LogicaSearchbar";
+import Loader from "@/components/Loader/Loader";
 
 interface ProductImage {
   id: number;
@@ -60,9 +61,7 @@ const ProductsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-[60vh] text-gray-500">
-        Cargando productos...
-      </div>
+      <Loader />
     );
   }
 

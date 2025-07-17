@@ -15,6 +15,9 @@ import addressRoutes from './routes/address.Routes';
 import mercadoPagoRoutes from "./routes/mercadoPago.Routes";
 import { swaggerUiHandler, swaggerUiSetup } from './swaggerConfig';
 import stockNotificationRoutes from "./routes/stockNotification.Routes";
+import anonCartRoutes from './routes/anonCart.Routes';
+
+
 dotenv.config();
 
 export const app = express();
@@ -42,6 +45,7 @@ app.use('/users', userRoutes);
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
+app.use('/anon-cart', anonCartRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)
 app.use("/categories", categoryRoutes);
 app.use("/stock-notifications", stockNotificationRoutes);

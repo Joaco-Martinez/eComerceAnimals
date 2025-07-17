@@ -4,22 +4,23 @@ import { useParams } from "next/navigation";
 import ProductDetail from "@/components/ProductDetail/ProductDetail";
 import { getProductById } from "@/service/productService";
 import Loader from "@/components/Loader/Loader";
+import SliderProductosRecomendados from "@/components/SliderProductosRecomendados/SliderProductosRecomendado";
 
 interface ProductImage {
-  id: number;
+  id: string;
   url: string;
   productId: number;
 }
 
 interface Category {
-  id: number;
+  id: string;
   name: string;
   description: string;
   image: string;
 }
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -30,7 +31,7 @@ interface Product {
   sku: string;
   petType: string;
   isActive: boolean;
-  categoryId: number;
+  categoryId: string;
   createdAt: string;
   updatedAt: string;
   category: Category;
@@ -48,5 +49,11 @@ export default function ProductDetailPage() {
 
   if (!product) return <Loader />;
 
-  return <ProductDetail product={product} />;
+  return (
+          <>
+              <ProductDetail product={product} />
+              <SliderProductosRecomendados petType={product.petType} />
+          </>
+
+  )
 }

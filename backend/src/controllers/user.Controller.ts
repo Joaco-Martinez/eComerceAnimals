@@ -13,7 +13,7 @@ export const getUsers = async (_req: Request, res: Response) => {
 
 export const updateUserPassword = async (req: Request, res: Response) => {
   try {
-    const id = Number(req.params.id);
+    const id = String(req.params.id);
     const { password } = req.body;
     if (!password) return res.status(400).json({ message: 'La contraseña es requerida' });
 
@@ -26,7 +26,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const id = Number(req.params.id);
+    const id = String(req.params.id);
     await userService.deleteUser(id);
     res.status(204).send();
   } catch {

@@ -14,14 +14,14 @@ export const getAllCategories = async () => {
   return prisma.category.findMany();
 };
 
-export const getCategoryById = async (id: number) => {
+export const getCategoryById = async (id: string) => {
   return prisma.category.findUnique({
     where: { id },
   });
 };
 
 export const updateCategory = async (
-  id: number,
+  id: string,
   data: Partial<{ name: string; description: string; image: string }>
 ) => {
   return prisma.category.update({
@@ -30,7 +30,7 @@ export const updateCategory = async (
   });
 };
 
-export const deleteCategory = async (id: number) => {
+export const deleteCategory = async (id: string) => {
   return prisma.category.delete({
     where: { id },
   });

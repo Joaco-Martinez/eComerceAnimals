@@ -46,17 +46,17 @@ enum NotificationType {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
+  id             String   @id @default(uuid())
   name           String
-  email          String    @unique
+  email          String   @unique
   password       String
-  role           Role      @default(customer)
+  role           Role     @default(customer)
   phone          String?
   isEmailVerified           Boolean   @default(false)
   emailVerificationCode     String?
   emailVerificationExpires  DateTime?
-  resetPasswordCode        String?   // Código temporal
-  resetPasswordExpiresAt   DateTime? // Fecha de expiración del código
+  resetPasswordCode         String?
+  resetPasswordExpiresAt    DateTime?
 
   addresses      Address[]
   cart           Cart?
@@ -69,9 +69,9 @@ model User {
 }
 
 model Address {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   user        User     @relation(fields: [userId], references: [id])
-  userId      Int
+  userId      String
   fullName    String
   street      String
   number      String
@@ -84,146 +84,164 @@ model Address {
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
+  id          String     @id @default(uuid())
   name        String
   description String
   price       Float
   stock       Int
   weight      Float?
-  size        String[] 
-  color       String[] 
+  size        String[]
+  color       String[]
   sku         String?
-   petType     PetType      @default(both)
-  isActive    Boolean      @default(true)
+  petType     PetType    @default(both)
+  isActive    Boolean    @default(true)
   images      Image[]
-  category    Category     @relation(fields: [categoryId], references: [id])
-  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  String
   stockNotifications StockNotification[]
   reviews     Review[]
   cartItems   CartItem[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   orderItems  OrderItem[]
+  anonCartItems AnonCartItem[]
 }
 
 model Image {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   url       String
   product   Product  @relation(fields: [productId], references: [id])
-  productId Int
+  productId String
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   description String?
   image       String?
   products    Product[]
 }
+
 model StockNotification {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   email      String
   product    Product  @relation(fields: [productId], references: [id])
-  productId  Int
+  productId  String
   notified   Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
+
 model Cart {
-  id        Int         @id @default(autoincrement())
-  userId    Int         @unique
-  user      User        @relation(fields: [userId], references: [id])
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
   items     CartItem[]
-  updatedAt DateTime    @updatedAt
+  updatedAt DateTime  @updatedAt
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   cart      Cart     @relation(fields: [cartId], references: [id])
-  cartId    Int
+  cartId    String
   product   Product  @relation(fields: [productId], references: [id])
-  productId Int
+  productId String
   quantity  Int
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  address     Address     @relation(fields: [addressId], references: [id])
-  addressId   Int
-  coupon      Coupon?     @relation(fields: [couponId], references: [id])
-  couponId    Int?
+  id          String       @id @default(uuid())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+  address     Address      @relation(fields: [addressId], references: [id])
+  addressId   String
+  coupon      Coupon?      @relation(fields: [couponId], references: [id])
+  couponId    String?
   items       OrderItem[]
   payment     Payment?
   totalAmount Float
-  status      OrderStatus @default(pending)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  
+  status      OrderStatus  @default(pending)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model OrderItem {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   order      Order    @relation(fields: [orderId], references: [id])
-  orderId    Int
+  orderId    String
   product    Product  @relation(fields: [productId], references: [id])
-  productId  Int
+  productId  String
   quantity   Int
   unitPrice  Float
 }
 
 model Payment {
-  id        Int           @id @default(autoincrement())
-  order     Order         @relation(fields: [orderId], references: [id])
-  orderId   Int           @unique
+  id        String         @id @default(uuid())
+  order     Order          @relation(fields: [orderId], references: [id])
+  orderId   String         @unique
   amount    Float
   method    String
-  status    PaymentStatus @default(pending)
+  status    PaymentStatus  @default(pending)
   paidAt    DateTime?
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
-  userId    Int
+  userId    String
   product   Product  @relation(fields: [productId], references: [id])
-  productId Int
+  productId String
   comment   String
-  rating    Int       // 1 a 5
-  createdAt DateTime  @default(now())
+  rating    Int
+  createdAt DateTime @default(now())
 }
 
 model Coupon {
-  id          Int           @id @default(autoincrement())
-  code        String        @unique
-  description String?
-  discountType DiscountType
-  value       Float
-  maxUses     Int
-  usedCount   Int           @default(0)
-  userLimit   Int
+  id            String        @id @default(uuid())
+  code          String        @unique
+  description   String?
+  discountType  DiscountType
+  value         Float
+  maxUses       Int
+  usedCount     Int           @default(0)
+  userLimit     Int
   expirationDate DateTime?
-  active      Boolean       @default(true)
-  orders      Order[]
-  userCoupons UserCoupon[]
+  active        Boolean       @default(true)
+  orders        Order[]
+  userCoupons   UserCoupon[]
 }
 
 model UserCoupon {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
-  userId    Int
+  userId    String
   coupon    Coupon   @relation(fields: [couponId], references: [id])
-  couponId  Int
+  couponId  String
   usedAt    DateTime
 }
 
 model Notification {
-  id        Int              @id @default(autoincrement())
-  user      User             @relation(fields: [userId], references: [id])
-  userId    Int
+  id        String            @id @default(uuid())
+  user      User              @relation(fields: [userId], references: [id])
+  userId    String
   title     String
   message   String
   type      NotificationType
-  isRead    Boolean          @default(false)
+  isRead    Boolean           @default(false)
+  createdAt DateTime          @default(now())
+}
+
+model AnonCart {
+  id        String           @id @default(uuid())
+  items     AnonCartItem[]
   createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model AnonCartItem {
+  id         String     @id @default(uuid())
+  cart       AnonCart   @relation(fields: [cartId], references: [id])
+  cartId     String
+  product    Product    @relation(fields: [productId], references: [id])
+  productId  String
+  quantity   Int
 }

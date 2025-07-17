@@ -1,6 +1,6 @@
 import { prisma } from '../db/db';
 
-export const getUserCart = async (userId: number) => {
+export const getUserCart = async (userId: string) => {
   return await prisma.cart.findUnique({
     where: { userId },
     include: {
@@ -13,7 +13,7 @@ export const getUserCart = async (userId: number) => {
   });
 };
 
-export const addToCart = async (userId: number, productId: number, quantity: number) => {
+export const addToCart = async (userId: string, productId: string, quantity: number) => {
   let cart = await prisma.cart.findUnique({ where: { userId } });
 
   if (!cart) {
@@ -40,7 +40,7 @@ export const addToCart = async (userId: number, productId: number, quantity: num
   });
 };
 
-export const updateCartItem = async (userId: number, productId: number, quantity: number) => {
+export const updateCartItem = async (userId: string, productId: string, quantity: number) => {
   const cart = await prisma.cart.findUnique({ where: { userId } });
   if (!cart) throw new Error('Carrito no encontrado');
 
@@ -50,7 +50,7 @@ export const updateCartItem = async (userId: number, productId: number, quantity
   });
 };
 
-export const removeFromCart = async (userId: number, productId: number) => {
+export const removeFromCart = async (userId: string, productId: string) => {
   const cart = await prisma.cart.findUnique({ where: { userId } });
   if (!cart) throw new Error('Carrito no encontrado');
 

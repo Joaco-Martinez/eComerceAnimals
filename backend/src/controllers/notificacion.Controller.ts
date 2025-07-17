@@ -4,7 +4,7 @@ import { sendNotificationEmail } from '../services/notificacion.service';
 
 // Define AuthRequest interface if not already defined elsewhere
 interface AuthRequest extends Request {
-  userId?: number;
+  userId?: string;
 }
 
 export const createNotification = async (req: Request, res: Response) => {

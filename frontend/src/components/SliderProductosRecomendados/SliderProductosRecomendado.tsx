@@ -6,21 +6,25 @@ import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import Loader from '../Loader/Loader';
-// import ProductCardSlide from '../productCardSlide/ProductCardSlide'; 
+
 import CardProduct from '../CardProduct/CardProduct';
-import { getAllProducts } from '../../service/productService';
+import { getProductByPetType } from '../../service/productService';
 
 import type { ProductCardProps } from '../CardProduct/CardProduct';
 
-export default function SliderProductosDestacados() {
+interface Props {
+  petType: string;
+}
+
+export default function SliderProductosDestacados({ petType }: Props) {
   const [featuredProducts, setFeaturedProducts] = useState<ProductCardProps[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getAllProducts(); 
-        setFeaturedProducts(data.slice(0, 4)); 
+        const data = await getProductByPetType(petType); 
+        setFeaturedProducts(data.slice(0, 4)); // Mostrar los primeros 4
       } catch (error) {
         console.error('Error al cargar productos:', error);
       } finally {
@@ -29,7 +33,7 @@ export default function SliderProductosDestacados() {
     };
 
     fetchProducts();
-  }, []);
+  }, [petType]);
 
   if (loading) {
     return (
@@ -48,7 +52,7 @@ export default function SliderProductosDestacados() {
     <section className="py-6 px-4 sm:px-8 w-full max-w-screen-lg mx-auto">
       <h2 className="text-xl sm:text-2xl font-light  text-center text-[#918283] mb-4">
         NUESTROS <p className="text-[#918283] font-bold inline">
-          ELEGIDOS
+          RECOMENDADOS
           </p>
       </h2>
 

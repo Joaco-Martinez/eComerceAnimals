@@ -4,7 +4,7 @@ export const getAllProducts = () => prisma.product.findMany({
   include: { category: true, images: true }
 });
 
-export const getProductById = (id: number) => prisma.product.findUnique({
+export const getProductById = (id: string) => prisma.product.findUnique({
   where: { id },
   include: { category: true, images: true }
 });
@@ -42,7 +42,7 @@ export const createProduct = async (data: {
   weight?: number;
   size?: string[]; // <-- array
   color?: string[]; // <-- array
-  categoryId: number;
+  categoryId: string;
   sku?: string;
   images?: Express.Multer.File[];
   petType: 'dog' | 'cat' | 'both';
@@ -71,7 +71,7 @@ export const createProduct = async (data: {
   });
 };
 export const updateProduct = (
-  id: number,
+  id: string,
   data: Partial<{
     name: string;
     description: string;
@@ -80,11 +80,11 @@ export const updateProduct = (
     weight: number;
     size: string[];  // <-- array
     color: string[]; // <-- array
-    categoryId: number;
+    categoryId: string;
     sku: string;
     isActive: boolean;
     petType: 'dog' | 'cat' | 'both';
   }>
 ) => prisma.product.update({ where: { id }, data });
 
-export const deleteProduct = (id: number) => prisma.product.delete({ where: { id } });
+export const deleteProduct = (id: string) => prisma.product.delete({ where: { id } });
