@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import Image from "next/image";
-
+import Link from "next/link";
 export interface ProductImage {
   id: number;
   url: string;
@@ -9,6 +9,7 @@ export interface ProductImage {
 
 export interface ProductCardProps {
   name: string;
+  id: number;
   description: string;
   price: number;
   images: ProductImage[];
@@ -31,6 +32,7 @@ const ProductCard: FC<ProductCardProps> = ({
   description,
   price,
   images,
+  id,
 }) => {
   const [isSmallDevice, setIsSmallDevice] = useState(false);
 
@@ -39,7 +41,7 @@ const ProductCard: FC<ProductCardProps> = ({
       setIsSmallDevice(window.innerWidth <= 400);
     };
 
-    checkDevice(); // Al montar
+    checkDevice(); 
     window.addEventListener("resize", checkDevice); // Al cambiar tamaño
 
     return () => window.removeEventListener("resize", checkDevice); // Limpieza
@@ -54,6 +56,7 @@ const ProductCard: FC<ProductCardProps> = ({
       <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden h-full flex flex-col">
         <div className="p-0 flex-1">
           {/* Header con ícono de favorito */}
+                <Link href={`/productos/${id}`}>
           <div className="relative bg-gray-50 px-2 sm:px-4 pt-2 sm:pt-4 pb-1 sm:pb-2">
             <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
               <div className="flex items-center justify-center">
@@ -66,7 +69,7 @@ const ProductCard: FC<ProductCardProps> = ({
                 />
               </div>
             </div>
-
+            
             {/* Imagen del producto */}
             <div className="flex justify-center ">
               <Image
@@ -126,6 +129,7 @@ const ProductCard: FC<ProductCardProps> = ({
               <span className="">3 cuotas de ${installment}</span> sin interés
             </div>
           </div>
+          </Link>
         </div>
       </div>
     </div>

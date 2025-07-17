@@ -11,14 +11,32 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendResetCodeEmail(email: string, code: string) {
+  const mailOptions = {
+    from: `"Punky Pet" <${process.env.SMTP_USER}>`,
+    to: email,
+    subject: 'Código para restablecer tu contraseña',
+    text: `Tu código de recuperación es: ${code}`,
+    html: `<p>Tu código de recuperación es: <b>${code}</b></p>`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Código de recuperación enviado a ${email}`);
+  } catch (error) {
+    console.error('Error al enviar código:', error);
+    throw error;
+  }
+}
+
 export async function sendNotificationEmail(
   to: string,
   subject: string,
   text: string,
-  html?: string // 📧 nuevo: html opcional
+  html?: string 
 ) {
   const mailOptions = {
-    from: `Verificación <${process.env.SMTP_USER}>`,
+    from: `Punky Pet <${process.env.SMTP_USER}>`,
     to,
     subject,
     text,

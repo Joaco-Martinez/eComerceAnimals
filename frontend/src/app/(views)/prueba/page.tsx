@@ -1,9 +1,18 @@
 'use client';
 import { useAuthContext } from '../../../context/authContext';
-
+import { useEffect } from 'react';
 
 export default function DebugAuth() {
   const { user, isAuth, ResetUserData } = useAuthContext();
+
+  useEffect(() => {
+ fetch('http://localhost:3000/auth/me', {
+  method: 'GET',
+  credentials: 'include'
+})
+  .then(res => res.json())
+  .then(data => console.log('Usuario:', data));
+}, []);
 
   return (
     <div className="p-4">

@@ -45,7 +45,6 @@ async function main() {
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/Premium-Cordero-RP-75kg-Perfil-2-OLD-1_kealtl"
   ];
 
-  // Crear categorías
   const categoryNames = [
     "Alimentos ", "Juguetes ", "Accesorios ", "Camas ",
     "Indumentaria ", "Snacks ", "Salud ", " Antipulgas",
@@ -67,12 +66,8 @@ async function main() {
 
   const sizes = ["S", "M", "L", "XL"];
   const colors = [
-    "#FF0000", // Rojo
-    "#0000FF", // Azul
-    "#008000", // Verde
-    "#000000", // Negro
-    "#FFFFFF", // Blanco
-    "#FFFF00"  // Amarillo
+    "#FF0000", "#0000FF", "#008000",
+    "#000000", "#FFFFFF", "#FFFF00"
   ];
 
   const productImages = [
@@ -87,7 +82,7 @@ async function main() {
       data: {
         name: `Producto ${i + 1} - ${cat.name.trim()}`,
         description: `Este es un producto relacionado con la categoría ${cat.name.toLowerCase().trim()}.`,
-        price: 1000 + i * 100,
+        price: 10000 + i * 500, // ⬅️ Asegura precio mínimo de 5 dígitos (10.000+)
         stock: 15 + i,
         weight: 0.2 + i * 0.1,
         size: getRandomSubset(sizes),
@@ -105,7 +100,7 @@ async function main() {
     });
   }
 
-  console.log("✅ Seeder completado con 20 categorías y 20 productos con imágenes, SKU, tamaños y colores hexadecimales.");
+  console.log("✅ Seeder completado con 20 categorías y productos con precios desde $10.000.");
 }
 
 main()

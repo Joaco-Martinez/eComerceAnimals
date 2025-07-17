@@ -33,38 +33,62 @@ router.get('/', authMiddleware, userController.getUsers);
 
 /**
  * @swagger
- * /users/{id}:
- *   put:
- *     summary: Cambiar contraseña del usuario
+ * /users/forgot-password:
+ *   post:
+ *     summary: Solicitar código para restablecer contraseña
  *     tags: [Users]
- *     security:
- *       - cookieAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del usuario
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [password]
+ *             required: [email]
  *             properties:
- *               password:
+ *               email:
  *                 type: string
+ *                 format: email
+ *                 example: usuario@example.com
+ *     responses:
+ *       200:
+ *         description: Código enviado al correo electrónico
+ *       400:
+ *         description: Email inválido o usuario no encontrado
+ */
+router.post('/forgot-password', userController.forgotPassword);
+
+/**
+ * @swagger
+ * /users/reset-password:
+ *   post:
+ *     summary: Restablecer contraseña con código recibido por email
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, code, newPassword]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@example.com
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *               newPassword:
+ *                 type: string
+ *                 format: password
  *                 example: "nuevaPassword123"
  *     responses:
  *       200:
- *         description: Contraseña actualizada
- *       404:
- *         description: Usuario no encontrado
+ *         description: Contraseña actualizada correctamente
+ *       400:
+ *         description: Código inválido o expirado
  */
-router.put('/:id', authMiddleware, userController.updateUserPassword);
-
+router.post('/reset-password', userController.resetPassword);
 /**
  * @swagger
  * /users/{id}:

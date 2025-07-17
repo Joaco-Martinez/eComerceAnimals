@@ -55,6 +55,8 @@ model User {
   isEmailVerified           Boolean   @default(false)
   emailVerificationCode     String?
   emailVerificationExpires  DateTime?
+  resetPasswordCode        String?   // Código temporal
+  resetPasswordExpiresAt   DateTime? // Fecha de expiración del código
 
   addresses      Address[]
   cart           Cart?

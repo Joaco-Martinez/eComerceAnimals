@@ -9,8 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { User } from '../../interfaces/Types';
-import apiService from '../service/apiService';
-
+import {getCurrentUser} from '../service/authService';
 // Tipado del contexto
 interface AuthContextType {
   user: User | null;
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await apiService.get('/auth/me', true);
+        const res = await getCurrentUser();
         setUser(res as User);
         setIsAuth(true);
       } catch (error) {

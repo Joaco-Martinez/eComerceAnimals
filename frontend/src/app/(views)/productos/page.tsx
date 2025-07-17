@@ -21,6 +21,7 @@ interface Product {
   size: string[];
   color: string[];
   sku: string;
+  id: number;
   petType: "dog" | "cat" | "both";
   category: {
     id: number;

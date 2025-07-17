@@ -46,7 +46,7 @@ export const verifyEmailCode = async (email: string, code: string) => {
     throw new Error('El código expiró. Registrate de nuevo.');
   }
 
-  await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { email },
     data: {
       isEmailVerified: true,
@@ -55,7 +55,9 @@ export const verifyEmailCode = async (email: string, code: string) => {
     },
   });
 
-  return { message: 'Correo verificado con éxito' };
+  const token = generateToken(updatedUser.id);
+
+  return { user: updatedUser, token, message: 'Correo verificado con éxito' };
 };
 
 export const loginUser = async (email: string, password: string) => {

@@ -41,6 +41,12 @@ export interface UserCreate {
   address: AddressCreate;
 }
 
+export interface ProductImage {
+  id: number;
+  url: string;
+  description: number;
+}
+
 // Product
 export interface Product {
   id: number;
@@ -57,6 +63,8 @@ export interface Product {
   categoryId: number;
   createdAt: string;
   updatedAt: string;
+  category: Category;
+  images: ProductImage[];
 }
 
 // Category

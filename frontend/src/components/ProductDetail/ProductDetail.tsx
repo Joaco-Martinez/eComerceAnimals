@@ -1,21 +1,24 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
-export interface ProductImage {
+interface ProductImage {
   id: number;
   url: string;
   productId: number;
 }
 
-export interface Category {
+interface Category {
   id: number;
   name: string;
   description: string;
   image: string;
 }
 
-export interface Product {
+interface Product {
   id: number;
   name: string;
   description: string;
@@ -39,86 +42,170 @@ interface Props {
 }
 
 const ProductDetail = ({ product }: Props) => {
-  const [selectedColor, setSelectedColor] = useState(product.color[0] || "");
-    console.log("ProductDetail", product);
+  const [selectedColor, setSelectedColor] = useState(product.color[0]);
+  const [currentImage, setCurrentImage] = useState(0);
+  const [showDetails, setShowDetails] = useState(false);
+
+  // Cálculos de precios dinámicos
+  const originalPrice = product.price;
+  const transferPrice = Math.round(originalPrice * 0.8);
+  const installment = Math.round(originalPrice / 3);
+
+  const format = (value: number) =>
+    value.toLocaleString("es-AR", { minimumFractionDigits: 0 });
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden font-sans">
-      {/* Header */}
-      <div className="p-4 text-sm text-gray-500">← {product.category?.name || "Volver"}</div>
-
-      {/* Imagen principal */}
-      <div className="flex justify-center px-6">
-        {product.images?.[0] && (
-          <Image
-            src={product.images[0].url}
-            alt={product.name}
-            width={250}
-            height={250}
-            className="object-contain rounded-lg"
-          />
-        )}
+    <div className="max-w-[370px] mx-auto bg-white rounded-t-3xl font-sans overflow-hidden shadow-md">
+      {/* CABECERA */}
+      <div className="bg-gradient-to-t from-[#d2d2d2] via-white to-[#d2d2d2] relative">
+        <div className="px-4 py-2 text-sm text-white/90">
+          ← {product.category?.name || "Accesorios"}
+        </div>
+        <div className="w-full -mb-4 z-10 relative flex justify-center  from-[#d2d2d2] to-white items-center">
+          <Swiper
+            onSlideChange={(swiper) => setCurrentImage(swiper.activeIndex)}
+            className="w-full flex justify-center items-center"
+          >
+            {product.images.map((image, i) => (
+              <SwiperSlide
+                key={image.id}
+                className="flex justify-center items-center"
+              >
+                <Image
+                  src={image.url}
+                  alt={`Imagen ${i + 1}`}
+                  width={250}
+                  height={250}
+                  className="object-contain drop-shadow-md mx-auto"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+        <div className="flex justify-center gap-1 mt-5 py-2">
+          {product.images.map((_, i) => (
+            <div
+              key={i}
+              className={`w-2 h-2 rounded-full ${
+                i === currentImage ? "bg-[#C4BFAB]" : "bg-gray-400"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Product Info */}
-      <div className="px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{product.name}</h2>
-          <button className="text-gray-400 text-2xl">♡</button>
+      {/* CONTENIDO */}
+      <div className="bg-white rounded-t-3xl px-5 pt-4 pb-6 relative">
+        <div className="flex justify-between items-start mb-3">
+          <h1 className="text-[18px] font-bold text-[#333]">{product.name}</h1>
+          <button>
+            <Image
+              src="/icons/corazon.png"
+              alt="Favorito"
+              width={64}
+              height={64}
+              className=" top-0 left-0 cursor-pointer hover:scale-110 transition-transform duration-150"
+            />
+          </button>
         </div>
 
-        {/* Precio */}
-        <div className="mt-2">
-          <span className=" text-gray-400 text-sm">${(product.price * 0.8).toFixed(0)}</span>
-          <div className="text-2xl font-bold text-[#6e3c46]">${product.price}</div>
-          <div className="text-xs text-gray-500">por transferencia</div>
-          <div className="text-sm text-gray-500 mt-1">${(product.price / 3).toFixed(0)} en 3 cuotas</div>
-        </div>
-
-        {/* Colores */}
-        <div className="mt-4">
-          <span className="text-sm font-medium">Opciones de Color</span>
-          <div className="flex gap-2 mt-2 flex-wrap">
+        <div className="mb-4">
+          <p className="text-sm font-semibold text-[#2C4B4D]">
+            Opciones de Color
+          </p>
+          <div className="flex gap-1.5 mt-2">
             {product.color.map((color) => (
-              <button
+              <div
                 key={color}
-                className={`w-5 h-5 rounded-full border-2 ${
-                  selectedColor === color ? "border-gray-800" : "border-gray-300"
+                onClick={() => setSelectedColor(color)}
+                className={`w-5.5 h-5.5 rounded-full border-2 cursor-pointer transition-all duration-150 ${
+                  selectedColor === color
+                    ? "border-[#C4BFAB] scale-90"
+                    : "border-gray-300"
                 }`}
                 style={{ backgroundColor: color.toLowerCase() }}
-                onClick={() => setSelectedColor(color)}
               />
             ))}
           </div>
         </div>
 
-        {/* Descripción */}
-        <div className="mt-6 text-sm text-gray-700 leading-relaxed">
+        <div className="text-right mb-4">
+          <p className="text-sm  text-[#918283]">
+            ${format(originalPrice)}
+          </p>
+          <p className="text-4xl font-bold text-[#2C4B4D] leading-tight">
+            ${format(transferPrice)}
+          </p>
+          <p className="text-sm text-gray-600">por transferencia</p>
+          <div className="flex  justify-end">
+            <h2 className="text-sm text-[#918283] flex ">
+              <p className="font-semibold">
+                ${format(installment)} 
+              </p>
+              en 3 cuotas
+            </h2>
+          </div>
+        </div>
+
+        <div className="text-sm text-[#C4BFAB] mb-4 leading-relaxed">
+          <p className="font-semibold mb-1">Descripción</p>
           <p>{product.description}</p>
         </div>
-
-        {/* Detalles */}
-        <div className="mt-6 flex justify-between text-sm text-gray-600">
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 bg-gray-100 rounded-full mb-1 flex items-center justify-center">
-              📏
-            </div>
-            <span>Peso: {product.weight} kg</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 bg-gray-100 rounded-full mb-1 flex items-center justify-center">
-              🐶
-            </div>
-            <span>Mascota: {product.petType === "both" ? "Perros y Gatos" : product.petType}</span>
+          
+          <div className="flex justify-between items-center align-center mb-4 pt-10">
+        <div
+          className="flex items-center mb-4 cursor-pointer"
+          onClick={() => setShowDetails(!showDetails)}
+          >
+          <div className="text-[#918283] text-xl">
+            {showDetails ? (
+              <ChevronDown className="w-7 h-7 text-[#918283]" />
+            ) : (
+              <ChevronRight className="w-7 h-7 text-[#918283]"  />
+            )}
           </div>
         </div>
 
-        {/* Botón */}
-        <div className="mt-6">
-          <button className="w-full bg-[#6e3c46] text-white py-3 rounded-full font-semibold">
+        <div className="flex justify-end">
+          <button className="bg-[#918283] text-white py-[14px] px-6 rounded-l-[999px] rounded-r-none font-semibold text-sm rounded-b-none">
             + AGREGAR AL CARRITO
           </button>
         </div>
+            </div>
+
+        {showDetails && (
+          <div className="self-start flex flex-col items-start mt-6 text-xs text-[#918283]">
+            <div className="flex items-start">
+              <div className="w-8 h-8 mb-1 flex items-center justify-start">
+                <Image src="/icons/size.svg" alt="Tamaño" width={24} height={24} />
+              </div>
+              <p>{product.size?.[0] || "Tamaño único"}</p>
+            </div>
+            <div className="flex  items-start">
+              <div className="w-8 h-8 mb-1 flex items-center justify-start">
+                <Image
+                  src="/icons/brush.svg"
+                  alt="Cerdas"
+                  width={24}
+                  height={24}
+                />
+              </div>
+              <p>{product.stock}</p>
+            </div>
+            <div className="flex  items-start">
+              <div className="w-8 h-8 mb-1 flex items-center justify-start">
+                <Image
+                  src="/icons/brush.svg"
+                  alt="Cerdas"
+                  width={24}
+                  height={24}
+                />
+              </div>
+              <p>{product.weight}</p>
+            </div>
+              
+          </div>
+        )}
       </div>
     </div>
   );

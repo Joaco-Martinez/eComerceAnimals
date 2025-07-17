@@ -20,13 +20,16 @@ dotenv.config();
 export const app = express();
 app.use(cookieParser());
 app.use(cors({
-  origin: true, 
+  origin: ['http://localhost:3001', 'http://localhost:4001'],
   credentials: true
 }));
 app.use(express.json());
 
 
 app.use(morgan("dev"));
+
+import { Request, Response } from 'express';
+
 
 
 app.get('/', (_req, res) => {

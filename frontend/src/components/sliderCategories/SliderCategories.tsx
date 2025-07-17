@@ -4,7 +4,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 import Image from "next/image";
 import { getAllCategories } from "../../service/categorieService";
 import { useEffect, useState } from "react";
-
+import Loader from "../Loader/Loader";
 interface categories {
   id: number;
   name: string;
@@ -64,7 +64,7 @@ export const SliderCategories = () => {
   return (
     <div className="w-full px-4 flex flex-col items-center justify-center">
       {loading ? (
-        <p className="text-center text-gray-500 py-6">Cargando categorías...</p>
+        <Loader />
       ) : categories.length === 0 ? (
         <p className="text-center text-gray-500 py-6">No hay categorías disponibles</p>
       ) : (

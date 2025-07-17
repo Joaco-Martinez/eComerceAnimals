@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/autoplay';
-
+import Loader from '../Loader/Loader';
 // import ProductCardSlide from '../productCardSlide/ProductCardSlide'; 
 import CardProduct from '../CardProduct/CardProduct';
 import { getAllProducts } from '../../service/productService';
@@ -37,7 +37,7 @@ export default function SliderProductosDestacados() {
         <h2 className="text-xl sm:text-2xl font-bold text-[#2C4B4D] mb-4">
           Productos destacados
         </h2>
-        <p className="text-gray-500">Cargando productos...</p>
+        <Loader />
       </section>
     );
   }
