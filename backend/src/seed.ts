@@ -66,7 +66,14 @@ async function main() {
   const categories = await prisma.category.findMany();
 
   const sizes = ["S", "M", "L", "XL"];
-  const colors = ["Rojo", "Azul", "Verde", "Negro", "Blanco", "Amarillo"];
+  const colors = [
+    "#FF0000", // Rojo
+    "#0000FF", // Azul
+    "#008000", // Verde
+    "#000000", // Negro
+    "#FFFFFF", // Blanco
+    "#FFFF00"  // Amarillo
+  ];
 
   const productImages = [
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/images_2_leasda",
@@ -98,7 +105,7 @@ async function main() {
     });
   }
 
-  console.log("✅ Seeder completado con 20 categorías y 20 productos con imágenes, SKU, tamaños y colores.");
+  console.log("✅ Seeder completado con 20 categorías y 20 productos con imágenes, SKU, tamaños y colores hexadecimales.");
 }
 
 main()

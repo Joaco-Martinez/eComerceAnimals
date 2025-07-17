@@ -11,14 +11,11 @@ export default function WhatsappLink() {
       className="fixed bottom-4 right-4 z-50"
     >
       <Image
-        src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/whatsapp_oo9us9"
+        src="/icons/whatsapp.png"
         alt="Whatsapp"
         width={40}
         height={40}
-        style={{
-          filter:
-            "invert(39%) sepia(10%) saturate(200%) hue-rotate(315deg) brightness(90%) contrast(85%)",
-        }}
+        
       />
     </a>
   );

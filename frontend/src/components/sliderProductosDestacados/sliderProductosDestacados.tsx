@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/autoplay';
-import { Autoplay } from 'swiper/modules';
-import ProductCardSlide from '../productCardSlide/ProductCardSlide'; 
+
+// import ProductCardSlide from '../productCardSlide/ProductCardSlide'; 
+import CardProduct from '../CardProduct/CardProduct';
 import { getAllProducts } from '../../service/productService';
 
 import type { ProductCardProps } from '../CardProduct/CardProduct';
@@ -17,8 +19,8 @@ export default function SliderProductosDestacados() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data  = await getAllProducts(); 
-        setFeaturedProducts(data.slice(0, 4)); // Solo los primeros 4 para el slider
+        const data = await getAllProducts(); 
+        setFeaturedProducts(data.slice(0, 4)); // Mostrar los primeros 4
       } catch (error) {
         console.error('Error al cargar productos:', error);
       } finally {
@@ -31,44 +33,41 @@ export default function SliderProductosDestacados() {
 
   if (loading) {
     return (
-      <section className="py-6 px-4 sm:px-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-center text-[#2C4B4D] mb-4">
+      <section className="py-6 px-4 sm:px-8 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#2C4B4D] mb-4">
           Productos destacados
         </h2>
-        <p className="text-center text-gray-500">Cargando productos...</p>
+        <p className="text-gray-500">Cargando productos...</p>
       </section>
     );
   }
 
-  if (featuredProducts.length === 0) {
-    return null;
-  }
-  console.log('Featured Products:', featuredProducts);
+  if (featuredProducts.length === 0) return null;
+
   return (
-    <section className="py-6 px-4 sm:px-8">
-      <h2 className="text-xl sm:text-2xl font-bold text-center text-[#2C4B4D] mb-4">
-        Productos destacados
+    <section className="py-6 px-4 sm:px-8 w-full max-w-screen-lg mx-auto">
+      <h2 className="text-xl sm:text-2xl font-light  text-center text-[#918283] mb-4">
+        NUESTROS <p className="text-[#918283] font-bold inline">
+          ELEGIDOS
+          </p>
       </h2>
 
       <Swiper
-  modules={[Autoplay]}
-  autoplay={{ delay: 3500 }}
-  loop={featuredProducts.length > 1}
-  spaceBetween={16}
-  slidesPerView={2}
-  breakpoints={{
-    0: { slidesPerView: 1 },
-    640: { slidesPerView: 2 },
-  }}
-  className="w-full"
->
-  {featuredProducts.map(product => (
-    <SwiperSlide key={product.sku}>
-      <ProductCardSlide {...product} />
-    </SwiperSlide>
-  ))}
-</Swiper>
+        modules={[Autoplay]}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        loop={featuredProducts.length > 2}
+        spaceBetween={16}
+        slidesPerView={2}
+        className="w-full rounded-2xl overflow-hidden "
+      >
+        {featuredProducts.map(product => (
+          <SwiperSlide key={product.sku}>
+            <div className=" py-6">
+              <CardProduct {...product} />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </section>
   );
 }
-

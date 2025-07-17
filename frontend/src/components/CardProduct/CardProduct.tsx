@@ -81,7 +81,7 @@ const ProductCard: FC<ProductCardProps> = ({
 
           {/* Info del producto */}
           <div className="px-2 sm:px-6 pb-3 sm:pb-6 flex-1 flex flex-col">
-            <h2 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">
+            <h2 className="h-10 text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">
               {name}
             </h2>
 

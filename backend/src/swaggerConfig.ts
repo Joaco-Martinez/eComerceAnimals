@@ -22,6 +22,33 @@ const options = {
         name: 'token',
       },
     },
+    AddressInput: {
+  type: 'object',
+  required: ['fullName', 'street', 'number', 'city', 'province', 'postalCode'],
+  properties: {
+    fullName: { type: 'string', example: 'Joaquín Martínez' },
+    street: { type: 'string', example: 'Av. Siempre Viva' },
+    number: { type: 'string', example: '1234' },
+    city: { type: 'string', example: 'Springfield' },
+    province: { type: 'string', example: 'Buenos Aires' },
+    postalCode: { type: 'string', example: '1234' },
+  },
+},
+Address: {
+  type: 'object',
+  properties: {
+    id: { type: 'integer', example: 1 },
+    userId: { type: 'integer', example: 5 },
+    fullName: { type: 'string', example: 'Joaquín Martínez' },
+    street: { type: 'string', example: 'Av. Siempre Viva' },
+    number: { type: 'string', example: '1234' },
+    city: { type: 'string', example: 'Springfield' },
+    province: { type: 'string', example: 'Buenos Aires' },
+    postalCode: { type: 'string', example: '1234' },
+    isPrimary: { type: 'boolean', example: true },
+  }
+},
+
     CreateOrderInput: {
         type: 'object',
         properties: {

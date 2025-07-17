@@ -109,4 +109,32 @@ router.post('/logout', authController.logout);
  */
 router.get('/me', authController.me);
 
+/**
+ * @swagger
+ * /auth/verify-email:
+ *   post:
+ *     summary: Verificar el email de un usuario con un código
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, code]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joaquin@mail.com
+ *               code:
+ *                 type: string
+ *                 example: 482193
+ *     responses:
+ *       200:
+ *         description: Email verificado correctamente
+ *       400:
+ *         description: Código incorrecto o expirado
+ */
+router.post('/verify-email', authController.verifyEmailCode);
+
 export default router;

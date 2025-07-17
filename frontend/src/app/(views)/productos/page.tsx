@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/CardProduct/CardProduct";
 import { getAllProducts } from "@/service/productService";
+import LogicaSearchbar from "@/components/LogicaSearchbar/LogicaSearchbar";
 
 interface ProductImage {
   id: number;
@@ -73,11 +74,17 @@ const ProductsPage = () => {
   }
 
   return (
-  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-3 py-6 max-w-[1280px] mx-auto">
+  <>
+    <div className=" px-4 sm:px-8">
+
+        <LogicaSearchbar />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-3 py-6 max-w-[1280px] mx-auto">
     {products.map((product) => (
       <ProductCard key={product.sku} {...product} />
     ))}
   </div>
+    </>
 );
 
 };

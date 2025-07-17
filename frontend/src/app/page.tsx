@@ -6,11 +6,19 @@ import { SeccionPerrosYGatos } from "@/components/seccionPerrosYGatos/seccionPer
 import InstagramFeed from "@/components/redes/redes";
 import RedesSociales from "@/components/RedesSociales/RedesSociales";
 import SliderProductosDestacados from "@/components/sliderProductosDestacados/sliderProductosDestacados";
+import LogicaSearchbar from "@/components/LogicaSearchbar/LogicaSearchbar";
+
 export default function Home() {
   return (
     <main>
       <section className="min-h-screen flex flex-col items-center justify-start ">
-        <SliderPrincipal />
+
+      <LogicaSearchbar />
+
+      <div className="my-1"></div> {/* Separation between sections */}
+
+
+      <SliderPrincipal />
 
       
       <div className="my-1"></div> {/* Separation between sections */}

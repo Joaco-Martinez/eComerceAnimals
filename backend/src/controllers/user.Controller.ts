@@ -6,43 +6,20 @@ export const getUsers = async (_req: Request, res: Response) => {
     const users = await userService.getAllUsers();
     res.json(users);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Error al obtener usuarios' });
   }
 };
 
-export const getUser = async (req: Request, res: Response) => {
+export const updateUserPassword = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const user = await userService.getUserById(id);
-    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
-    res.json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener usuario' });
-  }
-};
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ message: 'La contraseña es requerida' });
 
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const { name, email, password } = req.body;
-    const newUser = await userService.createUser({ name, email, password });
-    res.status(201).json(newUser);
+    const updatedUser = await userService.updateUserPassword(id, password);
+    res.json({ message: 'Contraseña actualizada correctamente', userId: updatedUser.id });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al crear usuario' });
-  }
-};
-
-export const updateUser = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const { name, email, password } = req.body;
-    const updatedUser = await userService.updateUser(id, { name, email, password });
-    res.json(updatedUser);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al actualizar usuario' });
+    res.status(500).json({ message: 'Error al actualizar contraseña' });
   }
 };
 
@@ -52,7 +29,6 @@ export const deleteUser = async (req: Request, res: Response) => {
     await userService.deleteUser(id);
     res.status(204).send();
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Error al eliminar usuario' });
   }
 };

@@ -1,3 +1,4 @@
+// notificacion.service.ts
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
@@ -10,12 +11,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendNotificationEmail(to: string, subject: string, text: string) {
+export async function sendNotificationEmail(
+  to: string,
+  subject: string,
+  text: string,
+  html?: string // 📧 nuevo: html opcional
+) {
   const mailOptions = {
-    from: process.env.SMTP_USER,
+    from: `Verificación <${process.env.SMTP_USER}>`,
     to,
     subject,
     text,
+    html, // 📧 opcional
   };
 
   try {

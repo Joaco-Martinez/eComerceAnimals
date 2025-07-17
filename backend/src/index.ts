@@ -11,6 +11,7 @@ import cartRoutes from './routes/cart.Routes';
 import paymentsRouter from './routes/mercadoPago.Routes';
 import orderRoutes from './routes/order.Routes';
 import categoryRoutes from "./routes/category.Routes";
+import addressRoutes from './routes/address.Routes';
 import mercadoPagoRoutes from "./routes/mercadoPago.Routes";
 import { swaggerUiHandler, swaggerUiSetup } from './swaggerConfig';
 import stockNotificationRoutes from "./routes/stockNotification.Routes";
@@ -41,6 +42,7 @@ app.use('/orders', orderRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)
 app.use("/categories", categoryRoutes);
 app.use("/stock-notifications", stockNotificationRoutes);
+app.use('/addresses', addressRoutes);
 const PORT = parseInt(process.env.PORT || '3000', 10);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);

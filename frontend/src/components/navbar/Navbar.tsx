@@ -11,7 +11,11 @@ export default function Navbar() {
   const [userOpen, setUserOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const navItems = ["Home", "Productos", "Contacto"];
+  const navItems = [
+    { name: "Home", slug: "" },
+    { name: "Productos", slug: "productos" },
+    { name: "Contacto", slug: "contacto" },
+  ];
 
   return (
     <>
@@ -43,16 +47,13 @@ export default function Navbar() {
 
             {/* LINKS DESKTOP */}
             <ul className="hidden lg:flex items-center gap-6 md:gap-8 py-3">
-              {navItems.map((text) => (
-                <li key={text}>
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500"
-                  >
-                    {text}
-                  </a>
-                </li>
-              ))}
+              {navItems.map((item) => (
+    <li key={item.slug}>
+      <a href={`/${item.slug}`} className="hover:text-primary-700 dark:hover:text-primary-500">
+        {item.name}
+      </a>
+    </li>
+  ))}
             </ul>
 
             {/* ACCIONES (CARRITO, FAVORITOS, USER) */}
@@ -162,14 +163,14 @@ export default function Navbar() {
           {menuOpen && (
             <div className="mt-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg py-3 px-4 lg:hidden">
               <ul className="space-y-3 text-sm font-medium text-gray-900 dark:text-white">
-                {navItems.map((item) => (
-                  <li key={item}>
-                    <a href="/productos" className="hover:text-primary-700 dark:hover:text-primary-500">
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+  {navItems.map((item) => (
+    <li key={item.slug}>
+      <a href={`/${item.slug}`} className="hover:text-primary-700 dark:hover:text-primary-500">
+        {item.name}
+      </a>
+    </li>
+  ))}
+</ul>
             </div>
           )}
         </div>
