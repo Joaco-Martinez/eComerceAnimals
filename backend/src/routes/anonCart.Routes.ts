@@ -48,16 +48,22 @@ router.get('/', anonCartController.getCart);
  *           schema:
  *             type: object
  *             required:
- *               - cartId
+ *               - AnonCartId
  *               - productId
  *               - quantity
+ *               - color
+ *               - size
  *             properties:
- *               cartId:
+ *               AnonCartId:
  *                 type: string
  *               productId:
  *                 type: string
  *               quantity:
  *                 type: integer
+ *               color:
+ *                 type: string
+ *               size:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Producto agregado
@@ -65,6 +71,73 @@ router.get('/', anonCartController.getCart);
  *         description: Datos faltantes
  */
 router.post('/add', anonCartController.addItem);
+
+/**
+ * @swagger
+ * /anon-cart/update:
+ *   put:
+ *     summary: Actualizar cantidad de un producto en el carrito anónimo
+ *     tags: [AnonymousCart]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *               - color
+ *               - size
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "a1b2c3d4-e5f6-7890-abcd-1234567890ef"
+ *               quantity:
+ *                 type: integer
+ *                 example: 2
+ *               color:
+ *                 type: string
+ *                 example: "#ffffff"
+ *               size:
+ *                 type: string
+ *                 example: "M"
+ *     responses:
+ *       200:
+ *         description: Ítem actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Carrito actualizado
+ *                 content:
+ *                   type: object
+ *       400:
+ *         description: Faltan datos necesarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Faltan datos necesarios.
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error interno del servidor
+ */
+router.put("/update", anonCartController.UpdateItem);
 
 /**
  * @swagger

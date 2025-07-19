@@ -6,9 +6,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import toast from 'react-hot-toast';
-import { loginUser } from '../../service/authService';
+import { loginUser, getCurrentUser } from '../../service/authService';
+import Cookies from 'js-cookie';
 import { useAuthContext } from '../../context/authContext';
-
+import {mergeAnonCart} from '../../service/userService';
 import ForgotPasswordModal from '../ForgotPassswordModal/ForgotPasswordModal';
 import ResetPasswordModal from '../ResetPasswordModal/ResetPasswordModal';
 const schema = yup.object().shape({
@@ -32,24 +33,30 @@ const [emailForReset, setEmailForReset] = useState('');
   });
 
   const onSubmit = async (data: FormData) => {
-    try {
-      const response = await loginUser({
-        email: data.email,
-        password: data.password,
-      });
+  try {
+    await loginUser({
+      email: data.email,
+      password: data.password,
+    });
 
-      if (response?.user) {
-        SaveUserData({ user: response.user });
-        toast.success('Inicio de sesión exitoso');
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.message
-          ? `Error al iniciar sesión, ${error.message}`
-          : 'Error al iniciar sesión'
-      );
+    // ✅ Pedimos al backend los datos del usuario usando la cookie ya guardada
+    const user = await getCurrentUser(); // esto debe devolver user desde la cookie
+
+    SaveUserData({ user });
+    toast.success("Inicio de sesión exitoso");
+
+    const anoncartId = Cookies.get("AnonCart_id");
+    if (anoncartId) {
+      mergeAnonCart(anoncartId);
     }
-  };
+  } catch (error: any) {
+    toast.error(
+      error?.message
+        ? `Error al iniciar sesión, ${error.message}`
+        : "Error al iniciar sesión"
+    );
+  }
+};
 
   return (
     <div className="max-w-md mx-auto rounded-3xl shadow-lg p-8 bg-white">

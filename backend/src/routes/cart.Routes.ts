@@ -110,4 +110,44 @@ router.put('/update', authMiddleware, cartController.updateItem);
  */
 router.delete('/remove/:productId', authMiddleware, cartController.removeItem);
 
+
+/**
+ * @swagger
+ * /cart/merge:
+ *   post:
+ *     summary: Fusionar carrito an nimo con el carrito de usuario
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - anonCartId
+ *             properties:
+ *               anonCartId:
+ *                 type: string
+ *                 description: ID del carrito anonimo a fusionar
+ *     responses:
+ *       200:
+ *         description: Carrito fusionado con xito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Carrito fusionado con exito"
+ *       400:
+ *         description: Datos invalidos
+ *       401:
+ *         description: No autorizado
+ */
+router.post("/merge", authMiddleware, cartController.mergeAnonCart);
+
+
 export default router;

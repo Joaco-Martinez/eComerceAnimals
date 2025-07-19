@@ -5,7 +5,7 @@ export const registerUser = async (userData: { name: string; email: string; pass
 };
 
 export const loginUser = async (credentials: { email: string; password: string }) => {
-  return await apiService.post("/auth/login", credentials, true, true, true);
+  return await apiService.post("/auth/login", credentials, true, false, true);
 };
 
 export const logoutUser = async () => {

@@ -5,7 +5,7 @@ import { useState } from "react";
 import SliderArriba from "../sliderArriba/SliderArriba";
 import Link from "next/link";
 import Image from "next/image";
-
+import CartDrawer from "../CartDrawer/CartDrawer";
 export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -116,43 +116,10 @@ export default function Navbar() {
                 </button>
 
                 {/* CARRITO DESPLEGABLE */}
-                {cartOpen && (
-                  <div className="absolute right-0 z-10 mt-2 w-96 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg space-y-4">
-                    {[
-                      { name: "Apple iPhone 15", price: "$599", qty: 1 },
-                      { name: "Apple iPad Air", price: "$499", qty: 1 },
-                    ].map((item, i) => (
-                      <div key={i} className="grid grid-cols-2 items-center">
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                            {item.name}
-                          </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">{item.price}</p>
-                        </div>
-                        <div className="flex justify-end items-center gap-2">
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            Qty: {item.qty}
-                          </span>
-                          <button className="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
-                            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                              <path
-                                fillRule="evenodd"
-                                d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                    <a
-                      href="#"
-                      className="block w-full text-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 dark:bg-primary-600 dark:hover:bg-primary-700"
-                    >
-                      Proceed to Checkout
-                    </a>
-                  </div>
-                )}
+                <CartDrawer
+  isOpen={cartOpen}
+  onClose={() => setCartOpen(false)}
+/>
               </div>
               
 

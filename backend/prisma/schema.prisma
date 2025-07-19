@@ -145,6 +145,8 @@ model CartItem {
   cartId    String
   product   Product  @relation(fields: [productId], references: [id])
   productId String
+  color     String   
+  size      String   
   quantity  Int
 }
 
@@ -238,10 +240,14 @@ model AnonCart {
 }
 
 model AnonCartItem {
-  id         String     @id @default(uuid())
-  cart       AnonCart   @relation(fields: [cartId], references: [id])
-  cartId     String
-  product    Product    @relation(fields: [productId], references: [id])
-  productId  String
-  quantity   Int
+  id        String   @id @default(uuid())
+  cart      AnonCart @relation(fields: [cartId], references: [id])
+  cartId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  color     String
+  size      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

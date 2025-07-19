@@ -1,32 +1,59 @@
 import apiService from "./apiService";
 import type { Product } from "../../interfaces/Types"; 
 
+export interface AnonCartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  color: string;
+  size: string;
+  product: Product;
+}
 
 export interface AnonCart {
   id: string;
-  items: {
-    id: string;
-    productId: string;
-    quantity: number;
-    product: Product;
-  }[];
+  items: AnonCartItem[];
 }
 
-
-const BASE_URL = "/anon-cart"
-
-export const getAnonCart = async (cartId: string) => {
-  return await apiService.get(`${BASE_URL}?cartId=${cartId}`)
+interface UpdateAnonCartItemData {
+  cartId: string;
+  productId: string;
+  quantity: number;
+  color: string;
+  size: string;
 }
 
-export const addToAnonCart = async (cartId: string, productId: string, quantity: number) => {
-  return await apiService.post(`${BASE_URL}/add`, { cartId, productId, quantity }, false, false, true)
-}
+export const getAnonCart = async (AnonCartId: string) => {
+  return await apiService.get(`/anon-cart?cartId=${AnonCartId}` , true, false, true);
+};
 
-export const removeFromAnonCart = async (cartId: string, productId: string) => {
-  return await apiService.post(`${BASE_URL}/remove`, { cartId, productId }, false, false, true)
-}
 
-export const clearAnonCart = async (cartId: string) => {
-  return await apiService.post(`${BASE_URL}/clear`, { cartId }, false, false, true)
-}
+export const addToAnonCart = async (
+  AnonCartId: string,
+  productId: string,
+  quantity: number,
+  color: string,
+  size: string
+) => {
+  return await apiService.post(
+    `/anon-cart/add`,
+    { AnonCartId, productId, quantity, color, size },
+    false,
+    false,
+    true
+  );
+};
+
+export const removeFromAnonCart = async (AnonCartId: string, productId: string) => {
+  return await apiService.post(`/anon-cart/remove`, { cartId: AnonCartId, productId }, false, false, true);
+};
+
+export const clearAnonCart = async (AnonCartId: string) => {
+  return await apiService.post(`/anon-cart/clear`, { cartId: AnonCartId }, false, false, true);
+};
+
+export const updateAnonCartItem = async (data: UpdateAnonCartItemData ) => {
+  
+    await apiService.put("/anon-cart/update", data);
+    return
+};

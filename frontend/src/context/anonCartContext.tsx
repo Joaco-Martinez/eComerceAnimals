@@ -1,76 +1,107 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import Cookies from "js-cookie";
-import { v4 as uuidv4 } from "uuid";
 import {
   getAnonCart,
   addToAnonCart,
   removeFromAnonCart,
   clearAnonCart,
-} from "../service/anonCartService"; // asegúrate de tener el service separado
-import type { CartItem } from "../../interfaces/Types";
+} from "../service/anonCartService";
+import type { Product } from "../../interfaces/Types";
+
+interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  color: string;
+  size: string;
+  product: Product;
+}
 
 interface AnonCartContextType {
-  cartId: string;
+  cartId: string | null;
   items: CartItem[];
   loading: boolean;
-  addItem: (productId: string, quantity?: number) => Promise<void>;
+  addItem: (
+    productId: string,
+    quantity: number,
+    color: string,
+    size: string
+  ) => Promise<void>;
   removeItem: (productId: string) => Promise<void>;
   clearCart: () => Promise<void>;
 }
 
-const AnonCartContext = createContext<AnonCartContextType | undefined>(undefined);
+const AnonCartContext = createContext<AnonCartContextType | undefined>(
+  undefined
+);
 
 export const useAnonCart = () => {
   const ctx = useContext(AnonCartContext);
-  if (!ctx) throw new Error("useAnonCart debe usarse dentro de un AnonCartProvider");
+  if (!ctx)
+    throw new Error("useAnonCart debe usarse dentro de un AnonCartProvider");
   return ctx;
 };
 
 export const AnonCartProvider = ({ children }: { children: ReactNode }) => {
-  const [cartId, setCartId] = useState<string>("");
+  const [cartId, setCartId] = useState<string | null>(null);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let id = Cookies.get("cart_id");
-
-    if (!id) {
-      id = uuidv4();
-      Cookies.set("cart_id", id, { expires: 7 });
+  const fetchCart = async (id: string) => {
+    try {
+      const data = await getAnonCart(id);
+      setItems(data.items || []);
+    } catch (error) {
+      console.error("Error al obtener el carrito:", error);
+      setItems([]);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setCartId(id);
-
-    const fetchCart = async () => {
-      try {
-        const data = await getAnonCart(id!);
-        setItems(data.items || []);
-      } catch (error) {
-        console.error("Error al obtener el carrito:", error);
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCart();
+  useEffect(() => {
+    const id = Cookies.get("AnonCart_id");
+    if (id) {
+      setCartId(id);
+      fetchCart(id);
+    } else {
+      setLoading(false); // No hay carrito todavía, se creará cuando se agregue el primer ítem
+    }
   }, []);
 
-  const addItem = async (productId: string, quantity: number = 1) => {
-    await addToAnonCart(cartId, productId, quantity);
-    const updated = await getAnonCart(cartId);
-    setItems(updated.items);
+  const addItem = async (
+    productId: string,
+    quantity: number = 1,
+    color: string,
+    size: string
+  ) => {
+    await addToAnonCart(cartId || "", productId, quantity, color, size);
+
+    // Si el backend creó un nuevo carrito, ahora debe haber cookie
+    const newId = Cookies.get("AnonCart_id");
+    if (newId && newId !== cartId) setCartId(newId);
+
+    const updated = await getAnonCart(newId || cartId!);
+    setItems(updated.items || []);
   };
 
   const removeItem = async (productId: string) => {
+    if (!cartId) return;
     await removeFromAnonCart(cartId, productId);
     const updated = await getAnonCart(cartId);
-    setItems(updated.items);
+    setItems(updated.items || []);
   };
 
   const clearCart = async () => {
+    if (!cartId) return;
     await clearAnonCart(cartId);
     setItems([]);
   };

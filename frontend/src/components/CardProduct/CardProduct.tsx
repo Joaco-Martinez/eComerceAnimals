@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAnonCart } from "@/context/anonCartContext"; // Asegúrate de tener el contexto del carrito
-import toast from "react-hot-toast";
+
+
 export interface ProductImage {
   id: string;
   url: string;
@@ -37,23 +37,12 @@ const ProductCard: FC<ProductCardProps> = ({
   id,
 }) => {
   const [isSmallDevice, setIsSmallDevice] = useState(false);
-const { addItem } = useAnonCart();
+
   
 
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const handleAddToAnonCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.preventDefault();
-  e.stopPropagation();
 
-  try {
-    await addItem(id.toString());
-    toast.success("Producto agregado al carrito");
-  } catch (error) {
-    console.error("Error al agregar al carrito:", error);
-    toast.error("No se pudo agregar el producto al carrito, intente nuevamente");
-  }
-};
+
 
 useEffect(() => {
     const checkDevice = () => {
@@ -132,8 +121,8 @@ useEffect(() => {
                 </div>
 
                 <button 
-                onClick={(e) => handleAddToAnonCart(e)}
-                className="flex items-center justify-center z-50">
+
+                className="flex items-center justify-center ">
                   <Image
                     src="/icons/mas.png"
                     alt="Carrito"

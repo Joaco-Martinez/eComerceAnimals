@@ -4,6 +4,10 @@ import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import toast from "react-hot-toast";
+import { useAnonCart } from "@/context/anonCartContext";
+import {addToCart} from "@/service/cartService";
+import { useAuthContext } from "@/context/authContext";
 
 interface ProductImage {
   id: string;
@@ -43,6 +47,14 @@ interface Props {
 
 const ProductDetail = ({ product }: Props) => {
   const [selectedColor, setSelectedColor] = useState(product.color[0]);
+  const [selectedSize, setSelectedSize] = useState(product.size[0]);
+  const [selectedVariant, setSelectedVariant] = useState({
+  color: product.color[0],
+  size: product.size[0],
+});
+  const { isAuth } = useAuthContext();
+  console.log("isAuth:", isAuth);
+  const { addItem } = useAnonCart();
   const [currentImage, setCurrentImage] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -53,6 +65,65 @@ const ProductDetail = ({ product }: Props) => {
 
   const format = (value: number) =>
     value.toLocaleString("es-AR", { minimumFractionDigits: 0 });
+
+
+  const handleSizeSelect = (size: string) => {
+  setSelectedSize(size);
+  setSelectedVariant((prev) => ({ ...prev, size }));
+};
+
+  const handleColorSelect = (color: string) => {
+  setSelectedColor(color);
+  setSelectedVariant((prev) => ({ ...prev, color }));
+};
+
+  const handleAddToCart = async () => {
+  if (!selectedVariant.color || !selectedVariant.size) {
+    toast.error("Debes seleccionar un color y un tamaño");
+    return;
+  }
+  if (isAuth === false) {
+    
+    
+    try {
+      await addItem(
+        product.id,
+        1,
+        selectedVariant.color,
+        selectedVariant.size
+      );
+  
+      toast.success("Producto agregado al carrito");
+  
+      console.log("Producto agregado al carrito:", {
+        productId: product.id,
+        color: selectedVariant.color,
+        size: selectedVariant.size,
+      });
+    } catch (error) {
+      toast.error("Ocurrió un error al agregar el producto");
+      console.error("Error al agregar al carrito:", error);
+    }
+  } 
+  console.log("isAuth:", isAuth);
+  if (isAuth === true) {
+    try {
+      await addToCart(
+        product.id,
+        1,
+        selectedVariant.color,
+        selectedVariant.size
+      );
+  
+      toast.success("Producto agregado al carrito");
+  
+
+    } catch (error) {
+      toast.error("Ocurrió un error al agregar el producto");
+      console.error("Error al agregar al carrito:", error);
+    }
+  }
+};
 
   return (
     <div className="max-w-[370px] mx-auto bg-white rounded-t-3xl   overflow-hidden shadow-md">
@@ -110,23 +181,40 @@ const ProductDetail = ({ product }: Props) => {
         </div>
 
         <div className="mb-4 px-4">
-          <p className="text-sm font-semibold text-[#2C4B4D]">
-            Opciones de Color
-          </p>
-          <div className="flex gap-1.5 mt-2">
-            {product.color.map((color) => (
-              <div
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={`w-5.5 h-5.5 rounded-full border-2 cursor-pointer transition-all duration-150 ${
-                  selectedColor === color
-                    ? "border-[#C4BFAB] scale-90"
-                    : "border-gray-300"
-                }`}
-                style={{ backgroundColor: color.toLowerCase() }}
-              />
-            ))}
-          </div>
+         <p className="text-sm font-semibold text-[#2C4B4D]">
+  Opciones de Color
+</p>
+<div className="flex gap-1.5 mt-2">
+  {product.color.map((color) => (
+    <div
+      key={color}
+      onClick={() => handleColorSelect(color)}
+      className={`w-5.5 h-5.5 rounded-full border-2 cursor-pointer transition-all duration-150 ${
+        selectedColor === color
+          ? "border-[#C4BFAB] scale-90"
+          : "border-gray-300"
+      }`}
+      style={{ backgroundColor: color.toLowerCase() }}
+    />
+  ))}
+</div>
+
+<div className="flex items-center gap-1.5 mt-2">
+  {product.size.map((size) => (
+    <button
+      key={size}
+      type="button"
+      onClick={() => handleSizeSelect(size)}
+      className={`px-2 py-1 border-2 rounded-md cursor-pointer transition-all duration-150 ${
+        selectedSize === size
+          ? "border-[#C4BFAB] bg-[#C4BFAB] text-white"
+          : "border-gray-300"
+      }`}
+    >
+      {size}
+    </button>
+  ))}
+</div>
         </div>
 
         <div className="text-right mb-4 px-4">
@@ -139,7 +227,7 @@ const ProductDetail = ({ product }: Props) => {
           <p className="text-sm text-gray-600">por transferencia</p>
           <div className="flex  justify-end">
             <h2 className="text-sm text-[#918283] flex ">
-              <p className="font-semibold">
+              <p className="font-semibold pr-1">
                 ${format(installment)} 
               </p>
               en 3 cuotas
@@ -167,7 +255,9 @@ const ProductDetail = ({ product }: Props) => {
         </div>
 
         <div className="flex justify-end">
-          <button className="bg-[#918283] text-white py-[14px] px-6 rounded-l-[999px] rounded-r-none font-semibold text-sm rounded-b-none">
+          <button 
+          onClick={handleAddToCart}
+          className="bg-[#918283] text-white py-[14px] px-6 rounded-l-[999px] rounded-r-none font-semibold text-sm rounded-b-none">
             + AGREGAR AL CARRITO
           </button>
         </div>

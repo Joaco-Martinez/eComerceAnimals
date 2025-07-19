@@ -14,8 +14,8 @@ export const getCart = async (req: AuthRequest, res: Response) => {
 
 export const addItem = async (req: AuthRequest, res: Response) => {
   try {
-    const { productId, quantity } = req.body;
-    const item = await cartService.addToCart(req.userId!, productId, quantity);
+    const { productId, quantity, color, size } = req.body;
+    const item = await cartService.addToCart(req.userId!, productId, quantity, color, size);
     res.status(201).json(item);
   } catch (error) {
     console.error(error);
@@ -42,5 +42,16 @@ export const removeItem = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al eliminar del carrito' });
+  }
+};
+
+export const mergeAnonCart = async (req: AuthRequest, res: Response) => {
+  try {
+    const { anonCartId } = req.body;
+    await cartService.mergeAnonCartToUserCart(req.userId!, anonCartId);
+    res.status(200).json({ message: "Carrito fusionado con éxito" });
+  } catch (error) {
+    console.error("Error fusionando carrito:", error);
+    res.status(500).json({ message: "Error al fusionar carritos" });
   }
 };

@@ -42,8 +42,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchUser = async () => {
       try {
         const res = await getCurrentUser();
-        setUser(res as User);
-        setIsAuth(true);
+        if (res && typeof res === "object" && "id" in res) {
+              setUser(res as User);
+              setIsAuth(true);
+            } else {
+              setUser(null);
+              setIsAuth(false);
+            }
       } catch (error) {
         console.log('Error al obtener el usuario', error);
         setUser(null);
@@ -55,8 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     fetchUser();
   }, []);
-  
-  console.log('AuthProvider cargado', user);
+
   // Setea el usuario tras login o registro
   const SaveUserData = (data: { user: User }) => {
     setUser(data.user);
