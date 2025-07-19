@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-
+import LoginFormModal from "@/components/LoginFormModal/LoginFormModal";
 import BannerCarrito from "@/components/BannerCarrito/BannerCarrito";
 import DiscountInput from "@/components/DiscountInput/DiscountInput";
 import CartItem from "@/components/CartItem/CartItem";
@@ -11,7 +11,7 @@ import CartSummary from "@/components/CartSummary/CartSummary";
 import CartActions from "@/components/CartActions/CartActions";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal/DeleteConfirmModal";
 import StepProgressBar from "@/components/StepProgressBar/StepProgressBar";
-
+import AddressStep from "@/components/AddressStep.tsx/AddressStep";
 
 import { useAuthContext } from "@/context/authContext";
 import { useAnonCart } from "@/context/anonCartContext";
@@ -61,7 +61,11 @@ type MappedAnonCartItem = {
 export default function CartPage() {
   const { isAuth } = useAuthContext();
   const { cartId } = useAnonCart();
-
+  const [step, setStep] = useState(1);
+  const [ continuar, setContinuar ] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [ showCartItems, setShowCartItems ] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState<string | null>(null);
@@ -69,7 +73,9 @@ export default function CartPage() {
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const discount = subtotal * 0.2;
 
-  // Fetch cart
+  
+
+
   useEffect(() => {
     const fetchCart = async () => {
       if (isAuth === false) {
@@ -134,6 +140,30 @@ export default function CartPage() {
   }, [isAuth]);
 
   // Quantity handler
+
+  const handleContinuar = () => {
+    if(cart.length === 0) {
+      toast.error("El carrito esta vacio");
+      return 
+    }
+    
+    if(isAuth === false && step < 3) {
+      toast.error("Debes iniciar sesión para continuar");
+      setShowLoginModal(true);
+      return 
+    }
+
+    if (isAuth === true && step < 3) {
+      const newStep = step + 1;
+      setStep(newStep);
+      console.log(newStep)
+      if(newStep === 2) {
+        setShowCartItems(false);
+        setShowAddressModal(true);
+      }
+    }
+    setContinuar(true);
+  }
   const updateQuantity = async (id: string, delta: number) => {
     const item = cart.find((item) => item.id === id);
     if (!item) return;
@@ -195,10 +225,10 @@ export default function CartPage() {
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen">
       <BannerCarrito />
-      <StepProgressBar currentStep={1} />
+      <StepProgressBar currentStep={step} />
       <h2 className="text-center text-lg font-bold text-[#918283] pt-3">CARRITO</h2>
 
-      <div className="p-4 space-y-4 overflow-y-auto max-h-[40vh]">
+      {showCartItems === true && (<div className="p-4 space-y-4 overflow-y-auto max-h-[40vh]">
         {cart.length === 0 ? (
           <p className="text-center text-gray-500">Tu carrito está vacío.</p>
         ) : (
@@ -211,18 +241,26 @@ export default function CartPage() {
             />
           ))
         )}
-      </div>
-
       <div className="pt-3 pb-3">
         <DiscountInput />
       </div>
-
       {cart.length > 0 && (
         <div className="bg-white w-full rounded-3xl">
           <CartSummary subtotal={subtotal} discount={discount} />
-          <CartActions />
         </div>
       )}
+      </div>)
+      
+      }
+
+      {step === 2 && showAddressModal === true && <AddressStep />}
+      {step === 1 && <CartActions onContinuar={handleContinuar}/>}
+
+      {showLoginModal && (
+        <LoginFormModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      )}
+
+ 
 
       {showConfirmModal && (
         <DeleteConfirmModal

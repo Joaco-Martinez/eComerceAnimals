@@ -8,7 +8,7 @@ export default function StepProgressBar({ currentStep }: Props) {
   const progress = (currentStep - 1) / (steps.length - 1);
 
   return (
-    <div className="w-full max-w-md mx-auto px-7 mt-6">
+    <div className="w-full flex flex-col max-w-md mx-auto px-7 mt-6">
       <div className="relative mb-2 h-6">
         {/* Línea base */}
         <div className="absolute top-1/2 left-[10px] right-[10px] h-[2px] bg-[#E0DBD8] -translate-y-1/2 rounded-full" />
@@ -38,10 +38,11 @@ export default function StepProgressBar({ currentStep }: Props) {
               </div>
             );
           })}
+
         </div>
       </div>
 
-      {/* Labels */}
+      
      
     </div>
   );

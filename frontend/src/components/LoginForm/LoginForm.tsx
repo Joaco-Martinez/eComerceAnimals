@@ -19,7 +19,11 @@ const schema = yup.object().shape({
 
 type FormData = yup.InferType<typeof schema>;
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onLoginSuccess?: () => void;
+}
+
+export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const { SaveUserData } = useAuthContext();
 const [showForgotModal, setShowForgotModal] = useState(false);
 const [showResetModal, setShowResetModal] = useState(false);
@@ -39,8 +43,8 @@ const [emailForReset, setEmailForReset] = useState('');
       password: data.password,
     });
 
-    // ✅ Pedimos al backend los datos del usuario usando la cookie ya guardada
-    const user = await getCurrentUser(); // esto debe devolver user desde la cookie
+    
+    const user = await getCurrentUser(); 
 
     SaveUserData({ user });
     toast.success("Inicio de sesión exitoso");
@@ -49,6 +53,8 @@ const [emailForReset, setEmailForReset] = useState('');
     if (anoncartId) {
       mergeAnonCart(anoncartId);
     }
+
+     onLoginSuccess?.();
   } catch (error: any) {
     toast.error(
       error?.message

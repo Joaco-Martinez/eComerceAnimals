@@ -6,7 +6,7 @@ import Navbar from "../components/navbar/Navbar";
 import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
 import { AuthProvider } from '../context/authContext';
 import { AnonCartProvider } from '../context/anonCartContext';
-
+import { CheckoutProvider } from '@/context/checkoutContext';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,10 +34,12 @@ export default function RootLayout({
       >
         <AuthProvider>
         <AnonCartProvider>
+        <CheckoutProvider>
         <Navbar /> 
         {children}
         <Toaster />
         <WhatsappLink />
+        </CheckoutProvider>
         </AnonCartProvider>
         </AuthProvider>
       </body>
