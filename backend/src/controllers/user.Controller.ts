@@ -11,6 +11,16 @@ export const getUsers = async (_req: Request, res: Response) => {
   }
 };
 
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const id = String(req.params.id);
+    const user = await userService.getUserById(id);
+    res.json(user);
+  } catch {
+    res.status(500).json({ message: 'Error al obtener usuario' });
+  }
+}
+
 export const updateUserPassword = async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);

@@ -1,31 +1,36 @@
 import { prisma } from '../db/db';
-import { Address } from '../types/types';
+import { z } from 'zod';
+import { addressSchema } from '../controllers/address.Controller';
+
+type NewAddressInput = z.infer<typeof addressSchema>;
 
 export const AddressService = {
   async getByUser(userId: string) {
-    return await prisma.address.findMany({ where: { userId } });
+    return prisma.address.findMany({ where: { userId } });
   },
 
-  async create(addressData: Omit<Address, 'userId'>, userId: string) {
+  async create(data: NewAddressInput, userId: string) {
     const count = await prisma.address.count({ where: { userId } });
+
     if (count >= 3) {
       throw new Error('Máximo 3 direcciones permitidas.');
     }
 
-    return await prisma.address.create({
+    return prisma.address.create({
       data: {
-        ...addressData,
+        ...data,
         userId,
       },
     });
   },
 
   async delete(id: string, userId: string) {
-    return await prisma.address.delete({
-      where: {
-        id,
-        userId,
-      },
-    });
+    const address = await prisma.address.findUnique({ where: { id } });
+
+    if (!address || address.userId !== userId) {
+      throw new Error('No autorizado');
+    }
+
+    return prisma.address.delete({ where: { id } });
   },
 };

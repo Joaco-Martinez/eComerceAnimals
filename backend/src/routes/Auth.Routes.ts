@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as authController from '../controllers/auth.Controller';
+import { authMiddleware } from '../middlewares/authMiddlewares';
 
 const router = Router();
 
@@ -107,7 +108,7 @@ router.post('/logout', authController.logout);
  *       401:
  *         description: No autenticado
  */
-router.get('/me', authController.me);
+router.get('/me', authMiddleware, authController.me);
 
 /**
  * @swagger

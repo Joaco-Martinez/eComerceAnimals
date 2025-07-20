@@ -16,8 +16,7 @@ const router = Router();
  * /addresses:
  *   get:
  *     summary: Obtener direcciones del usuario
- *     tags:
- *       - Addresses
+ *     tags: [Addresses]
  *     security:
  *       - cookieAuth: []
  *     responses:
@@ -37,8 +36,7 @@ router.get('/', authMiddleware, AddressController.getByUser);
  * /addresses:
  *   post:
  *     summary: Crear nueva dirección
- *     tags:
- *       - Addresses
+ *     tags: [Addresses]
  *     security:
  *       - cookieAuth: []
  *     requestBody:
@@ -63,20 +61,20 @@ router.post('/', authMiddleware, AddressController.create);
  * @swagger
  * /addresses/{id}:
  *   delete:
- *     summary: Eliminar dirección
- *     tags:
- *       - Addresses
+ *     summary: Eliminar dirección por ID
+ *     tags: [Addresses]
  *     security:
  *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
+ *         description: ID de la dirección
  *     responses:
  *       204:
- *         description: Eliminado correctamente
+ *         description: Dirección eliminada
  *       404:
  *         description: Dirección no encontrada
  */

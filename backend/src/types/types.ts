@@ -9,7 +9,6 @@ export type NotificationType = "order" | "promo" | "payment" | "system";
 
 // Address
 export type Address = {
-  metodo: 'domicilio' | 'sucursal';
   postalCode: string;
   nombre: string;
   apellido: string;

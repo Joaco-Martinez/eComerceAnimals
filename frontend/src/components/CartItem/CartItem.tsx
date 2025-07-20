@@ -1,9 +1,20 @@
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import namer from "color-namer";
-
+type CartItemType = {
+  id: string;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+  };
+  size: string;
+  color: string; // en formato hex (ej: "#FF5733")
+  quantity: number;
+};
 type Props = {
-  item: any;
+  item: CartItemType;
   onIncrease: () => void;
   onDecrease: () => void;
 };

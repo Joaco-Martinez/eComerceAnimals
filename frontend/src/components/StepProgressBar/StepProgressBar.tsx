@@ -2,7 +2,7 @@ type Props = {
   currentStep: number; // 1 = Carrito, 2 = Envío, 3 = Pago, 4 = Confirmación
 };
 
-const steps = ["Carrito", "Envío", "Pago", ];
+const steps = ["Carrito", "Envío", "Pago", "Confirmacion" ];
 
 export default function StepProgressBar({ currentStep }: Props) {
   const progress = (currentStep - 1) / (steps.length - 1);

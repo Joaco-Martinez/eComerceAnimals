@@ -7,17 +7,21 @@ export type PaymentStatus = "pending" | "paid" | "failed";
 export type NotificationType = "order" | "promo" | "payment" | "system";
 
 // Address
-export interface Address {
-  id: string;
-  userId: string;
-  fullName: string;
-  street: string;
-  number: string;
-  city: string;
-  province: string;
+export type Address = {
   postalCode: string;
-  isPrimary: boolean;
-}
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  dni: string;
+  provincia: string;
+  localidad: string;
+  calle: string;
+  piso?: string;
+  userId: string;
+};
+
+
+
 
 export type AddressCreate = Omit<Address, "id" | "userId">;
 

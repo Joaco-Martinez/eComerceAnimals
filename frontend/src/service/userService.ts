@@ -14,6 +14,10 @@ export const forgotPassword = async (email: string) => {
   return await apiService.post("/cart/merge", { anonCartId }, true, false, false);
 };
 
+export const getUserById = async (id: string) => {
+  return await apiService.get(`/users/${id}`, true, false, false);
+};
+
 export const resetPassword = async (email: string, code: string, newPassword: string) => {
   return await apiService.post(
     '/users/reset-password',

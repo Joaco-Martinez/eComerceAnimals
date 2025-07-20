@@ -4,6 +4,8 @@ import crypto from 'crypto';
 
 export const getAllUsers = async () => prisma.user.findMany();
 
+export const getUserById = async (id: string) => prisma.user.findUnique({ where: { id } });
+
 export const updateUserPassword = async (id: string, newPassword: string) => {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   return prisma.user.update({

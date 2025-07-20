@@ -1,11 +1,11 @@
 import apiService from "./apiService";
 
 export const registerUser = async (userData: { name: string; email: string; password: string }) => {
-  return await apiService.post("/auth/register", userData, true,  false, true);
+  return await apiService.post("/auth/register", userData, false,  false, true);
 };
 
 export const loginUser = async (credentials: { email: string; password: string }) => {
-  return await apiService.post("/auth/login", credentials, true, false, true);
+  return await apiService.post("/auth/login", credentials, false, false, true);
 };
 
 export const logoutUser = async () => {

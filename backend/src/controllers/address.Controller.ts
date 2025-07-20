@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AddressService } from '../services/addresss.Service';
 import { z } from 'zod';
+import { AuthRequest } from '../middlewares/authMiddlewares';
 
-const addressSchema = z.object({
-  metodo: z.enum(['domicilio', 'sucursal']),
+export const addressSchema = z.object({
   postalCode: z.string().min(1),
   nombre: z.string().min(1),
   apellido: z.string().min(1),
@@ -16,29 +16,44 @@ const addressSchema = z.object({
 });
 
 export const AddressController = {
-  async getByUser(req: Request, res: Response) {
-    const userId = req.user.id;
-    const addresses = await AddressService.getByUser(userId);
-    res.json(addresses);
+  async getByUser(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.userId;
+      if (!userId) return res.status(401).json({ message: 'No autenticado' });
+
+      const addresses = await AddressService.getByUser(userId);
+      res.json(addresses);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al obtener direcciones' });
+    }
   },
 
-  async create(req: Request, res: Response) {
-    const userId = req.user.id;
+  async create(req: AuthRequest, res: Response) {
+    if (!req.userId) {
+      return res.status(401).json({ message: 'No autenticado' });
+    }
+
     try {
       const parsedData = addressSchema.parse(req.body);
-      const newAddress = await AddressService.create(parsedData, userId);
+      const newAddress = await AddressService.create(parsedData, req.userId);
       res.status(201).json(newAddress);
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Error desconocido';
+      const message = error instanceof Error ? error.message : 'Error desconocido';
       res.status(400).json({ error: message });
     }
   },
 
-  async delete(req: Request, res: Response) {
-    const userId = req.user.id;
-    const id = req.params.id;
-    await AddressService.delete(id, userId);
-    res.status(204).end();
+  async delete(req: AuthRequest, res: Response) {
+    if (!req.userId) {
+      return res.status(401).json({ message: 'No autenticado' });
+    }
+
+    try {
+      await AddressService.delete(req.params.id, req.userId);
+      res.status(204).end();
+    } catch (error) {
+      res.status(404).json({ message: 'No se pudo eliminar la dirección' });
+    }
   },
 };

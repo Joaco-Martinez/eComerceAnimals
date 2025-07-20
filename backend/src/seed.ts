@@ -37,6 +37,43 @@ async function main() {
     },
   });
 
+  // Obtener el userId de Joaco
+  const joaco = await prisma.user.findUnique({
+    where: { email: 'joaco.martinez1480@gmail.com' },
+  });
+
+  if (joaco) {
+    await prisma.address.createMany({
+      data: [
+        {
+          userId: joaco.id,
+          postalCode: "1405",
+          nombre: "Joaco",
+          apellido: "Martínez",
+          telefono: "1123456789",
+          dni: "12345678",
+          provincia: "Buenos Aires",
+          localidad: "Buenos Aires",
+          calle: "Av. Siempre Viva 123",
+          piso: "3B",
+        },
+        {
+          userId: joaco.id,
+          postalCode: "1900",
+          nombre: "Joaco",
+          apellido: "Martínez",
+          telefono: "1198765432",
+          dni: "12345678",
+          provincia: "Buenos Aires",
+          localidad: "La Plata",
+          calle: "Calle Falsa 456",
+          piso: "PB",
+        },
+      ],
+      skipDuplicates: true,
+    });
+  }
+
   const categoryImages = [
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/pngtree-kids-toys-png-image_13394244_kmyer4",
     "https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/pngtree-pets-accessories-pet-accessory-veterinary-png-image_6063863_iixn2o",
@@ -98,7 +135,7 @@ async function main() {
     });
   }
 
-  console.log("✅ Seeder completado con 20 categorías y productos usando UUID.");
+  console.log("✅ Seeder completado con usuarios, direcciones, categorías y productos.");
 }
 
 main()

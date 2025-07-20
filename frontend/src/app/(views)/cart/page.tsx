@@ -12,8 +12,10 @@ import CartActions from "@/components/CartActions/CartActions";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal/DeleteConfirmModal";
 import StepProgressBar from "@/components/StepProgressBar/StepProgressBar";
 import AddressStep from "@/components/AddressStep.tsx/AddressStep";
-
+import PaymentStep from "@/components/PaymentStep/PaymentStep";
+import { useCheckoutContext } from '../../../context/checkoutContext';
 import { useAuthContext } from "@/context/authContext";
+import TransferenciaGracias from "@/components/TransferenciaGracias/TransferenciaGracias";
 import { useAnonCart } from "@/context/anonCartContext";
 import {
   getAnonCart,
@@ -62,82 +64,103 @@ export default function CartPage() {
   const { isAuth } = useAuthContext();
   const { cartId } = useAnonCart();
   const [step, setStep] = useState(1);
-  const [ continuar, setContinuar ] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [ showCartItems, setShowCartItems ] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState<string | null>(null);
-
+  const { setCartItems, paymentMethod } = useCheckoutContext();
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const discount = subtotal * 0.2;
-
+  const [ showTransferencia, setShowTransferencia ] = useState(false);
   
 
 
   useEffect(() => {
-    const fetchCart = async () => {
-      if (isAuth === false) {
-        const anonCartId = Cookies.get("AnonCart_id");
-        if (!anonCartId) return;
+  const fetchCart = async () => {
+    let mappedItems: CartItem[] = [];
 
-        try {
-          const anonCart = await getAnonCart(anonCartId);
-          if (!anonCart?.items?.length) return setCart([]);
+    if (isAuth === false) {
+      const anonCartId = Cookies.get("AnonCart_id");
+      if (!anonCartId) return;
 
-          const mappedItems: CartItem[] = anonCart.items.map((item: MappedAnonCartItem) => ({
-            id: item.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            color: item.color,
-            size: item.size,
-            product: {
-              id: item.product.id,
-              name: item.product.name,
-              description: item.product.description,
-              price: item.product.price,
-              stock: item.product.stock,
-              image: item.product.images?.[0]?.url || "/placeholder.jpg",
-            },
-          }));
+      try {
+        const anonCart = await getAnonCart(anonCartId);
+        if (!anonCart?.items?.length) return setCart([]);
 
-          setCart(mappedItems);
-        } catch (error) {
-          console.error("Error cargando carrito anónimo:", error);
-        }
+        mappedItems = anonCart.items.map((item: MappedAnonCartItem) => ({
+          id: item.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          color: item.color,
+          size: item.size,
+          product: {
+            id: item.product.id,
+            name: item.product.name,
+            description: item.product.description,
+            price: item.product.price,
+            stock: item.product.stock,
+            image: item.product.images?.[0]?.url || "/placeholder.jpg",
+          },
+        }));
+      } catch (error) {
+        console.error("Error cargando carrito anónimo:", error);
+        return;
       }
+    }
 
-      if (isAuth === true) {
-        try {
-          const cart = await getCart();
-          if (!cart?.items?.length) return;
+    if (isAuth === true) {
+      try {
+        const cart = await getCart();
+        if (!cart?.items?.length) return;
 
-          const mappedItems: CartItem[] = cart.items.map((item: MappedAnonCartItem) => ({
-            id: item.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            color: item.color,
-            size: item.size,
-            product: {
-              id: item.product.id,
-              name: item.product.name,
-              description: item.product.description,
-              price: item.product.price,
-              stock: item.product.stock,
-              image: item.product.images?.[0]?.url || "/placeholder.jpg",
-            },
-          }));
-
-          setCart(mappedItems);
-        } catch (error) {
-          console.error("Error cargando carrito de usuario:", error);
-        }
+        mappedItems = cart.items.map((item: MappedAnonCartItem) => ({
+          id: item.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          color: item.color,
+          size: item.size,
+          product: {
+            id: item.product.id,
+            name: item.product.name,
+            description: item.product.description,
+            price: item.product.price,
+            stock: item.product.stock,
+            image: item.product.images?.[0]?.url || "/placeholder.jpg",
+          },
+        }));
+      } catch (error) {
+        console.error("Error cargando carrito de usuario:", error);
+        return;
       }
-    };
+    }
 
-    fetchCart();
-  }, [isAuth]);
+    
+    setCart(mappedItems);
+    setCartItems(
+      mappedItems.map((item) => ({
+        productId: item.productId,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        color: item.color,
+        size: item.size,
+      }))
+    );
+  };
+
+  fetchCart();
+}, [isAuth, setCartItems]);
+
+useEffect(() => {
+  if (step === 1) {
+    setShowCartItems(true);
+  } else {
+    setShowCartItems(false);
+  }
+}, [step]);
+
 
   // Quantity handler
 
@@ -153,7 +176,7 @@ export default function CartPage() {
       return 
     }
 
-    if (isAuth === true && step < 3) {
+    if (isAuth === true && step < 4) {
       const newStep = step + 1;
       setStep(newStep);
       console.log(newStep)
@@ -161,8 +184,15 @@ export default function CartPage() {
         setShowCartItems(false);
         setShowAddressModal(true);
       }
+      if (newStep === 4 && isAuth === true) {
+          if (paymentMethod === "transferencia") {
+            setShowTransferencia(true);
+          } else {
+            setShowTransferencia(false);
+          }
+        }
     }
-    setContinuar(true);
+
   }
   const updateQuantity = async (id: string, delta: number) => {
     const item = cart.find((item) => item.id === id);
@@ -221,10 +251,10 @@ export default function CartPage() {
     setShowConfirmModal(false);
     setPendingDeleteItemId(null);
   };
-
+ console.log(cart)
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen">
-      <BannerCarrito />
+      {step === 1 && <BannerCarrito />}
       <StepProgressBar currentStep={step} />
       <h2 className="text-center text-lg font-bold text-[#918283] pt-3">CARRITO</h2>
 
@@ -241,26 +271,31 @@ export default function CartPage() {
             />
           ))
         )}
-      <div className="pt-3 pb-3">
-        <DiscountInput />
-      </div>
-      {cart.length > 0 && (
-        <div className="bg-white w-full rounded-3xl">
-          <CartSummary subtotal={subtotal} discount={discount} />
-        </div>
-      )}
       </div>)
       
       }
-
+      {step === 1 && cart.length > 0 && (
+        <div>
+        <div className="pt-3 pb-3">
+          <DiscountInput />
+        </div>
+        <div className="bg-white w-full rounded-3xl">
+          <CartSummary subtotal={subtotal} discount={discount} />
+        </div>
+        </div>
+      )}
       {step === 2 && showAddressModal === true && <AddressStep />}
-      {step === 1 && <CartActions onContinuar={handleContinuar}/>}
-
+      {step === 3 && showAddressModal === true && <PaymentStep />}
+      <CartActions
+          step={step}
+          onContinuar={handleContinuar}
+          onBack={() => setStep(step - 1)}
+        />
       {showLoginModal && (
         <LoginFormModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
       )}
 
- 
+      {step === 4 && showTransferencia === true && <TransferenciaGracias />}
 
       {showConfirmModal && (
         <DeleteConfirmModal

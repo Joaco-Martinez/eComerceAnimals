@@ -12,6 +12,11 @@ enum Role {
   admin
 }
 
+enum ShippingMethod {
+  domicilio
+  sucursal
+}
+
 enum PetType {
   dog
   cat
@@ -70,7 +75,6 @@ model User {
 
 model Address {
   id         String   @id @default(uuid())
-  metodo     String
   postalCode String
   nombre     String
   apellido   String
@@ -82,9 +86,10 @@ model Address {
   piso       String?
   userId     String
   user       User     @relation(fields: [userId], references: [id])
-  orders      Order[]
-}
+  orders     Order[]
 
+  @@unique([id, userId])
+}
 
 model Product {
   id          String     @id @default(uuid())
@@ -154,19 +159,20 @@ model CartItem {
 }
 
 model Order {
-  id          String       @id @default(uuid())
-  user        User         @relation(fields: [userId], references: [id])
-  userId      String
-  address     Address      @relation(fields: [addressId], references: [id])
-  addressId   String
-  coupon      Coupon?      @relation(fields: [couponId], references: [id])
-  couponId    String?
-  items       OrderItem[]
-  payment     Payment?
-  totalAmount Float
-  status      OrderStatus  @default(pending)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String         @id @default(uuid())
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String
+  address        Address        @relation(fields: [addressId], references: [id])
+  addressId      String
+  shippingMethod ShippingMethod // 👈 NUEVO campo
+  coupon         Coupon?        @relation(fields: [couponId], references: [id])
+  couponId       String?
+  items          OrderItem[]
+  payment        Payment?
+  totalAmount    Float
+  status         OrderStatus    @default(pending)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model OrderItem {

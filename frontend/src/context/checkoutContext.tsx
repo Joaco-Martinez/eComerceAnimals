@@ -1,48 +1,69 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type MetodoEnvio = 'domicilio' | 'sucursal';
 type MetodoPago = 'mercadopago' | 'transferencia' | 'efectivo';
 
-export interface CheckoutAddress {
-  id: string;
-  metodo: MetodoEnvio;
-  postalCode: string;
-  nombre: string;
-  apellido: string;
-  telefono: string;
-  dni: string;
-  provincia: string;
-  localidad: string;
-  calle: string;
-  piso?: string;
+export interface CheckoutCartItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  color: string;
+  size: string;
 }
 
 interface CheckoutContextType {
-  selectedAddress: CheckoutAddress | null;
-  selectedPaymentMethod: MetodoPago | null;
-  setAddress: (address: CheckoutAddress) => void;
+  addressId: string | null;
+  shippingMethod: MetodoEnvio | null;
+  paymentMethod: MetodoPago | null;
+  cartItems: CheckoutCartItem[];
+
+  setAddressId: (id: string) => void;
+  setShippingMethod: (method: MetodoEnvio) => void;
   setPaymentMethod: (method: MetodoPago) => void;
+  setCartItems: (items: CheckoutCartItem[]) => void;
+
   clearCheckout: () => void;
 }
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
 
 export function CheckoutProvider({ children }: { children: ReactNode }) {
-  const [selectedAddress, setSelectedAddress] = useState<CheckoutAddress | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<MetodoPago | null>(null);
+  const [addressId, setAddressId] = useState<string | null>(null);
+  const [shippingMethod, setShippingMethod] = useState<MetodoEnvio | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<MetodoPago | null>(null);
+  const [cartItems, setCartItems] = useState<CheckoutCartItem[]>([]);
 
-  const setAddress = (address: CheckoutAddress) => setSelectedAddress(address);
-  const setPaymentMethod = (method: MetodoPago) => setSelectedPaymentMethod(method);
+
+  useEffect(() => {
+    console.log("cartItems", cartItems);
+    console.log("shippingmethod", shippingMethod);
+    console.log("addressId", addressId);
+    console.log("paymentMethod", paymentMethod);
+
+  })
   const clearCheckout = () => {
-    setSelectedAddress(null);
-    setSelectedPaymentMethod(null);
+    setAddressId(null);
+    setShippingMethod(null);
+    setPaymentMethod(null);
+    setCartItems([]);
   };
 
   return (
     <CheckoutContext.Provider
-      value={{ selectedAddress, selectedPaymentMethod, setAddress, setPaymentMethod, clearCheckout }}
+      value={{
+        addressId,
+        shippingMethod,
+        paymentMethod,
+        cartItems,
+        setAddressId,
+        setShippingMethod,
+        setPaymentMethod,
+        setCartItems,
+        clearCheckout,
+      }}
     >
       {children}
     </CheckoutContext.Provider>

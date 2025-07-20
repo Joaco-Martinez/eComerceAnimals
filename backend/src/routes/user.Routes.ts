@@ -59,6 +59,33 @@ router.post('/forgot-password', userController.forgotPassword);
 
 /**
  * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Obtener un usuario por ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Usuario no encontrado
+ */
+router.get('/:id', authMiddleware, userController.getUserById);
+
+/**
+ * @swagger
  * /users/reset-password:
  *   post:
  *     summary: Restablecer contraseña con código recibido por email
