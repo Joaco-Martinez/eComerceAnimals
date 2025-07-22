@@ -1,13 +1,12 @@
-import { prisma } from '../db/db';
+import { prisma } from "../db/db";
 
 export const createCategory = async (data: {
   name: string;
   description?: string;
   image?: string;
+  petType: "dog" | "cat" | "both";
 }) => {
-  return prisma.category.create({
-    data,
-  });
+  return prisma.category.create({ data });
 };
 
 export const getAllCategories = async () => {
@@ -15,23 +14,16 @@ export const getAllCategories = async () => {
 };
 
 export const getCategoryById = async (id: string) => {
-  return prisma.category.findUnique({
-    where: { id },
-  });
+  return prisma.category.findUnique({ where: { id } });
 };
 
 export const updateCategory = async (
   id: string,
-  data: Partial<{ name: string; description: string; image: string }>
+  data: Partial<{ name: string; description: string; image: string; petType: "dog" | "cat" | "both" }>
 ) => {
-  return prisma.category.update({
-    where: { id },
-    data,
-  });
+  return prisma.category.update({ where: { id }, data });
 };
 
 export const deleteCategory = async (id: string) => {
-  return prisma.category.delete({
-    where: { id },
-  });
+  return prisma.category.delete({ where: { id } });
 };

@@ -18,5 +18,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   }
 
   req.userId = payload.userId;
+  console.log('✅ Usuario autenticado:', payload.userId);
+  console.log("pene gordo", req.userId)
   next();
 };

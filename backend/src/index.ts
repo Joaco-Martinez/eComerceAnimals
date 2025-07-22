@@ -27,11 +27,13 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 app.use(morgan("dev"));
 
-import { Request, Response } from 'express';
 
 
 

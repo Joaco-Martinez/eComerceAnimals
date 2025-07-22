@@ -7,6 +7,7 @@ import InstagramFeed from "@/components/redes/redes";
 import RedesSociales from "@/components/RedesSociales/RedesSociales";
 import SliderProductosDestacados from "@/components/sliderProductosDestacados/sliderProductosDestacados";
 import LogicaSearchbar from "@/components/LogicaSearchbar/LogicaSearchbar";
+import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
 
 export default function Home() {
   return (
@@ -49,7 +50,10 @@ export default function Home() {
 
 
       <InstagramFeed />
+
       </section>
+              <WhatsappLink />
+      
     </main>
   );
 }

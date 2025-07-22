@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Navbar from "../components/navbar/Navbar";
-import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
+// import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
 import { AuthProvider } from '../context/authContext';
 import { AnonCartProvider } from '../context/anonCartContext';
 import { CheckoutProvider } from '@/context/checkoutContext';
@@ -38,7 +38,7 @@ export default function RootLayout({
         <Navbar /> 
         {children}
         <Toaster />
-        <WhatsappLink />
+        {/* <WhatsappLink /> */}
         </CheckoutProvider>
         </AnonCartProvider>
         </AuthProvider>

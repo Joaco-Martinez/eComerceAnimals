@@ -16,6 +16,14 @@ export const getUserCart = async (userId: string) => {
   });
 };
 
+export const cleanUserCart = async (userId: string) => {
+  const cart = await prisma.cart.findUnique({ where: { userId } });
+  if (!cart) return false;
+
+  await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+  return true;
+};
+
 export const mergeAnonCartToUserCart = async (userId: string, cartId: string) => {
   const anonCart = await getAnonCart(cartId);
   if (!anonCart) throw new Error("AnonCart no encontrado");

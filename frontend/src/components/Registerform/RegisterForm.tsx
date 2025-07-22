@@ -130,7 +130,12 @@ export default function RegisterForm() {
           {isSubmitting ? 'Registrando...' : 'Registrarme'}
         </button>
       </form>
-
+          <p className="mt-4 text-center text-sm text-gray-600">
+        ¿tenés cuenta?{' '}
+        <a href="/login" className="text-[#a18c89] font-medium hover:underline">
+          Inicia sesión
+        </a>
+      </p>
       <button
         type="button"
         className="w-full mt-6 py-2 rounded-full border border-gray-300 text-[#a18c89] font-medium"
@@ -144,7 +149,7 @@ export default function RegisterForm() {
   onClose={() => setShowModal(false)}
   email={registeredEmail}
   onVerified={(user) => {
-    SaveUserData({ user });         // ✅ guardamos al usuario
+    SaveUserData({ user });        
     toast.success('Correo validado y sesión iniciada');
   }}
 />

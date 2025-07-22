@@ -1,14 +1,15 @@
 "use client";
-
+import Loader from "../Loader/Loader";
 import { useRouter } from "next/navigation";
 
 interface CartActionsProps {
   step: number;
   onContinuar: () => void;
   onBack?: () => void;
+  loadingOrder?: boolean;
 }
 
-export default function CartActions({ step, onContinuar, onBack }: CartActionsProps) {
+export default function CartActions({ step, onContinuar, onBack, loadingOrder }: CartActionsProps) {
   const router = useRouter();
 
   const handleSeguirCompra = () => {
@@ -53,12 +54,13 @@ export default function CartActions({ step, onContinuar, onBack }: CartActionsPr
 
       {step === 3 && (
         <>
-          <button
+          {loadingOrder && <Loader />}
+          {!loadingOrder && <button
             onClick={onContinuar}
             className="bg-[#918283] text-white py-2 rounded-full"
           >
             Confirmar método de pago
-          </button>
+          </button>}
           <button
             onClick={onBack}
             className="border border-gray-400 py-2 rounded-full text-gray-700"
@@ -67,6 +69,7 @@ export default function CartActions({ step, onContinuar, onBack }: CartActionsPr
           </button>
         </>
       )}
+
     </div>
   );
 }

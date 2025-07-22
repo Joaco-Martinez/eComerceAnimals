@@ -3,6 +3,9 @@ import * as cartService from '../services/cart.Service';
 import { AuthRequest } from '../middlewares/authMiddlewares';
 
 export const getCart = async (req: AuthRequest, res: Response) => {
+   const userId = req.userId;
+  if (!userId) return res.status(401).json({ message: 'No autorizado' });
+  
   try {
     const cart = await cartService.getUserCart(req.userId!);
     res.json(cart);
@@ -12,7 +15,19 @@ export const getCart = async (req: AuthRequest, res: Response) => {
   }
 };
 
+
+export const cleanCart = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+  if (!userId) return res.status(401).json({ message: 'No autorizado' });
+
+  const cleaned = await cartService.cleanUserCart(userId);
+  if (!cleaned) return res.status(200).json({ message: 'Carrito ya está vacío' });
+
+  return res.status(200).json({ message: 'Carrito vaciado correctamente' });
+};
 export const addItem = async (req: AuthRequest, res: Response) => {
+   const userId = req.userId;
+  if (!userId) return res.status(401).json({ message: 'No autorizado' });
   try {
     const { productId, quantity, color, size } = req.body;
     const item = await cartService.addToCart(req.userId!, productId, quantity, color, size);
@@ -24,6 +39,8 @@ export const addItem = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateItem = async (req: AuthRequest, res: Response) => {
+   const userId = req.userId;
+   if (!userId) return res.status(401).json({ message: 'No autorizado' });
   try {
     const { productId, quantity } = req.body;
     const item = await cartService.updateCartItem(req.userId!, productId, quantity);
@@ -35,6 +52,8 @@ export const updateItem = async (req: AuthRequest, res: Response) => {
 };
 
 export const removeItem = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+   if (!userId) return res.status(401).json({ message: 'No autorizado' });
   try {
     const productId = (req.params.productId);
     await cartService.removeFromCart(req.userId!, productId);
@@ -46,6 +65,8 @@ export const removeItem = async (req: AuthRequest, res: Response) => {
 };
 
 export const mergeAnonCart = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+   if (!userId) return res.status(401).json({ message: 'No autorizado' });
   try {
     const { anonCartId } = req.body;
     await cartService.mergeAnonCartToUserCart(req.userId!, anonCartId);

@@ -9,31 +9,57 @@ export const getProductById = (id: string) => prisma.product.findUnique({
   include: { category: true, images: true }
 });
 
+export const searchProductsService = async (query: string) => {
+  return await prisma.product.findMany({
+    where: {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
+      ],
+    },
+    include: {
+      images: true,
+      category: true,
+    },
+  });
+};
+
 export const getFilteredProducts = async (filters: {
   petType?: 'dog' | 'cat' | 'both';
-  categoryId?: number;
+  categoryId?: string;
+  sortBy?: 'priceAsc' | 'priceDesc' | 'relevance';
 }) => {
-  const { petType, categoryId } = filters;
+  const { petType, categoryId, sortBy } = filters;
 
   const where: any = {};
 
-  if (petType) {
-    where.petType = petType;
+  if (petType === "dog" || petType === "cat") {
+    where.petType = { in: [petType, "both"] };
+  } else if (petType === "both") {
+    where.petType = "both";
   }
 
   if (categoryId) {
     where.categoryId = categoryId;
   }
 
+  // 👇 usá "as const" para que TS lo infiera como "asc" | "desc"
+  const orderBy =
+    sortBy === "priceAsc"
+      ? { price: "asc" as const }
+      : sortBy === "priceDesc"
+      ? { price: "desc" as const }
+      : undefined;
+
   return prisma.product.findMany({
     where,
+    orderBy,
     include: {
       category: true,
       images: true,
     },
   });
 };
-
 export const createProduct = async (data: {
   name: string;
   description: string;

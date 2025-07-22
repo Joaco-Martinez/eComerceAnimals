@@ -12,6 +12,16 @@ enum Role {
   admin
 }
 
+enum OrderStatus {
+  pending     // Todavía no pagó
+  paid        // Pagó, esperando envío
+  processing  // Preparando el pedido
+  shipped     // Enviado
+  delivered   // Entregado
+  cancelled   // Cancelado
+}
+
+
 enum ShippingMethod {
   domicilio
   sucursal
@@ -29,13 +39,7 @@ enum DiscountType {
   free_shipping
 }
 
-enum OrderStatus {
-  pending
-  paid
-  shipped
-  delivered
-  cancelled
-}
+
 
 enum PaymentStatus {
   pending
@@ -49,6 +53,8 @@ enum NotificationType {
   payment
   system
 }
+
+
 
 model User {
   id             String   @id @default(uuid())
@@ -127,6 +133,7 @@ model Category {
   name        String   @unique
   description String?
   image       String?
+  petType  PetType 
   products    Product[]
 }
 
@@ -160,39 +167,43 @@ model CartItem {
 
 model Order {
   id             String         @id @default(uuid())
+  orderNumber    String         @unique
   user           User           @relation(fields: [userId], references: [id])
   userId         String
   address        Address        @relation(fields: [addressId], references: [id])
   addressId      String
-  shippingMethod ShippingMethod // 👈 NUEVO campo
+  shippingMethod ShippingMethod
   coupon         Coupon?        @relation(fields: [couponId], references: [id])
   couponId       String?
   items          OrderItem[]
   payment        Payment?
   totalAmount    Float
+  trackingNumber String?        // Número de seguimiento del envío
   status         OrderStatus    @default(pending)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
 
 model OrderItem {
-  id         String   @id @default(uuid())
-  order      Order    @relation(fields: [orderId], references: [id])
-  orderId    String
-  product    Product  @relation(fields: [productId], references: [id])
-  productId  String
-  quantity   Int
-  unitPrice  Float
+  id        String  @id @default(uuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  unitPrice Float
+  color     String   // 👈 este campo debe existir
+  size      String   // 👈 este también
 }
 
 model Payment {
-  id        String         @id @default(uuid())
-  order     Order          @relation(fields: [orderId], references: [id])
-  orderId   String         @unique
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @unique
+  method    String   // 'transferencia' | 'mercadopago'
+  status    String   // 'pending' | 'paid' | 'failed'
   amount    Float
-  method    String
-  status    PaymentStatus  @default(pending)
-  paidAt    DateTime?
+  createdAt DateTime @default(now())
 }
 
 model Review {
@@ -205,6 +216,8 @@ model Review {
   rating    Int
   createdAt DateTime @default(now())
 }
+
+
 
 model Coupon {
   id            String        @id @default(uuid())

@@ -27,7 +27,7 @@ router.get('/', productController.getAll);
  * @swagger
  * /products/pet/{petType}:
  *   get:
- *     summary: Obtener productos filtrados por tipo de mascota
+ *     summary: Obtener productos por tipo de mascota
  *     tags: [Products]
  *     parameters:
  *       - in: path
@@ -37,11 +37,6 @@ router.get('/', productController.getAll);
  *           type: string
  *           enum: [dog, cat, both]
  *         description: Tipo de mascota
- *     responses:
- *       200:
- *         description: Lista de productos filtrados por petType
- *       400:
- *         description: petType inválido
  */
 router.get('/pet/:petType', productController.getByPetType);
 
@@ -49,20 +44,16 @@ router.get('/pet/:petType', productController.getByPetType);
  * @swagger
  * /products/category/{id}:
  *   get:
- *     summary: Obtener productos filtrados por categoría
+ *     summary: Obtener productos por categoría
  *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: ID de la categoría
- *     responses:
- *       200:
- *         description: Lista de productos filtrados por categoría
- *       400:
- *         description: ID de categoría inválido
  */
 router.get('/category/:id', productController.getByCategory);
 
@@ -70,46 +61,89 @@ router.get('/category/:id', productController.getByCategory);
  * @swagger
  * /products/filter:
  *   get:
- *     summary: Obtener productos filtrados por tipo de mascota y categoría (query params)
+ *     summary: Filtrar productos por tipo de mascota, categoría y orden
  *     tags: [Products]
  *     parameters:
  *       - in: query
  *         name: petType
+ *         required: false
  *         schema:
  *           type: string
  *           enum: [dog, cat, both]
- *         description: Tipo de mascota (opcional)
+ *         description: Tipo de mascota
  *       - in: query
  *         name: categoryId
+ *         required: false
  *         schema:
- *           type: integer
- *         description: ID de categoría (opcional)
+ *           type: string
+ *           format: uuid
+ *         description: ID de la categoría
+ *       - in: query
+ *         name: sortBy
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [relevance, priceAsc, priceDesc]
+ *           default: relevance
+ *         description: Orden de los productos (por relevancia, precio ascendente o descendente)
  *     responses:
  *       200:
  *         description: Lista de productos filtrados
- *       400:
- *         description: Parámetros inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
  */
 router.get('/filter', productController.getByPetAndCategory);
+
+
+/**
+ * @swagger
+ * /products/search:
+ *   get:
+ *     summary: Buscar productos por nombre o descripción
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Término de búsqueda (nombre o descripción)
+ *     responses:
+ *       200:
+ *         description: Lista de productos encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 content:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Query inválida
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/search', productController.searchProducts);
 
 /**
  * @swagger
  * /products/{id}:
  *   get:
- *     summary: Obtener un producto por ID
+ *     summary: Obtener producto por ID
  *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID del producto
- *     responses:
- *       200:
- *         description: Producto encontrado
- *       404:
- *         description: Producto no encontrado
+ *           type: string
+ *           format: uuid
  */
 router.get('/:id', productController.getById);
 
@@ -117,7 +151,7 @@ router.get('/:id', productController.getById);
  * @swagger
  * /products:
  *   post:
- *     summary: Crear un nuevo producto (con imágenes)
+ *     summary: Crear producto
  *     tags: [Products]
  *     requestBody:
  *       required: true
@@ -150,19 +184,16 @@ router.get('/:id', productController.getById);
  *               sku:
  *                 type: string
  *               categoryId:
- *                 type: integer
+ *                 type: string
+ *                 format: uuid
  *               petType:
  *                 type: string
  *                 enum: [dog, cat, both]
- *                 description: Tipo de mascota (dog, cat, both)
  *               images:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
- *     responses:
- *       201:
- *         description: Producto creado
  */
 router.post('/', upload.array('images'), productController.create);
 
@@ -170,56 +201,15 @@ router.post('/', upload.array('images'), productController.create);
  * @swagger
  * /products/{id}:
  *   put:
- *     summary: Actualizar un producto (puede incluir nuevas imágenes)
+ *     summary: Actualizar producto
  *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID del producto
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               stock:
- *                 type: integer
- *               weight:
- *                 type: number
- *               size:
- *                 type: string
- *               color:
- *                 type: string
- *               sku:
- *                 type: string
- *               categoryId:
- *                 type: integer
- *               petType:
- *                 type: string
- *                 enum: [dog, cat, both]
- *                 description: Tipo de mascota (dog, cat, both)
- *               images:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *     responses:
- *       200:
- *         description: Producto actualizado
- *       400:
- *         description: petType inválido
- *       404:
- *         description: Producto no encontrado
+ *           type: string
+ *           format: uuid
  */
 router.put('/:id', upload.array('images'), productController.update);
 
@@ -227,20 +217,15 @@ router.put('/:id', upload.array('images'), productController.update);
  * @swagger
  * /products/{id}:
  *   delete:
- *     summary: Eliminar un producto
+ *     summary: Eliminar producto
  *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID del producto
- *     responses:
- *       204:
- *         description: Producto eliminado correctamente
- *       404:
- *         description: Producto no encontrado
+ *           type: string
+ *           format: uuid
  */
 router.delete('/:id', productController.remove);
 

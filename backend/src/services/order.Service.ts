@@ -1,111 +1,147 @@
 import { prisma } from '../db/db';
+import { customAlphabet } from 'nanoid';
+import sendEmail from '../utils/sendEmail';
+import {
+  generateOrderEmailTemplate,
+  generateTransferEmailTemplate,
+} from '../utils/emailTemplates';
+import { ShippingMethod } from '@prisma/client';
 
-export const createOrderFromCart = async (
+const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
+
+export const createOrder = async (
   userId: string,
-  addressId: string,
-  couponCode?: string
-) => {
-  // Verificamos carrito
-  const cart = await prisma.cart.findUnique({
-    where: { userId },
-    include: {
-      items: {
-        include: { product: true },
-      },
-    },
-  });
-
-  if (!cart || cart.items.length === 0) throw new Error('El carrito está vacío');
-
-  // Verificamos dirección
-  const address = await prisma.address.findFirst({ where: { id: addressId, userId } });
-  if (!address) throw new Error('Dirección no válida');
-
-  // Cupón opcional
-  let coupon = null;
-  if (couponCode) {
-    coupon = await prisma.coupon.findFirst({
-      where: { code: couponCode, active: true },
-    });
-    if (!coupon) throw new Error('Cupón inválido');
+  data: {
+    cartItems: {
+      productId: string;
+      quantity: number;
+      price: number;
+      color: string;
+      size: string;
+    }[];
+    shippingMethod: 'domicilio' | 'sucursal';
+    addressId: string;
+    paymentMethod: 'transferencia' | 'mercadopago';
   }
-
-  // Total sin cupón
-  let total = cart.items.reduce((sum, item) => {
-    return sum + item.product.price * item.quantity;
+) => {
+  const totalAmount = data.cartItems.reduce((acc, item) => {
+    if (typeof item.price !== 'number' || isNaN(item.price)) {
+      throw new Error(`Precio inválido en item con producto ${item.productId}`);
+    }
+    return acc + item.price * item.quantity;
   }, 0);
 
-  // Aplicamos cupón
-  if (coupon) {
-    if (coupon.discountType === 'percentage') {
-      total = total - total * (coupon.value / 100);
-    } else if (coupon.discountType === 'fixed') {
-      total = Math.max(0, total - coupon.value);
-    }
-    // free_shipping no aplica descuento directo, lo podés usar en el envío si lo implementás
-  }
+  const orderNumber = `ORD-${new Date()
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, '')}-${nanoid()}`;
 
-  // Creamos orden
   const order = await prisma.order.create({
     data: {
       userId,
-      addressId,
-      totalAmount: total,
-      couponId: coupon?.id,
+      addressId: data.addressId,
+      shippingMethod: data.shippingMethod,
+      orderNumber,
+      totalAmount,
+      status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
       items: {
-        create: cart.items.map((item) => ({
+        create: data.cartItems.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
-          unitPrice: item.product.price,
+          unitPrice: item.price,
+          color: item.color,
+          size: item.size,
         })),
       },
+      payment: {
+        create: {
+          method: data.paymentMethod,
+          status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+          amount: totalAmount,
+        },
+      },
     },
-    include: {
-      items: true,
+    select: {
+      id: true,
+      orderNumber: true,
+      totalAmount: true,
+      shippingMethod: true,
+      status: true,
+      user: {
+        select: {
+          email: true,
+          name: true,
+        },
+      },
+      address: {
+        select: {
+          calle: true,
+          localidad: true,
+          provincia: true,
+          postalCode: true,
+        },
+      },
+      items: {
+        select: {
+          productId: true,
+          quantity: true,
+          unitPrice: true,
+          color: true,
+          size: true,
+          product: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
 
-  // Marcamos cupón como usado (si tiene límite por usuario)
-  if (coupon) {
-    await prisma.userCoupon.create({
-      data: {
-        userId,
-        couponId: coupon.id,
-        usedAt: new Date(),
+  const orderForEmail = {
+    orderNumber: order.orderNumber,
+    totalAmount: order.totalAmount,
+    shippingMethod: order.shippingMethod,
+    user: {
+      name: order.user.name,
+      email: order.user.email,
+    },
+    items: order.items.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      color: item.color,
+      size: item.size,
+      product: {
+        name: item.product.name,
       },
-    });
+    })),
+    address: {
+      calle: order.address.calle,
+      localidad: order.address.localidad,
+      provincia: order.address.provincia,
+      postalCode: order.address.postalCode,
+    },
+  };
 
-    await prisma.coupon.update({
-      where: { id: coupon.id },
-      data: { usedCount: { increment: 1 } },
-    });
-  }
-
-  for (const item of cart.items) {
-    await prisma.product.update({
-      where: { id: item.productId },
-      data: {
-        stock: {
-          decrement: item.quantity,
-        },
-      },
-    });
-  }
-
-  // Vaciamos carrito
-  await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+  await sendEmail({
+    to: order.user.email,
+    subject: 'Punky Pet - Orden creada',
+    html:
+      data.paymentMethod === 'transferencia'
+        ? generateTransferEmailTemplate(orderForEmail)
+        : generateOrderEmailTemplate(orderForEmail),
+  });
 
   return order;
 };
 
-export const getUserOrders = async (userId: string) => {
-  return await prisma.order.findMany({
-    where: { userId },
-    include: {
-      items: { include: { product: true } },
-      address: true,
-      coupon: true,
-    },
-    orderBy: { createdAt: 'desc' },
+export const updateOrderStatus = async (
+  orderId: string,
+  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+) => {
+  return await prisma.order.update({
+    where: { id: orderId },
+    data: { status },
   });
 };

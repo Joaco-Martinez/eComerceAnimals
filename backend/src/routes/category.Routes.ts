@@ -15,7 +15,7 @@ const router = Router();
  * @swagger
  * /categories:
  *   post:
- *     summary: Crear una nueva categoría con imagen subida a Cloudinary
+ *     summary: Crear una nueva categoría con imagen y tipo de mascota
  *     tags: [Categories]
  *     requestBody:
  *       required: true
@@ -25,30 +25,28 @@ const router = Router();
  *             type: object
  *             required:
  *               - name
- *               - image
+ *               - petType
  *             properties:
  *               name:
  *                 type: string
  *                 example: Accesorios para perros
  *               description:
  *                 type: string
- *                 example: Productos para perros y gatos
+ *               petType:
+ *                 type: string
+ *                 enum: [dog, cat, both]
  *               image:
  *                 type: string
  *                 format: binary
- *                 description: Imagen de la categoría
  *     responses:
  *       201:
- *         description: Categoría creada exitosamente con URL de imagen en Cloudinary
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Category'
+ *         description: Categoría creada exitosamente
  *       400:
  *         description: Datos inválidos
  *       500:
- *         description: Error interno del servidor
+ *         description: Error del servidor
  */
+
 
 router.post("/", upload.single("image"), categoryController.createCategory);
 

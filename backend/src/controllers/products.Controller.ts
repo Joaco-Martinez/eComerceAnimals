@@ -1,25 +1,26 @@
 import { Request, Response } from 'express';
 import * as productService from '../services/product.Service';
-
 const validPetTypes = ['dog', 'cat', 'both'] as const;
+const validSortBy = ['relevance', 'priceAsc', 'priceDesc'] as const;
+import { prisma } from "../db/db";
 
-export const getAll = async (req: Request, res: Response) => {
+export const getAll = async (_req: Request, res: Response) => {
   const products = await productService.getFilteredProducts({});
   res.json(products);
 };
 
 export const getByPetType = async (req: Request, res: Response) => {
   const { petType } = req.params;
-  if (!validPetTypes.includes(petType as "dog" | "cat" | "both")) {
+  if (!validPetTypes.includes(petType as any)) {
     return res.status(400).json({ error: `petType inválido. Debe ser uno de: ${validPetTypes.join(', ')}` });
   }
-  const products = await productService.getFilteredProducts({ petType: petType as 'dog' | 'cat' | 'both' });
+  const products = await productService.getFilteredProducts({ petType: petType as typeof validPetTypes[number] });
   res.json(products);
 };
 
 export const getByCategory = async (req: Request, res: Response) => {
-  const categoryId = Number(req.params.id);
-  if (isNaN(categoryId)) {
+  const categoryId = req.params.id;
+  if (!categoryId) {
     return res.status(400).json({ error: 'categoryId inválido' });
   }
   const products = await productService.getFilteredProducts({ categoryId });
@@ -27,14 +28,22 @@ export const getByCategory = async (req: Request, res: Response) => {
 };
 
 export const getByPetAndCategory = async (req: Request, res: Response) => {
-  const { petType, categoryId } = req.query;
-  if (petType && !validPetTypes.includes(petType as "dog" | "cat" | "both")) {
+  const { petType, categoryId, sortBy } = req.query;
+
+  if (petType && !validPetTypes.includes(petType as any)) {
     return res.status(400).json({ error: `petType inválido. Debe ser uno de: ${validPetTypes.join(', ')}` });
   }
+
+  if (sortBy && !validSortBy.includes(sortBy as any)) {
+    return res.status(400).json({ error: `sortBy inválido. Debe ser uno de: ${validSortBy.join(', ')}` });
+  }
+
   const filters = {
-    petType: petType as 'dog' | 'cat' | 'both' | undefined,
-    categoryId: categoryId ? Number(categoryId) : undefined,
+    petType: petType as typeof validPetTypes[number] | undefined,
+    categoryId: categoryId ? String(categoryId) : undefined,
+    sortBy: sortBy as typeof validSortBy[number] | undefined,
   };
+
   const products = await productService.getFilteredProducts(filters);
   res.json(products);
 };
@@ -52,7 +61,7 @@ export const create = async (req: Request, res: Response) => {
       name, description, price, stock, weight, size, color, categoryId, sku, petType
     } = req.body;
 
-    if (!petType || !validPetTypes.includes(petType)) {
+    if (!petType || !validPetTypes.includes(petType as any)) {
       return res.status(400).json({ error: `petType debe ser uno de: ${validPetTypes.join(', ')}` });
     }
 
@@ -64,9 +73,9 @@ export const create = async (req: Request, res: Response) => {
       price: parseFloat(price),
       stock: parseInt(stock),
       weight: weight ? parseFloat(weight) : undefined,
-      size: size ? JSON.parse(size) : [], // <-- espera un string tipo '["S", "M"]'
-      color: color ? JSON.parse(color) : [], // <-- igual
-      categoryId: categoryId,
+      size: size ? JSON.parse(size) : [],
+      color: color ? JSON.parse(color) : [],
+      categoryId,
       sku,
       images: files || [],
       petType,
@@ -86,7 +95,7 @@ export const update = async (req: Request, res: Response) => {
       name, description, price, stock, weight, size, color, categoryId, sku, petType
     } = req.body;
 
-    if (petType && !validPetTypes.includes(petType)) {
+    if (petType && !validPetTypes.includes(petType as any)) {
       return res.status(400).json({ error: `petType debe ser uno de: ${validPetTypes.join(', ')}` });
     }
 
@@ -96,9 +105,9 @@ export const update = async (req: Request, res: Response) => {
       price: price ? parseFloat(price) : undefined,
       stock: stock ? parseInt(stock) : undefined,
       weight: weight ? parseFloat(weight) : undefined,
-      size: size ? JSON.parse(size) : undefined, // <-- aquí también
+      size: size ? JSON.parse(size) : undefined,
       color: color ? JSON.parse(color) : undefined,
-      categoryId: categoryId ? categoryId : undefined,
+      categoryId: categoryId || undefined,
       sku,
       petType,
     });
@@ -110,6 +119,34 @@ export const update = async (req: Request, res: Response) => {
   }
 };
 
+export const searchProducts = async (req: Request, res: Response) => {
+  const { q } = req.query;
+
+  console.log("Query recibida:", q);
+
+  // TEST MANUAL para ver si hay productos con "ajustable"
+  const test = await prisma.product.findMany({
+    where: {
+      OR: [
+        { name: { contains: "ajustable", mode: "insensitive" } },
+        { description: { contains: "ajustable", mode: "insensitive" } },
+      ],
+    },
+  });
+  console.log("Resultados test:", test);
+
+  if (typeof q !== "string" || q.trim() === "") {
+    return res.status(400).json({ message: "Query inválida" });
+  }
+
+  try {
+    const results = await productService.searchProductsService(q.trim());
+    return res.status(200).json({ content: results });
+  } catch (error) {
+    console.error("Error al buscar productos:", error);
+    return res.status(500).json({ message: "Error al buscar productos" });
+  }
+};
 export const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
   await productService.deleteProduct(id);

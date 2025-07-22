@@ -24,6 +24,9 @@ export const addToCart = async (
   );
 };
 
+export const cleanCart = async () => {
+  return await apiService.del(`/cart/clean`, true, false, false);
+}
 export const deleteItemFromCart = async (productId: string) => {
   return await apiService.del(`/cart/remove/${productId}`, true, false, true);
 };

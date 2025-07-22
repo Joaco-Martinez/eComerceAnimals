@@ -149,5 +149,28 @@ router.delete('/remove/:productId', authMiddleware, cartController.removeItem);
  */
 router.post("/merge", authMiddleware, cartController.mergeAnonCart);
 
+/**
+ * @swagger
+ * /cart/clean:
+ *   delete:
+ *     summary: Vaciar por completo el carrito del usuario
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Carrito vaciado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Carrito vaciado correctamente"
+ *       401:
+ *         description: No autorizado
+ */
+router.delete('/clean', authMiddleware, cartController.cleanCart);
 
 export default router;

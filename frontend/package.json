@@ -16,6 +16,7 @@
     "@mercadopago/sdk-react": "^1.0.3",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.10.0",
+    "clsx": "^2.1.1",
     "color-namer": "^1.4.0",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",

@@ -2,7 +2,10 @@
 
 import { useAuthContext } from '@/context/authContext';
 
-export default function TransferenciaGracias() {
+interface TransferenciaGraciasProps {
+  numeroOrder: string
+}
+export default function TransferenciaGracias({ numeroOrder }: TransferenciaGraciasProps) {
   const { user } = useAuthContext();
 
   return (
@@ -11,11 +14,11 @@ export default function TransferenciaGracias() {
         {user?.name ? `${user.name}, gracias por tu compra...` : 'Gracias por tu compra...'}
       </h2>
 
-      <p className="text-sm italic text-gray-500 mb-4">Orden #6485</p>
+      <p className="text-sm italic text-gray-500 mb-4">Orden {numeroOrder}</p>
 
       <div className="mb-6">
         <p className="font-semibold">Medio de pago: <span className="text-gray-800">Transferencia bancaria</span></p>
-        <p className="text-xs italic text-gray-500">(Recuerda enviar el comprobante)</p>
+        <p className="text-xs italic text-gray-500">(Tambien se te enviaron los datos a tu email registrado. Recuerda enviar el comprobante)</p>
       </div>
 
       <div className="text-sm mb-6 space-y-1"> 

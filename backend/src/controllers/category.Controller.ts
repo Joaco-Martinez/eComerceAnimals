@@ -1,23 +1,26 @@
-// src/controllers/category.controller.ts
 import { Request, Response } from "express";
 import * as CategoryService from "../services/category.Service";
 import cloudinary from "../utils/cloudinary";
-import * as fs from 'fs';
+import * as fs from "fs";
+
+const validPetTypes = ["dog", "cat", "both"] as const;
+
 export const createCategory = async (req: Request, res: Response) => {
-  const { name, description } = req.body;
+  const { name, description, petType } = req.body;
   const file = req.file;
+
+  if (!name || !petType || !validPetTypes.includes(petType)) {
+    return res.status(400).json({ error: "Nombre o petType inválido" });
+  }
 
   try {
     let imageUrl = undefined;
 
     if (file) {
-      // Subir imagen a Cloudinary
       const result = await cloudinary.uploader.upload(file.path, {
         folder: "categories",
       });
       imageUrl = result.secure_url;
-
-      // Borrar archivo temporal
       fs.unlinkSync(file.path);
     }
 
@@ -25,6 +28,7 @@ export const createCategory = async (req: Request, res: Response) => {
       name,
       description,
       image: imageUrl,
+      petType,
     });
 
     res.status(201).json(newCategory);
@@ -61,6 +65,11 @@ export const getCategoryById = async (req: Request, res: Response) => {
 export const updateCategory = async (req: Request, res: Response) => {
   const id = String(req.params.id);
   if (!id) return res.status(400).json({ error: "ID inválido" });
+
+  const { petType } = req.body;
+  if (petType && !validPetTypes.includes(petType)) {
+    return res.status(400).json({ error: "petType inválido" });
+  }
 
   try {
     const updatedCategory = await CategoryService.updateCategory(id, req.body);

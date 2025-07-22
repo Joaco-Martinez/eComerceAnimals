@@ -15,6 +15,7 @@ import { updateCartItem, deleteItemFromCart } from "@/service/cartService";
 import { useRouter } from "next/navigation";
 import {updateAnonCartItem, removeFromAnonCart} from "@/service/anonCartService";
 import { getCart } from "@/service/cartService";
+import { useCheckoutContext } from "@/context/checkoutContext";
 type CartItem = {
   id: string;
   productId: string;
@@ -56,12 +57,15 @@ interface Props {
 
 export default function CartDrawer({ isOpen, onClose }: Props) {
   const { isAuth } = useAuthContext();
+  const { cartWasCleared, setCartWasCleared } = useCheckoutContext();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { cartId  } = useAnonCart();
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState<string | null>(null);
     const router = useRouter();
-  useEffect(() => {
+  
+  
+    useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
 
@@ -136,11 +140,15 @@ export default function CartDrawer({ isOpen, onClose }: Props) {
         fetchUserCart();
     }
 
+     if (cartWasCleared) {
+    setCartItems([]); // Limpiamos visualmente el drawer
+    setCartWasCleared(false); // Reiniciamos el flag
+  }
 
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen, isAuth]);
+  }, [isOpen, isAuth, cartWasCleared, setCartWasCleared]);
 
 
 
