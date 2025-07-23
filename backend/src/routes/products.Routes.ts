@@ -150,10 +150,61 @@ router.get('/:id', productController.getById);
 
 /**
  * @swagger
+ * /products/images/{imageId}:
+ *   delete:
+ *     summary: Eliminar una imagen de un producto
+ *     description: Elimina una imagen por su ID y también la borra de Cloudinary si corresponde.
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: imageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la imagen a eliminar
+ *     responses:
+ *       200:
+ *         description: Imagen eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Imagen eliminada
+ *                 image:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     url:
+ *                       type: string
+ *                     productId:
+ *                       type: string
+ *       400:
+ *         description: Error al eliminar la imagen
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Imagen no encontrada
+ */
+router.delete('/images/:imageId', authMiddleware, isAdmin, productController.deleteProductImageController)
+
+
+/**
+ * @swagger
  * /products:
  *   post:
  *     summary: Crear producto
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -204,6 +255,8 @@ router.post('/',  authMiddleware, isAdmin, uploadProductImages, productControlle
  *   put:
  *     summary: Actualizar producto
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -211,6 +264,50 @@ router.post('/',  authMiddleware, isAdmin, uploadProductImages, productControlle
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: ID del producto a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: integer
+ *               weight:
+ *                 type: number
+ *               size:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               sku:
+ *                 type: string
+ *               categoryId:
+ *                 type: string
+ *                 format: uuid
+ *               petType:
+ *                 type: string
+ *                 enum: [dog, cat, both]
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       200:
+ *         description: Producto actualizado exitosamente
+ *       400:
+ *         description: Datos inválidos
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Producto no encontrado
  */
 router.put('/:id', authMiddleware, isAdmin, uploadProductImages, productController.update);
 
@@ -220,6 +317,8 @@ router.put('/:id', authMiddleware, isAdmin, uploadProductImages, productControll
  *   delete:
  *     summary: Eliminar producto
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -227,6 +326,13 @@ router.put('/:id', authMiddleware, isAdmin, uploadProductImages, productControll
  *         schema:
  *           type: string
  *           format: uuid
+ *     responses:
+ *       204:
+ *         description: Producto eliminado
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Producto no encontrado
  */
 router.delete('/:id', authMiddleware, isAdmin, productController.remove);
 

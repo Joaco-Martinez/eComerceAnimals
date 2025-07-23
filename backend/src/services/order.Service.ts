@@ -1,9 +1,11 @@
 import { prisma } from '../db/db';
 import { customAlphabet } from 'nanoid';
 import sendEmail from '../utils/sendEmail';
+import mjml2html from 'mjml';
 import {
   generateOrderEmailTemplate,
   generateTransferEmailTemplate,
+  generateLowStockAlertEmailTemplate,
 } from '../utils/emailTemplates';
 import { ShippingMethod } from '@prisma/client';
 
@@ -36,66 +38,95 @@ export const createOrder = async (
     .slice(0, 10)
     .replace(/-/g, '')}-${nanoid()}`;
 
-  const order = await prisma.order.create({
-    data: {
-      userId,
-      addressId: data.addressId,
-      shippingMethod: data.shippingMethod,
-      orderNumber,
-      totalAmount,
-      status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
-      items: {
-        create: data.cartItems.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          unitPrice: item.price,
-          color: item.color,
-          size: item.size,
-        })),
-      },
-      payment: {
-        create: {
-          method: data.paymentMethod,
-          status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
-          amount: totalAmount,
+  const lowStockAlerts: {
+    id: string;
+    name: string;
+    sku: string;
+    newStock: number;
+  }[] = [];
+
+  const order = await prisma.$transaction(async (tx) => {
+    for (const item of data.cartItems) {
+      const product = await tx.product.findUnique({
+        where: { id: item.productId },
+        select: { stock: true, name: true, sku: true, id: true },
+      });
+
+      if (!product) throw new Error(`Producto no encontrado: ${item.productId}`);
+      if (product.stock < item.quantity) {
+        throw new Error(`Stock insuficiente para ${product.name}`);
+      }
+
+      const updated = await tx.product.update({
+        where: { id: item.productId },
+        data: {
+          stock: { decrement: item.quantity },
         },
-      },
-    },
-    select: {
-      id: true,
-      orderNumber: true,
-      totalAmount: true,
-      shippingMethod: true,
-      status: true,
-      user: {
-        select: {
-          email: true,
-          name: true,
+        select: { stock: true },
+      });
+
+      if (updated.stock <= 3) {
+        lowStockAlerts.push({
+          id: product.id,
+          name: product.name,
+          sku: product.sku ?? 'SIN SKU',
+          newStock: updated.stock,
+        });
+      }
+    }
+
+    return await tx.order.create({
+      data: {
+        userId,
+        addressId: data.addressId,
+        shippingMethod: data.shippingMethod,
+        orderNumber,
+        totalAmount,
+        status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+        items: {
+          create: data.cartItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            color: item.color,
+            size: item.size,
+          })),
         },
-      },
-      address: {
-        select: {
-          calle: true,
-          localidad: true,
-          provincia: true,
-          postalCode: true,
-        },
-      },
-      items: {
-        select: {
-          productId: true,
-          quantity: true,
-          unitPrice: true,
-          color: true,
-          size: true,
-          product: {
-            select: {
-              name: true,
-            },
+        payment: {
+          create: {
+            method: data.paymentMethod,
+            status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+            amount: totalAmount,
           },
         },
       },
-    },
+      select: {
+        id: true,
+        orderNumber: true,
+        totalAmount: true,
+        shippingMethod: true,
+        status: true,
+        user: { select: { email: true, name: true } },
+        address: {
+          select: {
+            calle: true,
+            localidad: true,
+            provincia: true,
+            postalCode: true,
+          },
+        },
+        items: {
+          select: {
+            productId: true,
+            quantity: true,
+            unitPrice: true,
+            color: true,
+            size: true,
+            product: { select: { name: true } },
+          },
+        },
+      },
+    });
   });
 
   const orderForEmail = {
@@ -112,9 +143,7 @@ export const createOrder = async (
       unitPrice: item.unitPrice,
       color: item.color,
       size: item.size,
-      product: {
-        name: item.product.name,
-      },
+      product: { name: item.product.name },
     })),
     address: {
       calle: order.address.calle,
@@ -133,8 +162,21 @@ export const createOrder = async (
         : generateOrderEmailTemplate(orderForEmail),
   });
 
+  await Promise.all(
+    lowStockAlerts.map((product) =>
+      sendEmail({
+        to: 'mascotiendavgbpets@gmail.com',
+        subject: `⚠️ Stock bajo: ${product.name}`,
+        html: mjml2html(
+          generateLowStockAlertEmailTemplate(product.name, product.sku, product.id, product.newStock)
+        ).html,
+      })
+    )
+  );
+
   return order;
 };
+
 
 export const getOrdersByUser = async (userId: string) => {
   const orders = await prisma.order.findMany({
@@ -150,6 +192,7 @@ export const getOrdersByUser = async (userId: string) => {
   });
 
   return orders;
+
 };
 
 export const updateOrderStatus = async (

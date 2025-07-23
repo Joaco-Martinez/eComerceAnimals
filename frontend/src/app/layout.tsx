@@ -7,6 +7,7 @@ import Navbar from "../components/navbar/Navbar";
 import { AuthProvider } from '../context/authContext';
 import { AnonCartProvider } from '../context/anonCartContext';
 import { CheckoutProvider } from '@/context/checkoutContext';
+import CookieBanner from '@/components/CookieBanner/CookieBanner'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         {/* <WhatsappLink /> */}
+        <CookieBanner />
         </CheckoutProvider>
         </AnonCartProvider>
         </AuthProvider>

@@ -232,3 +232,54 @@ export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => 
   return mjml2html(mjml).html;
 };
 
+export const generateLowStockAlertEmailTemplate = (
+  name: string,
+  sku: string,
+  id: string,
+  stock: number
+) => {
+  return `
+<mjml>
+  <mj-head>
+    <mj-title>Alerta de Stock Bajo</mj-title>
+    <mj-preview>Stock bajo en producto ${name}</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, Arial, sans-serif" />
+      <mj-text font-size="14px" line-height="1.5" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f8f8f8">
+    <mj-section background-color="#ffffff" padding="20px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="bold" color="#2C4B4D">
+          ⚠️ Alerta de Stock Bajo
+        </mj-text>
+
+        <mj-text>
+          El producto <strong>${name}</strong> tiene un stock bajo.
+        </mj-text>
+
+        <mj-text>
+          <strong>SKU:</strong> ${sku}<br/>
+          <strong>ID:</strong> ${id}<br/>
+          <strong>Stock actual:</strong> ${stock} unidad${stock === 1 ? '' : 'es'}
+        </mj-text>
+
+        <mj-text color="#a94442" font-weight="bold">
+          Por favor, reponer el stock lo antes posible.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding-top="0">
+      <mj-column>
+        <mj-divider border-color="#C4BFAB" />
+        <mj-text font-size="12px" color="#999999">
+          Este mensaje fue generado automáticamente por el sistema de Punky Pet.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+  `;
+};

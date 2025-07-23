@@ -105,8 +105,8 @@ export const update = async (req: Request, res: Response) => {
       price: price ? parseFloat(price) : undefined,
       stock: stock ? parseInt(stock) : undefined,
       weight: weight ? parseFloat(weight) : undefined,
-      size: size ? JSON.parse(size) : undefined,
-      color: color ? JSON.parse(color) : undefined,
+      size: typeof size === 'string' ? size.split(',') : size,
+      color: typeof color === 'string' ? color.split(',') : color,
       categoryId: categoryId || undefined,
       sku,
       petType,
@@ -118,6 +118,17 @@ export const update = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error interno actualizando producto' });
   }
 };
+
+export const deleteProductImageController = async (req: Request, res: Response) => {
+  const { imageId } = req.params
+
+  try {
+    const deleted = await productService.deleteProductImage(imageId)
+    return res.status(200).json({ message: 'Imagen eliminada', image: deleted })
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message || 'Error al eliminar imagen' })
+  }
+}
 
 export const searchProducts = async (req: Request, res: Response) => {
   const { q } = req.query;

@@ -1,5 +1,39 @@
 import api from "./apiService";
 
+export type Product = {
+  id: string
+  name: string
+  description: string
+  price: number
+  stock: number
+  weight: number
+  size: string[]
+  color: string[]
+  sku: string
+  petType: 'dog' | 'cat' | 'both'
+  category: {
+    id: string
+    name: string
+  }
+  images: {
+    id: string
+    url: string
+  }[]
+  isActive?: boolean;
+}
+export type UpdateProductDto = {
+  name?: string
+  description?: string
+  price?: number
+  stock?: number
+  weight?: number
+  size?: string[]
+  color?: string[]
+  sku?: string
+  petType?: 'dog' | 'cat' | 'both'
+  categoryId?: string
+}
+
 export const getAllProducts = async () => await api.get("/products");
 
 export const getProductById = async (id: string) => {
@@ -20,6 +54,10 @@ export const getProductsByCategoryId = async (categoryId: string) => {
   if (!categoryId) throw new Error("Se requiere el ID de la categoría");
   return await api.get(`/products/category/${categoryId}`);
 };
+
+export const deleteProductImage = async (imageId: string) => {
+  return await api.del(`/products/images/${imageId}`)
+}
 
 export const getFilteredProducts = async (filters: {
   petType?: string;
@@ -45,4 +83,11 @@ export const postProduct = async (data: FormData) => {
       "Content-Type": "multipart/form-data",
     },
   })
+}
+export const updateProduct = async (
+  id: string,
+  data: UpdateProductDto
+): Promise<Product> => {
+  const res = await api.put(`/products/${id}`, data)
+  return res
 }
