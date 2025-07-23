@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getAllCategories } from "../../service/categorieService";
 import { useEffect, useState } from "react";
 import Loader from "../Loader/Loader";
+import { useRouter } from "next/navigation";
 interface categories {
   id: string;
   name: string;
@@ -29,7 +30,7 @@ export const SliderCategories = () => {
   const [categories, setCategories] = useState<categories[]>([]);
   const [groupSize, setGroupSize] = useState(3); 
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   useEffect(() => {
     const handleResize = () => {
       if (typeof window !== "undefined") {
@@ -92,29 +93,30 @@ export const SliderCategories = () => {
         }}
       >
         {group.map((category) => (
-          <div
-            key={category.id}
-            className="flex flex-col items-center justify-center cursor-pointer select-none px-2"
-            style={{
-              minWidth: 74,
-              flexShrink: 1, // que se achique si falta espacio
-              maxWidth: 96,
-            }}
-          >
-            <div className="flex items-center justify-center w-16 h-16 rounded-full overflow-hidden border border-gray-300 shadow-md">
-              <Image
-                src={category.image ?? "/placeholder.jpg"}
-                alt={category.name}
-                width={64}
-                height={64}
-                className="object-cover w-full h-full"
-              />
-            </div>
-            <h5 className="text-sm font-medium text-[#918283] text-center mt-2">
-              {category.name}
-            </h5>
-          </div>
-        ))}
+  <div
+    key={category.id}
+    onClick={() => router.push(`/productos?categoryId=${category.id}`)}
+    className="flex flex-col items-center justify-center cursor-pointer select-none px-2 transition-transform hover:scale-105"
+    style={{
+      minWidth: 74,
+      flexShrink: 1,
+      maxWidth: 96,
+    }}
+  >
+    <div className="flex items-center justify-center w-16 h-16 rounded-full overflow-hidden border border-gray-300 shadow-md">
+      <Image
+        src={category.image ?? "/placeholder.jpg"}
+        alt={category.name}
+        width={64}
+        height={64}
+        className="object-cover w-full h-full"
+      />
+    </div>
+    <h5 className="text-sm font-medium text-[#918283] text-center mt-2">
+      {category.name}
+    </h5>
+  </div>
+))}
       </div>
     </SwiperSlide>
   ))}

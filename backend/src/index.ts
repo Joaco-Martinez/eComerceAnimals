@@ -51,6 +51,7 @@ app.use('/anon-cart', anonCartRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)
 app.use("/categories", categoryRoutes);
 app.use("/stock-notifications", stockNotificationRoutes);
+
 app.use('/addresses', addressRoutes);
 const PORT = parseInt(process.env.PORT || '3000', 10);
 app.listen(PORT, '0.0.0.0', () => {

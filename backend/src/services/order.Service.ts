@@ -136,6 +136,22 @@ export const createOrder = async (
   return order;
 };
 
+export const getOrdersByUser = async (userId: string) => {
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      orderNumber: true,
+      totalAmount: true,
+      status: true,
+      createdAt: true,
+    },
+  });
+
+  return orders;
+};
+
 export const updateOrderStatus = async (
   orderId: string,
   status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled'

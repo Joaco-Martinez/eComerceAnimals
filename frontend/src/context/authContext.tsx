@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchUser = async () => {
       try {
         const res = await getCurrentUser();
+        console.log(res)
         if (res && typeof res === "object" && "id" in res) {
               setUser(res as User);
               setIsAuth(true);

@@ -1,8 +1,10 @@
 // src/routes/category.routes.ts
 import { Router } from "express";
 import * as categoryController from "../controllers/category.Controller";
-import upload from "../middlewares/upload";
+import uploadProductImages  from "../middlewares/upload";
 const router = Router();
+import { isAdmin } from '../middlewares/isAdmin'
+import { authMiddleware } from '../middlewares/authMiddlewares';
 
 /**
  * @swagger
@@ -48,7 +50,7 @@ const router = Router();
  */
 
 
-router.post("/", upload.single("image"), categoryController.createCategory);
+router.post("/",   authMiddleware, isAdmin, uploadProductImages, categoryController.createCategory);
 
 /**
  * @swagger
@@ -140,7 +142,7 @@ router.get("/:id", categoryController.getCategoryById);
  *       500:
  *         description: Error interno del servidor
  */
-router.put("/:id", categoryController.updateCategory);
+router.put("/:id", authMiddleware, categoryController.updateCategory);
 
 /**
  * @swagger
@@ -163,7 +165,7 @@ router.put("/:id", categoryController.updateCategory);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete("/:id", categoryController.deleteCategory);
+router.delete("/:id", authMiddleware, isAdmin, categoryController.deleteCategory);
 
 
 

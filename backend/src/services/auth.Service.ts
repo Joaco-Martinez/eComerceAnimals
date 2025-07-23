@@ -25,12 +25,12 @@ export const registerUser = async (name: string, email: string, password: string
     include: { cart: true },
   });
 
-  // ✉️ Enviamos email con el código
+  
   await sendNotificationEmail(
     email,
     'Verificá tu correo',
     `Tu código de verificación es: ${code}`,
-    `<p>Hola ${name},</p><p>Tu código de verificación es:</p><h2>${code}</h2><p>Este código vence en 15 minutos.</p>`
+    `<p>Hola ${name},</p><p>Tu código de verificación es:</p><h2>${code}</h2><p>Este código vence en 24 horas, de lo contrario tu cuenta sera eliminada</p>`
   );
 
   const token = generateToken(user.id);

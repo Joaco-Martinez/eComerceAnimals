@@ -1,4 +1,5 @@
 import mjml2html from 'mjml';
+
 export interface OrderItem {
   productId: string;
   quantity: number;
@@ -31,6 +32,7 @@ export interface OrderEmailTemplateData {
   shippingMethod: 'domicilio' | 'sucursal';
 }
 
+// Template para orden general (pago con tarjeta, etc.)
 export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
   const itemsRows = order.items
     .map(
@@ -110,7 +112,7 @@ export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
   return mjml2html(mjml).html;
 };
 
-
+// Template para orden con transferencia
 export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => {
   const itemsRows = order.items
     .map(item => `
@@ -152,24 +154,12 @@ export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => 
       <mj-section background-color="#ffffff" padding="24px" border-radius="8px">
         <mj-column>
           <mj-text font-size="16px" font-weight="bold">🏦 Datos para la transferencia</mj-text>
-          <mj-text padding-bottom="8px">
-            Titular: <strong>Joaquín Martinez</strong>
-          </mj-text>
-          <mj-text padding-bottom="8px">
-            CUIL: <strong>20-46587629-9</strong>
-          </mj-text>
-          <mj-text padding-bottom="8px">
-            Cuenta: <strong>CA $ 37617210354446</strong>
-          </mj-text>
-          <mj-text padding-bottom="8px">
-            Alias: <strong>Joaco2006.m</strong>
-          </mj-text>
-          <mj-text padding-bottom="8px">
-            CBU: <strong>0110721230072103544465</strong>
-          </mj-text>
-          <mj-text padding-bottom="8px">
-            Monto a transferir: <strong>$${order.totalAmount.toFixed(2)}</strong>
-          </mj-text>
+          <mj-text padding-bottom="8px">Titular: <strong>Joaquín Martinez</strong></mj-text>
+          <mj-text padding-bottom="8px">CUIL: <strong>20-46587629-9</strong></mj-text>
+          <mj-text padding-bottom="8px">Cuenta: <strong>CA $ 37617210354446</strong></mj-text>
+          <mj-text padding-bottom="8px">Alias: <strong>Joaco2006.m</strong></mj-text>
+          <mj-text padding-bottom="8px">CBU: <strong>0110721230072103544465</strong></mj-text>
+          <mj-text padding-bottom="8px">Monto a transferir: <strong>$${order.totalAmount.toFixed(2)}</strong></mj-text>
 
           <mj-divider border-color="#e0e0e0" padding="16px 0" />
 
@@ -189,25 +179,56 @@ export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => 
           <mj-divider border-color="#e0e0e0" padding="16px 0" />
 
           <mj-text font-size="16px" font-weight="bold">🚚 Método de envío</mj-text>
-          <mj-text>${direccion}</mj-text>
+<mj-text padding-bottom="12px">${direccion}</mj-text>
 
-          <mj-text padding-top="16px" css-class="subtitle">
-            Una vez confirmado el pago recibirás un correo de confirmación.<br/>
-            Luego te avisaremos cuando el pedido sea despachado.
-          </mj-text>
-        </mj-column>
-      </mj-section>
+<mj-text font-size="16px" font-weight="bold" padding-top="12px">📎 Instrucciones</mj-text>
+<mj-text css-class="subtitle" padding-bottom="16px">
+  Una vez realizado el pago, enviá el comprobante por alguno de los medios a continuación.
+</mj-text>
 
-      <mj-section padding="16px 0">
-        <mj-column>
-          <mj-text align="center" font-size="13px" color="#999">
-            © 2025 Punky Pet. Todos los derechos reservados.
-          </mj-text>
-        </mj-column>
-      </mj-section>
+<mj-button
+  href="https://api.whatsapp.com/send?phone=543546431231&text=Hola%2C%20te%20envio%20el%20comprobante%20de%20la%20transferencia%20de%20la%20orden%20%23${order.orderNumber}"
+  background-color="#25D366"
+  color="#fff"
+  font-size="13px"
+  inner-padding="10px 16px"
+  border-radius="6px"
+  width="100%"
+  align="center"
+>
+  Enviar por WhatsApp
+</mj-button>
+
+<mj-button
+  href="mailto:mascotiendavgbpets@gmail.com?subject=Comprobante%20de%20transferencia%20-%20Orden%20${order.orderNumber}&body=Hola,%20adjunto%20el%20comprobante%20de%20la%20orden%20${order.orderNumber}."
+  background-color="#D44638"
+  color="#fff"
+  font-size="13px"
+  inner-padding="10px 16px"
+  border-radius="6px"
+  width="100%"
+  align="center"
+  padding-top="8px"
+>
+  Enviar por Gmail
+</mj-button>
+
+<mj-divider border-color="#e0e0e0" padding="16px 0" />
+
+<mj-text css-class="subtitle" padding-bottom="8px">
+  <strong>Importante:</strong><br/>
+  El pago deberá realizarse dentro de las 24 horas desde la compra.<br/>
+  De lo contrario, la orden será cancelada automáticamente.
+</mj-text>
+
+<mj-text css-class="subtitle">
+  Cuando confirmemos tu pago, te enviaremos un email de confirmación.<br/>
+  Luego recibirás otro correo cuando el pedido sea despachado.
+</mj-text>
     </mj-body>
   </mjml>
   `;
 
   return mjml2html(mjml).html;
 };
+

@@ -14,8 +14,10 @@ import {
   getFilteredProducts,
   getAllCategories,
   searchProducts,
+  getProductsByCategoryId,
 } from "@/service/productService";
 
+// Tipos
 interface ProductImage {
   id: string;
   url: string;
@@ -45,23 +47,35 @@ interface Product {
   category: Category;
 }
 
+// Función para extraer filtros desde URL
+const buildFiltersFromSearchParams = (searchParams: URLSearchParams) => {
+  const petTypeParam = searchParams.get("petType");
+  const categoryIdParam = searchParams.get("categoryId");
+
+  return {
+    ...(petTypeParam ? { petType: petTypeParam } : {}),
+    ...(categoryIdParam ? { categoryId: categoryIdParam } : {}),
+  };
+};
+
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [filters, setFilters] = useState<{ petType?: string; categoryId?: string }>({});
+  const [manualFilters, setManualFilters] = useState<{ petType?: string; categoryId?: string }>({});
   const [currentSort, setCurrentSort] = useState<"relevance" | "priceAsc" | "priceDesc">("relevance");
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
   const searchParams = useSearchParams();
   const q = searchParams.get("q");
   const router = useRouter();
   const PRODUCTS_PER_PAGE = 32;
 
   const paginatedProducts = products.slice(
-  (currentPage - 1) * PRODUCTS_PER_PAGE,
-  currentPage * PRODUCTS_PER_PAGE
+    (currentPage - 1) * PRODUCTS_PER_PAGE,
+    currentPage * PRODUCTS_PER_PAGE
   );
 
   const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
@@ -69,24 +83,23 @@ const ProductsPage = () => {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleFilterChange = useCallback((newFilters: { petType?: string; categoryId?: string }) => {
-    // Limpia la búsqueda global (elimina ?q=...)
-    router.replace("/productos");
-    setFilters(newFilters);
+    setManualFilters(newFilters); // guardamos filtros aplicados
+    router.replace("/productos"); // limpiamos la URL
   }, [router]);
 
-  // Buscar por query param (desde barra de búsqueda global)
+  // Buscar por barra de búsqueda
   useEffect(() => {
     const buscarDesdeURL = async () => {
       if (!q) return;
@@ -106,26 +119,41 @@ const ProductsPage = () => {
     buscarDesdeURL();
   }, [q]);
 
-    useEffect(() => {
-  setCurrentPage(1);
-}, [products]);
-
-  // Obtener productos con filtros si no hay búsqueda por query param
+  // Resetear página al cambiar productos
   useEffect(() => {
-    if (q) return; // si hay búsqueda global, evitamos esta lógica
+    setCurrentPage(1);
+  }, [products]);
 
-    const fetchFiltered = async () => {
+  // Obtener productos con filtros
+  useEffect(() => {
+    if (q) return;
+
+    const fetchProducts = async () => {
       setLoading(true);
       try {
+        const derivedFilters =
+          Object.keys(manualFilters).length > 0
+            ? manualFilters
+            : buildFiltersFromSearchParams(searchParams);
+
         const params = {
-          ...filters,
+          ...derivedFilters,
           sortBy: currentSort,
         };
 
-        const res =
-          filters.petType || filters.categoryId || currentSort !== "relevance"
-            ? await getFilteredProducts(params)
-            : await getAllProducts();
+        let res;
+
+        if (derivedFilters.categoryId && !derivedFilters.petType) {
+          res = await getProductsByCategoryId(derivedFilters.categoryId);
+        } else if (
+          derivedFilters.petType ||
+          derivedFilters.categoryId ||
+          currentSort !== "relevance"
+        ) {
+          res = await getFilteredProducts(params);
+        } else {
+          res = await getAllProducts();
+        }
 
         setProducts(res);
       } catch (err) {
@@ -136,10 +164,10 @@ const ProductsPage = () => {
       }
     };
 
-    fetchFiltered();
-  }, [filters, currentSort, q]);
+    fetchProducts();
+  }, [searchParams, manualFilters, currentSort, q]);
 
-  // Cargar categorías al inicio
+  // Cargar categorías
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -162,32 +190,32 @@ const ProductsPage = () => {
       </div>
 
       {products.length === 0 ? (
-  <div className="flex justify-center items-center h-[60vh] text-gray-500">
-    No se encontraron productos.
-  </div>
-) : (
-  <div className="pb-12 pt-2">
-    <Pagination
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onPrev={handlePrevPage}
-      onNext={handleNextPage}
-    />
-  
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-3 py-6 max-w-[1280px] mx-auto">
-      {paginatedProducts.map((product) => (
-        <ProductCard key={product.id} {...product} />
-      ))}
-    </div>
+        <div className="flex justify-center items-center h-[60vh] text-gray-500">
+          No se encontraron productos.
+        </div>
+      ) : (
+        <div className="pb-12 pt-2">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPrev={handlePrevPage}
+            onNext={handleNextPage}
+          />
 
-    <Pagination
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onPrev={handlePrevPage}
-      onNext={handleNextPage}
-    />
-  </div>
-)}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-3 py-6 max-w-[1280px] mx-auto">
+            {paginatedProducts.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPrev={handlePrevPage}
+            onNext={handleNextPage}
+          />
+        </div>
+      )}
 
       <MobileBottomBar
         onFilterClick={() => setShowFilters(true)}

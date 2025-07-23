@@ -15,6 +15,12 @@ export const getProductByPetType = async (PetType: string) => {
 export const searchProducts = async (query: string) => {
   return await api.get(`/products/search?q=${encodeURIComponent(query)}`);
 };
+
+export const getProductsByCategoryId = async (categoryId: string) => {
+  if (!categoryId) throw new Error("Se requiere el ID de la categoría");
+  return await api.get(`/products/category/${categoryId}`);
+};
+
 export const getFilteredProducts = async (filters: {
   petType?: string;
   categoryId?: string;
@@ -30,3 +36,13 @@ export const getFilteredProducts = async (filters: {
 };
 
 export const getAllCategories = () => api.get("/categories");
+
+export const deleteProduct = async (id: string) => await api.del(`/products/${id}`);
+
+export const postProduct = async (data: FormData) => {
+  return await api.post("/products", data, true, true, true, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+}

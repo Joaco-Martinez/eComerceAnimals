@@ -8,7 +8,8 @@ import toast from "react-hot-toast";
 import { useAnonCart } from "@/context/anonCartContext";
 import {addToCart} from "@/service/cartService";
 import { useAuthContext } from "@/context/authContext";
-
+import { useRouter } from "next/navigation";
+import NotifyStockModal from "../NotifyStockModal/NotifyStockModal";
 interface ProductImage {
   id: string;
   url: string;
@@ -48,12 +49,13 @@ interface Props {
 const ProductDetail = ({ product }: Props) => {
   const [selectedColor, setSelectedColor] = useState(product.color[0]);
   const [selectedSize, setSelectedSize] = useState(product.size[0]);
+  const router = useRouter();
   const [selectedVariant, setSelectedVariant] = useState({
   color: product.color[0],
   size: product.size[0],
 });
+  const [showNotifyStockModal, setShowNotifyStockModal] = useState(false);
   const { isAuth } = useAuthContext();
-  console.log("isAuth:", isAuth);
   const { addItem } = useAnonCart();
   const [currentImage, setCurrentImage] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
@@ -126,12 +128,19 @@ const ProductDetail = ({ product }: Props) => {
 };
 
   return (
-    <div className="max-w-[370px] mx-auto bg-white rounded-t-3xl   overflow-hidden shadow-md">
+    <div className="max-w-[370px] mx-auto bg-white rounded-t-3xl shadow-md overflow-y-auto">
       {/* CABECERA */}
+      <NotifyStockModal 
+      productId={product.id}
+      productName={product.name} isOpen={showNotifyStockModal} onClose={() => setShowNotifyStockModal(false)} />
+      
       <div className="bg-gradient-to-t from-[#d2d2d2] via-white to-[#d2d2d2] relative">
-        <div className="px-4 py-2 text-sm text-white/90">
-          ← {product.category?.name || "Accesorios"}
-        </div>
+        <button
+      onClick={() => router.back()}
+      className="px-4 py-2 text-sm text-[#000000] hover:underline"
+    >
+      ← Volver
+    </button>
         <div className="w-full -mb-4 z-10 relative flex justify-center  from-[#d2d2d2] to-white items-center">
           <Swiper
             onSlideChange={(swiper) => setCurrentImage(swiper.activeIndex)}
@@ -235,35 +244,46 @@ const ProductDetail = ({ product }: Props) => {
           </div>
         </div>
 
-        <div className="text-sm text-[#C4BFAB] mb-4 leading-relaxed px-4">
-          <p className="font-semibold mb-1">Descripción</p>
-          <p>{product.description}</p>
-        </div>
+        <div className="text-sm text-[#C4BFAB] mb-4 leading-relaxed px-4 break-words">
+  <p className="font-semibold mb-1">Descripción</p>
+  <p className="whitespace-pre-line">{product.description}</p>
+</div>
           
           <div className="flex justify-between items-center align-center  pt-10">
         <div
           className="flex items-center mb-4 cursor-pointer"
           onClick={() => setShowDetails(!showDetails)}
           >
-          <div className="text-[#918283] text-xl px-4">
+          <div className="text-[#ffff] text-xl px-4">
             {showDetails ? (
-              <ChevronDown className="w-7 h-7 text-[#918283]" />
+              <ChevronDown className="w-7 h-7 " />
             ) : (
-              <ChevronRight className="w-7 h-7 text-[#918283]"  />
+              <ChevronRight className="w-7 h-7 "  />
             )}
           </div>
         </div>
 
         <div className="flex justify-end">
-          <button 
+          {product.stock > 0 && <button 
           onClick={handleAddToCart}
           className="bg-[#918283] text-white py-[14px] px-6 rounded-l-[999px] rounded-r-none font-semibold text-sm rounded-b-none">
             + AGREGAR AL CARRITO
-          </button>
+          </button>}
+          {product.stock === 0 && (
+            <button
+              onClick={() => setShowNotifyStockModal(true)} // asumiendo que usás un modal como el que hicimos antes
+              className="bg-[#918283] text-white py-[14px] px-6 rounded-l-[999px] rounded-r-none font-semibold text-sm rounded-b-none"
+            >
+              <div className="text-sm font-bold leading-tight">SIN STOCK</div>
+              <div className="text-xs font-normal text-white/90 mt-1">
+                Avisarme cuando haya stock
+              </div>
+            </button>
+          )}
         </div>
             </div>
 
-        {showDetails && (
+        {/* {showDetails && (
           <div className="self-start flex flex-col items-start mt-6 text-xs text-[#918283]">
             <div className="flex items-start">
               <div className="w-8 h-8 mb-1 flex items-center justify-start">
@@ -284,7 +304,7 @@ const ProductDetail = ({ product }: Props) => {
             </div>
               
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

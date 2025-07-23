@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import { useAuthContext } from '../../context/authContext';
 import {mergeAnonCart} from '../../service/userService';
 import ForgotPasswordModal from '../ForgotPassswordModal/ForgotPasswordModal';
+import { useRouter } from 'next/navigation';
 import ResetPasswordModal from '../ResetPasswordModal/ResetPasswordModal';
 const schema = yup.object().shape({
   email: yup.string().email('Email inválido').required('El email es obligatorio'),
@@ -24,10 +25,11 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
+  const router = useRouter();
   const { SaveUserData } = useAuthContext();
-const [showForgotModal, setShowForgotModal] = useState(false);
-const [showResetModal, setShowResetModal] = useState(false);
-const [emailForReset, setEmailForReset] = useState('');
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [emailForReset, setEmailForReset] = useState('');
   const {
     register,
     handleSubmit,
@@ -43,8 +45,11 @@ const [emailForReset, setEmailForReset] = useState('');
       password: data.password,
     });
 
-    
     const user = await getCurrentUser(); 
+    
+    if (!user) {
+      return
+    }
 
     SaveUserData({ user });
     toast.success("Inicio de sesión exitoso");
@@ -54,11 +59,15 @@ const [emailForReset, setEmailForReset] = useState('');
       mergeAnonCart(anoncartId);
     }
 
-     onLoginSuccess?.();
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    } else {
+      router.push('/');
+    }
   } catch (error: any) {
     toast.error(
       error?.message
-        ? `Error al iniciar sesión, ${error.message}`
+        ? `Error al iniciar sesión: ${error.message}`
         : "Error al iniciar sesión"
     );
   }

@@ -34,16 +34,14 @@ export const getFilteredProducts = async (filters: {
   const where: any = {};
 
   if (petType === "dog" || petType === "cat") {
-    where.petType = { in: [petType, "both"] };
-  } else if (petType === "both") {
-    where.petType = "both";
-  }
+  where.petType = { in: [petType, "both"] };
+}
 
   if (categoryId) {
     where.categoryId = categoryId;
   }
 
-  // 👇 usá "as const" para que TS lo infiera como "asc" | "desc"
+  
   const orderBy =
     sortBy === "priceAsc"
       ? { price: "asc" as const }

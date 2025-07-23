@@ -4,6 +4,9 @@ export interface OrderItem {
   id: string;
   productId: string;
   quantity: number;
+  product: {
+    name: string;
+  }
   unitPrice: number;
   color: string;
   size: string;
@@ -51,6 +54,9 @@ export interface Order {
 export interface CartItemInput {
   productId: string;
   quantity: number;
+  product?: {
+    name: string;
+  }
   price: number;
   color: string;
   size: string;
@@ -68,4 +74,9 @@ export const crearOrder = async (
 ): Promise<Order> => {
   const response = await apiService.post("/orders", data, true, false, false);
   return response as Order;
+};
+
+export const getOrdersByUserController = async (): Promise<Order[]> => {
+  const response = await apiService.get("/orders/user", true, false, false);
+  return response as Order[];
 };

@@ -35,12 +35,9 @@ const ProductCard: FC<ProductCardProps> = ({
   price,
   images,
   id,
+  stock
 }) => {
   const [isSmallDevice, setIsSmallDevice] = useState(false);
-
-  
-
-
 
 
 
@@ -66,6 +63,19 @@ useEffect(() => {
           {/* Header con ícono de favorito */}
                 <Link href={`/productos/${id}`}>
           <div className="relative bg-gray-50 px-2 sm:px-4 pt-2 sm:pt-4 pb-1 sm:pb-2">
+            {/* {stock < 4 && stock > 0 && (
+  <div className="absolute top-2 left-1/4 -translate-x-1/2 rotate-[-45deg] bg-[#ffd45c] text-white text-[10px] sm:text-xs font-semibold shadow-md z-10 text-center w-[140px] sm:w-[160px] py-1">
+    POCO STOCK
+    <span className="text-[#ffd45c] ">...........</span>
+  </div>
+)} */}
+
+{stock === 0 && (
+  <div className="absolute top-2 left-1/4 -translate-x-1/2 rotate-[-45deg] bg-[#ff905c] text-white text-[10px] sm:text-xs font-semibold shadow-md z-10 text-center w-[140px] sm:w-[160px] py-1">
+    SIN STOCK
+    <span className="text-[#ff905c] ">...........</span>
+  </div>
+)}
             <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
               <div className="flex items-center justify-center">
                 <Image

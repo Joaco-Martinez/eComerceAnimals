@@ -8,6 +8,7 @@ export type NotificationType = "order" | "promo" | "payment" | "system";
 
 // Address
 export type Address = {
+  id?: string;
   postalCode: string;
   nombre: string;
   apellido: string;

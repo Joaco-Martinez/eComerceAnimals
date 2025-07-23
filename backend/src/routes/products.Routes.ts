@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import * as productController from '../controllers/products.Controller';
-import upload from '../middlewares/upload';
-
+import uploadProductImages from '../middlewares/upload';
+import { isAdmin } from '../middlewares/isAdmin'
+import { authMiddleware } from '../middlewares/authMiddlewares';
 const router = Router();
 
 /**
@@ -195,7 +196,7 @@ router.get('/:id', productController.getById);
  *                   type: string
  *                   format: binary
  */
-router.post('/', upload.array('images'), productController.create);
+router.post('/',  authMiddleware, isAdmin, uploadProductImages, productController.create);
 
 /**
  * @swagger
@@ -211,7 +212,7 @@ router.post('/', upload.array('images'), productController.create);
  *           type: string
  *           format: uuid
  */
-router.put('/:id', upload.array('images'), productController.update);
+router.put('/:id', authMiddleware, isAdmin, uploadProductImages, productController.update);
 
 /**
  * @swagger
@@ -227,6 +228,6 @@ router.put('/:id', upload.array('images'), productController.update);
  *           type: string
  *           format: uuid
  */
-router.delete('/:id', productController.remove);
+router.delete('/:id', authMiddleware, isAdmin, productController.remove);
 
 export default router;

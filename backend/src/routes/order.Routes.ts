@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { createOrderController, updateOrderStatusController } from '../controllers/order.Controller';
+import { createOrderController, updateOrderStatusController, getOrdersByUserController } from '../controllers/order.Controller';
 import { authMiddleware } from '../middlewares/authMiddlewares';
+
 
 const router = Router();
 
@@ -37,6 +38,22 @@ const router = Router();
  */
 router.post('/', authMiddleware, createOrderController);
 
+
+/**
+ * @swagger
+ * /orders/user:
+ *   get:
+ *     summary: Obtener pedidos del usuario autenticado
+ *     tags: [Orders]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de órdenes del usuario
+ *       401:
+ *         description: No autorizado
+ */
+router.get('/user', authMiddleware, getOrdersByUserController);
 /**
  * @swagger
  * /orders/{orderId}/status:

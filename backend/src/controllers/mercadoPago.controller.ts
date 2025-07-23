@@ -11,6 +11,7 @@ export const mercadoPagoController = {
 
     try {
       const initPoint = await mercadoPagoService.createPreference(items, metadata);
+      
       res.json({ init_point: initPoint });
     } catch (error: any) {
       res.status(500).json({ error: error.message || "Error al crear preferencia" });

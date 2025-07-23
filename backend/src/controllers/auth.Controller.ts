@@ -55,7 +55,7 @@ export const login = async (req: Request, res: Response) => {
   secure: false,         // ⚠️ en desarrollo, NO puede ser true
   sameSite: 'lax',       // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
 })
-      .json({ id: user.id, name: user.name, email: user.email });
+      .json({ id: user.id, name: user.name, email: user.email, role: user.role });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
@@ -76,6 +76,7 @@ export const me = async (req: Request, res: Response) => {
       name: user.name,
       email: user.email,
       cart: user.cart,
+      role: user.role,
     });
   } catch (error) {
     res.status(401).json({ message: (error as Error).message });

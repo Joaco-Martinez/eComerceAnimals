@@ -4,7 +4,10 @@ import { User } from "../../types/types";
 declare global {
   namespace Express {
     interface Request {
-      user: User;
+      user?: {
+        id: string
+        role: Role
+      }
     }
   }
 }

@@ -21,7 +21,6 @@ export const createCategory = async (req: Request, res: Response) => {
         folder: "categories",
       });
       imageUrl = result.secure_url;
-      fs.unlinkSync(file.path);
     }
 
     const newCategory = await CategoryService.createCategory({
