@@ -34,3 +34,7 @@ export const deleteItemFromCart = async (productId: string) => {
 export const  updateCartItem= async (data: UpdateCartBody) => {
   return await apiService.put("/cart/update", data);
 };
+
+export const applyCoupon = async (code: string) => {
+  return await apiService.post("/coupons/apply", { code }, true, true, true);
+};

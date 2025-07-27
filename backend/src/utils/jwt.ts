@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mi_secreto';
 
-interface TokenPayload {
+export interface TokenPayload {
   userId: string;
   sessionId: string;
   iat: number;
@@ -12,7 +11,7 @@ interface TokenPayload {
 
 export const generateToken = (userId: string, sessionId: string) => {
   return jwt.sign({ userId, sessionId }, JWT_SECRET, {
-    expiresIn: '7d',
+    expiresIn: '1h',
   });
 };
 
@@ -22,13 +21,4 @@ export const verifyToken = (token: string): TokenPayload | null => {
   } catch {
     return null;
   }
-};
-
-export const hashPassword = async (password: string) => {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-};
-
-export const comparePassword = async (password: string, hash: string) => {
-  return bcrypt.compare(password, hash);
 };

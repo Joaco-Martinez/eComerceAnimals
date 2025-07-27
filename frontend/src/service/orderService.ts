@@ -1,5 +1,60 @@
 import apiService from "./apiService"
 
+
+export interface GetOrderResponse {
+  id: string;
+  orderNumber: string;
+  userId: string;
+  user: {
+    id: string;
+    email: string;
+    name: string; // obligatoria según lo que renderizás en CardOrder
+  };
+  addressId: string;
+  address: {
+    id: string;
+    nombre: string;
+    apellido: string;
+    calle: string;
+    piso?: string;
+    localidad: string;
+    provincia: string;
+    postalCode: string;
+    telefono: string;
+    dni: string;
+    userId: string;
+  };
+  shippingMethod: 'domicilio' | 'sucursal';
+  totalAmount: number;
+  status: string;
+  trackingNumber: string | null;
+  createdAt: string;
+  updatedAt: string;
+  couponId?: string | null;
+  items: {
+    productId: string;
+    quantity: number;
+    color: string;
+    size: string;
+    product: {
+      name: string;
+      price: number;
+      sku: string;
+    };
+  }[];
+}
+
+export interface OrderStatus {
+  status:
+    | "pending" // Todavía no pagó
+    | "paid" // Pagó, esperando envío
+    | "processing" // Preparando el pedido
+    | "shipped" // Enviado
+    | "delivered" // Entregado
+    | "cancelled"; // Cancelado
+}
+
+
 export interface OrderItem {
   id: string;
   productId: string;
@@ -79,4 +134,24 @@ export const crearOrder = async (
 export const getOrdersByUserController = async (): Promise<Order[]> => {
   const response = await apiService.get("/orders/user", true, false, false);
   return response as Order[];
+};
+
+export const getAllOrders = async (): Promise<GetOrderResponse[]> => {
+  const response = await apiService.get("/orders", true, false, false);
+  return response as GetOrderResponse[];
+};
+
+export const getOrderById = async (id: string): Promise<GetOrderResponse> => {
+  const response = await apiService.get(`/orders/${id}`, true, false, false);
+  return response as GetOrderResponse;
+};
+
+export const updateOrder = async (id: string, data: OrderStatus): Promise<GetOrderResponse> => {
+  const response = await apiService.patch(`/orders/${id}/status`, data, true, true, true);
+  return response as GetOrderResponse;
+};
+
+export const mandarNotificacion = async (id: string, data: { trackingNumber: string }): Promise<GetOrderResponse> => {
+  const response = await apiService.patch(`/notifications/${id}/tracking`, data, true, true, true);
+  return response as GetOrderResponse;
 };

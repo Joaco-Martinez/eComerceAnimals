@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { createOrderController, updateOrderStatusController, getOrdersByUserController } from '../controllers/order.Controller';
+import { createOrderController, updateOrderStatusController, getOrdersByUserController, getAllOrdersController, getOrderByIdController } from '../controllers/order.Controller';
 import { authMiddleware } from '../middlewares/authMiddlewares';
+import { isAdmin } from '../middlewares/isAdmin';
 
 
 const router = Router();
@@ -82,4 +83,46 @@ router.get('/user', authMiddleware, getOrdersByUserController);
  */
 router.patch('/:orderId/status', authMiddleware, updateOrderStatusController);
 
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: Obtener todas las órdenes (requiere admin)
+ *     tags: [Orders]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de órdenes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ */
+router.get("/", authMiddleware, isAdmin,  getAllOrdersController)
+
+
+/**
+ * @swagger
+ * /orders/{orderId}:
+ *   get:
+ *     summary: Obtener una orden por ID (requiere admin)
+ *     tags: [Orders]
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Órden encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ */
+router.get("/:orderId", authMiddleware, isAdmin,  getOrderByIdController)
 export default router;

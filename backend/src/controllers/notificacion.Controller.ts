@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../db/db';
-import { sendNotificationEmail } from '../services/notificacion.service';
+import { sendNotificationEmail, updateOrderTrackingNumber } from '../services/notificacion.service';
 
 // Define AuthRequest interface if not already defined elsewhere
 interface AuthRequest extends Request {
@@ -28,6 +28,25 @@ export const createNotification = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error creando notificación' });
   }
 };
+
+export const updateTrackingController = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { trackingNumber } = req.body;
+  console.log("ERRORRRRR ACA",id, trackingNumber);
+  if (!trackingNumber) {
+    return res.status(400).json({ message: 'trackingNumber es requerido' });
+  }
+
+  try {
+    const updatedOrder = await updateOrderTrackingNumber(id, trackingNumber);
+    res.status(200).json({ message: 'Código de seguimiento actualizado y email enviado', order: updatedOrder });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error actualizando número de seguimiento' });
+  }
+};
+
+
 
 export const getNotifications = async (req: AuthRequest, res: Response) => {
   try {

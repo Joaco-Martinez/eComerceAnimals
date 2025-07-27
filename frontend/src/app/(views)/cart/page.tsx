@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import LoginFormModal from "@/components/LoginFormModal/LoginFormModal";
 import BannerCarrito from "@/components/BannerCarrito/BannerCarrito";
 import DiscountInput from "@/components/DiscountInput/DiscountInput";
+
 import CartItem from "@/components/CartItem/CartItem";
 import CartSummary from "@/components/CartSummary/CartSummary";
 import CartActions from "@/components/CartActions/CartActions";
@@ -19,6 +20,8 @@ import { useAuthContext } from "@/context/authContext";
 import { crearOrder } from "@/service/orderService";
 import TransferenciaGracias from "@/components/TransferenciaGracias/TransferenciaGracias";
 import { useAnonCart } from "@/context/anonCartContext";
+import CouponUnloadWarning from '../../../components/DiscountInput/CouponUnloadWarning';
+import CouponAlert from '../../../components/DiscountInput/CouponAlert';
 import {CreateOrderInput} from "../../../service/orderService";
 import {
   getAnonCart,
@@ -77,13 +80,12 @@ export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState<string | null>(null);
-  const { setCartItems, paymentMethod, totalAmount, shippingMethod, addressId, setCartWasCleared } = useCheckoutContext();
+  const { setCartItems, paymentMethod, totalAmount, shippingMethod, addressId, setCartWasCleared, couponId } = useCheckoutContext();
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const discount = subtotal * 0.2;
   const [ showTransferencia, setShowTransferencia ] = useState(false);
   const [ loadingOrder, setLoadingOrder ] = useState(false);
   const [ numeroOrder, setNumeroOrder ] = useState<string | null>(null);
-
 
   useEffect(() => {
   const fetchCart = async () => {
@@ -333,6 +335,9 @@ useEffect(() => {
   };
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen">
+      {couponId && <CouponAlert />}
+      <CouponUnloadWarning couponApplied={!!couponId} />
+
       {step === 1 && <BannerCarrito />}
       <StepProgressBar currentStep={step} />
       <h2 className="text-center text-lg font-bold text-[#918283] pt-3">CARRITO</h2>

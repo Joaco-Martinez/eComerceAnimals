@@ -11,6 +11,52 @@ import { ShippingMethod } from '@prisma/client';
 
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
 
+
+export const getAllOrders = async () => {
+  return prisma.order.findMany({
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true, // si querés mostrarlo
+        },
+      },
+      address: true,
+      items: {
+        select: {
+          product: true,
+          quantity: true,
+          color: true,
+          size: true,
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
+
+export const getOrderById = async (id: string) => prisma.order.findUnique({
+       where: { id },  
+  include: {
+      user: {
+        select: {
+          name: true,
+          email: true, 
+        },
+      },
+      address: true,
+      items: {
+        select: {
+          product: true,
+          quantity: true,
+          color: true,
+          size: true,
+        }
+      }
+    },
+  });
 export const createOrder = async (
   userId: string,
   data: {
@@ -24,6 +70,7 @@ export const createOrder = async (
     shippingMethod: 'domicilio' | 'sucursal';
     addressId: string;
     paymentMethod: 'transferencia' | 'mercadopago';
+    couponId?: string;
   }
 ) => {
   const totalAmount = data.cartItems.reduce((acc, item) => {
@@ -46,6 +93,7 @@ export const createOrder = async (
   }[] = [];
 
   const order = await prisma.$transaction(async (tx) => {
+    // Verificación de stock
     for (const item of data.cartItems) {
       const product = await tx.product.findUnique({
         where: { id: item.productId },
@@ -75,6 +123,7 @@ export const createOrder = async (
       }
     }
 
+    // Crear orden
     return await tx.order.create({
       data: {
         userId,
@@ -82,6 +131,7 @@ export const createOrder = async (
         shippingMethod: data.shippingMethod,
         orderNumber,
         totalAmount,
+        couponId: data.couponId,
         status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
         items: {
           create: data.cartItems.map((item) => ({
@@ -176,7 +226,6 @@ export const createOrder = async (
 
   return order;
 };
-
 
 export const getOrdersByUser = async (userId: string) => {
   const orders = await prisma.order.findMany({

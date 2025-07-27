@@ -1,6 +1,7 @@
 // notificacion.service.ts
 import nodemailer from 'nodemailer';
-
+import {sendTrackingEmailTemplate} from '../utils/emailTemplates';
+import { prisma } from '../db/db';
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT) || 587,
@@ -51,3 +52,30 @@ export async function sendNotificationEmail(
     throw error;
   }
 }
+
+
+export const updateOrderTrackingNumber = async (orderId: string, trackingNumber: string) => {
+  const updatedOrder = await prisma.order.update({
+    where: { id: orderId },
+    data: { trackingNumber },
+    include: {
+      user: true,
+      address: true,
+      items: {
+        include: { product: true },
+      },
+    },
+  });
+
+  if (updatedOrder.user?.email) {
+    const html = sendTrackingEmailTemplate(updatedOrder);
+    await sendNotificationEmail(
+      updatedOrder.user.email,
+      `Tu pedido #${updatedOrder.orderNumber} fue despachado`,
+      `Seguimiento disponible: ${trackingNumber}`,
+      html
+    );
+  }
+
+  return updatedOrder;
+};

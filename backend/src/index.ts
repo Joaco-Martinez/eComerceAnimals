@@ -16,6 +16,8 @@ import mercadoPagoRoutes from "./routes/mercadoPago.Routes";
 import { swaggerUiHandler, swaggerUiSetup } from './swaggerConfig';
 import stockNotificationRoutes from "./routes/stockNotification.Routes";
 import anonCartRoutes from './routes/anonCart.Routes';
+import notifications from './routes/notificacion.Routes';
+import couponRoutes from './routes/coupon.Routes'
 
 
 dotenv.config();
@@ -48,11 +50,13 @@ app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/anon-cart', anonCartRoutes);
+app.use('/coupons', couponRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)
 app.use("/categories", categoryRoutes);
 app.use("/stock-notifications", stockNotificationRoutes);
-
+app.use("/notifications", notifications);
 app.use('/addresses', addressRoutes);
+
 const PORT = parseInt(process.env.PORT || '3000', 10);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);

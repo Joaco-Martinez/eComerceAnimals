@@ -8,18 +8,28 @@ type Order = {
   id: string;
   orderNumber: string;
   createdAt: string;
-  status: string;
+  status?: string;
   totalAmount: number;
 };
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-200 text-yellow-800",
-  paid: "bg-green-200 text-green-800",
-  shipped: "bg-blue-200 text-blue-800",
-  delivered: "bg-teal-200 text-teal-800",
-  cancelled: "bg-red-200 text-red-800",
-  processing: "bg-purple-200 text-purple-800",
+  Pendiente: "bg-yellow-200 text-yellow-800",
+  Pagado: "bg-green-200 text-green-800",
+  Enviado: "bg-blue-200 text-blue-800",
+  Entregado: "bg-teal-200 text-teal-800",
+  Cancelado: "bg-red-200 text-red-800",
+  Procesando: "bg-purple-200 text-purple-800",
 };
+
+const traducirStatus = (status: string) => {
+  if (status === "pending") return "Pendiente";
+  if (status === "paid") return "Pagado";
+  if (status === "shipped") return "Enviado";
+  if (status === "delivered") return "Entregado";
+  if (status === "cancelled") return "Cancelado";
+  if (status === "processing") return "Procesando";
+
+}
 
 export default function OrdersPage() {
   const { user } = useAuthContext();
@@ -29,7 +39,12 @@ export default function OrdersPage() {
     if (user) {
       const fetchOrders = async () => {
         const orders = await getOrdersByUserController();
-        setOrders(orders);
+        const ordersWithStatus = orders.map((order) => ({
+          ...order,
+          status: traducirStatus(order.status),
+        }));
+        console.log(ordersWithStatus)
+        setOrders(ordersWithStatus);
       };
       fetchOrders();
     }
@@ -53,10 +68,10 @@ export default function OrdersPage() {
               </h2>
               <span
                 className={`text-xs font-medium px-3 py-1 rounded-full ${
-                  statusColors[order.status] || "bg-gray-200 text-gray-700"
+                  statusColors[order.status ?? ""] || "bg-gray-200 text-gray-700"
                 }`}
               >
-                {order.status.toUpperCase()}
+                {order.status?.toUpperCase()}
               </span>
             </div>
 

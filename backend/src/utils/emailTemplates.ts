@@ -1,5 +1,5 @@
 import mjml2html from 'mjml';
-
+import { Order, User, Address, Product } from '@prisma/client';
 export interface OrderItem {
   productId: string;
   quantity: number;
@@ -16,6 +16,15 @@ export interface OrderAddress {
   localidad: string;
   provincia: string;
   postalCode: string;
+}
+
+export interface OrderWithDetails extends Order {
+  user: User;
+  address: Address;
+  items: {
+    quantity: number;
+    product: Product;
+  }[];
 }
 
 export interface OrderUser {
@@ -283,3 +292,70 @@ export const generateLowStockAlertEmailTemplate = (
 </mjml>
   `;
 };
+
+export const sendTrackingEmailTemplate = (order: OrderWithDetails) => {
+  const itemsRows = order.items
+    .map(
+      item => `
+        <tr style="border-bottom:1px solid #ddd;">
+          <td style="padding:8px 0;">${item.quantity} x ${item.product.name}</td>
+          <td style="text-align:right;">$${(item.product.price * item.quantity).toFixed(2)}</td>
+        </tr>
+      `
+    )
+    .join('');
+
+  const address = order.address;
+  const direccion = `
+    ${address.calle}, ${address.localidad}, ${address.provincia} <br/>
+    Código Postal: ${address.postalCode}
+  `;
+
+  return `
+    <div style="font-family:sans-serif; background:#E0DED1; color:#2C4B4D; padding:24px; border-radius:12px; max-width:600px; margin:auto;">
+      
+      <!-- Logo -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <img 
+          src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1753574629/punky_pet_isotipo_2_png_1_utytfg.png" 
+          alt="Logo Punky Pet" 
+          width="100" 
+          style="display:block; margin:auto;" 
+        />
+      </div>
+
+      <!-- Encabezado -->
+      <h2 style="color:#2C4B4D;">¡Tu pedido fue despachado! 🎉</h2>
+      <p>Hola ${order.user.name || 'cliente'},</p>
+      <p>Tu pedido <strong>#${order.orderNumber}</strong> ha sido enviado. A continuación, los detalles:</p>
+
+      <!-- Productos -->
+      <h3 style="margin-top:24px;">📦 Productos</h3>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+        ${itemsRows}
+      </table>
+
+      <!-- Dirección -->
+      <h3 style="margin-top:24px;">📍 Dirección de envío</h3>
+      <p>${direccion}</p>
+
+      <!-- Seguimiento -->
+      <h3 style="margin-top:24px;">🔎 Número de seguimiento</h3>
+      <div style="background:white; padding:12px 18px; border-radius:8px; display:inline-block; font-size:18px; font-weight:bold; margin-bottom:8px;">
+        ${order.trackingNumber}
+      </div>
+
+      <!-- Link de seguimiento -->
+      <p style="margin-top:8px;">
+        Podés hacer seguimiento desde: 
+        <a href="https://www.correoargentino.com.ar/formularios/e-commerce" target="_blank" style="color:#2C4B4D; font-weight:bold; text-decoration:underline;">
+          correoargentino.com.ar
+        </a>
+      </p>
+
+      <!-- Footer -->
+      <p style="margin-top:32px;">Gracias por confiar en <strong>Punky Pet</strong> 💚</p>
+    </div>
+  `;
+};
+

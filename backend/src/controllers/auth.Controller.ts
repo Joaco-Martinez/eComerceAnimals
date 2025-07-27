@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/auth.Service';
-
+import { prisma } from '../db/db';
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
@@ -51,17 +51,35 @@ export const login = async (req: Request, res: Response) => {
 
     res
       .cookie('token', token, {
-  httpOnly: true,
-  secure: false,         // ⚠️ en desarrollo, NO puede ser true
-  sameSite: 'lax',       // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
-})
-      .json({ id: user.id, name: user.name, email: user.email, role: user.role });
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // ✅ true solo en producción con HTTPS
+        sameSite: 'lax', // 🔥 permite cookies entre dominios en dev
+        maxAge: 7 * 24 * 60 * 60 * 1000, // ✅ 7 días en milisegundos
+      })
+      .json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
 };
 
-export const logout = (_req: Request, res: Response) => {
+
+export const logout = async (req: Request, res: Response) => {
+  const token = req.cookies.token;
+  if (token) {
+    const session = await prisma.session.findFirst({ where: { token } });
+    if (session) {
+      await prisma.session.update({
+        where: { id: session.id },
+        data: { isRevoked: true },
+      });
+    }
+  }
+
   res.clearCookie('token').json({ message: 'Sesión cerrada' });
 };
 

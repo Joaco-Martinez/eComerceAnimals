@@ -12,7 +12,7 @@ import { useAuthContext } from '../../context/authContext';
 import {mergeAnonCart} from '../../service/userService';
 import ForgotPasswordModal from '../ForgotPassswordModal/ForgotPasswordModal';
 import { useRouter } from 'next/navigation';
-import ResetPasswordModal from '../ResetPasswordModal/ResetPasswordModal';
+import ResetPasswordModal from '../ShopNow/ResetPasswordModal/ResetPasswordModal';
 const schema = yup.object().shape({
   email: yup.string().email('Email inválido').required('El email es obligatorio'),
   password: yup.string().required('La contraseña es obligatoria'),
