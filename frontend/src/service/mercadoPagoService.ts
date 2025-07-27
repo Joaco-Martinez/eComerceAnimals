@@ -11,6 +11,7 @@ type OrderItem = {
 type OrderPayload = {
   items: OrderItem[];
   metadata?: Record<string, any>;
+  totalAmount?: number;
 };
 
 export const mercadoPagoService = {

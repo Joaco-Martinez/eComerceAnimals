@@ -39,6 +39,18 @@ export interface OrderEmailTemplateData {
   address: OrderAddress;
   user: OrderUser;
   shippingMethod: 'domicilio' | 'sucursal';
+    shippingCost?: number;
+  transferDiscount?: {
+    applied: boolean;
+    percentage: number;
+    value: number;
+  };
+  couponDiscount?: {
+    applied: boolean;
+    type: 'percentage' | 'fixed' | 'free_shipping';
+    value: number;
+    amount: number;
+  };
 }
 
 // Template para orden general (pago con tarjeta, etc.)
@@ -54,24 +66,34 @@ export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
     )
     .join('');
 
+
+
+  const transferHtml = order.transferDiscount?.applied
+    ? `
+    <tr>
+      <td>Descuento Transferencia (${order.transferDiscount.percentage}%)</td>
+      <td align="right">- $${order.transferDiscount.value.toFixed(2)}</td>
+    </tr>`
+    : '';
+
+  const couponHtml = order.couponDiscount?.applied
+    ? `
+    <tr>
+      <td>Descuento Cupón (${order.couponDiscount.type === 'percentage' ? `${order.couponDiscount.value}%` : `$${order.couponDiscount.amount}`})</td>
+      <td align="right">- $${order.couponDiscount.amount.toFixed(2)}</td>
+    </tr>`
+    : '';
+
   const mjml = `
 <mjml>
   <mj-head>
     <mj-title>Punky Pet - Orden creada</mj-title>
     <mj-preview>¡Gracias por tu compra, ${order.user.name}!</mj-preview>
-    <mj-style>
-      .small {
-        font-size: 13px;
-        color: #777;
-      }
-    </mj-style>
   </mj-head>
   <mj-body background-color="#f4f4f4">
     <mj-section padding="24px 0">
       <mj-column>
-        <mj-text align="center" font-size="20px" font-weight="bold" color="#333">
-          ¡Gracias por tu compra, ${order.user.name}!
-        </mj-text>
+        <mj-text align="center" font-size="20px" font-weight="bold">¡Gracias por tu compra, ${order.user.name}!</mj-text>
         <mj-text align="center" font-size="16px">
           Tu orden <strong>#${order.orderNumber}</strong> fue generada correctamente.
         </mj-text>
@@ -87,11 +109,13 @@ export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
             <th align="right">Precio</th>
           </tr>
           ${itemsRows}
+          ${transferHtml}
+          ${couponHtml}
+          <tr style="border-top:1px solid #ccc;">
+            <td><strong>Total</strong></td>
+            <td align="right"><strong>$${order.totalAmount.toFixed(2)}</strong></td>
+          </tr>
         </mj-table>
-
-        <mj-text align="right" font-size="16px" font-weight="bold" padding-top="12px">
-          Total: $${order.totalAmount.toFixed(2)}
-        </mj-text>
 
         <mj-divider border-color="#ddd" padding="16px 0" />
 
@@ -101,7 +125,7 @@ export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
           Método: <strong>${order.shippingMethod === 'domicilio' ? 'Domicilio' : 'Sucursal de Correo'}</strong>
         </mj-text>
 
-        <mj-text padding-top="20px" css-class="small">
+        <mj-text padding-top="20px" font-size="13px" color="#777">
           Te avisaremos por correo electrónico cuando el pedido sea despachado.
         </mj-text>
       </mj-column>
@@ -116,13 +140,14 @@ export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
     </mj-section>
   </mj-body>
 </mjml>
-`;
+  `;
 
   return mjml2html(mjml).html;
 };
 
 // Template para orden con transferencia
 export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => {
+  console.log("🚀 ~ file: emailTemplates.ts:305 ~ generateTransferEmailTemplate ~ order:", order)
   const itemsRows = order.items
     .map(item => `
       <tr style="border-bottom:1px solid #ccc;">
@@ -179,67 +204,70 @@ export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => 
               <th align="right">Precio</th>
             </tr>
             ${itemsRows}
+            <tr style="border-top:1px solid #ccc;">
+              <td><strong>Total</strong></td>
+              <td align="right"><strong>$${order.totalAmount.toFixed(2)}</strong></td>
+            </tr>
           </mj-table>
-
-          <mj-text align="right" font-size="16px" font-weight="bold" padding-top="8px">
-            Total: $${order.totalAmount.toFixed(2)}
-          </mj-text>
 
           <mj-divider border-color="#e0e0e0" padding="16px 0" />
 
           <mj-text font-size="16px" font-weight="bold">🚚 Método de envío</mj-text>
-<mj-text padding-bottom="12px">${direccion}</mj-text>
+          <mj-text padding-bottom="12px">${direccion}</mj-text>
 
-<mj-text font-size="16px" font-weight="bold" padding-top="12px">📎 Instrucciones</mj-text>
-<mj-text css-class="subtitle" padding-bottom="16px">
-  Una vez realizado el pago, enviá el comprobante por alguno de los medios a continuación.
-</mj-text>
+          <mj-text font-size="16px" font-weight="bold" padding-top="12px">📎 Instrucciones</mj-text>
+          <mj-text css-class="subtitle" padding-bottom="16px">
+            Una vez realizado el pago, enviá el comprobante por alguno de los medios a continuación.
+          </mj-text>
 
-<mj-button
-  href="https://api.whatsapp.com/send?phone=543546431231&text=Hola%2C%20te%20envio%20el%20comprobante%20de%20la%20transferencia%20de%20la%20orden%20%23${order.orderNumber}"
-  background-color="#25D366"
-  color="#fff"
-  font-size="13px"
-  inner-padding="10px 16px"
-  border-radius="6px"
-  width="100%"
-  align="center"
->
-  Enviar por WhatsApp
-</mj-button>
+          <mj-button
+            href="https://api.whatsapp.com/send?phone=543546431231&text=Hola%2C%20te%20envio%20el%20comprobante%20de%20la%20transferencia%20de%20la%20orden%20%23${order.orderNumber}"
+            background-color="#25D366"
+            color="#fff"
+            font-size="13px"
+            inner-padding="10px 16px"
+            border-radius="6px"
+            width="100%"
+            align="center"
+          >
+            Enviar por WhatsApp
+          </mj-button>
 
-<mj-button
-  href="mailto:mascotiendavgbpets@gmail.com?subject=Comprobante%20de%20transferencia%20-%20Orden%20${order.orderNumber}&body=Hola,%20adjunto%20el%20comprobante%20de%20la%20orden%20${order.orderNumber}."
-  background-color="#D44638"
-  color="#fff"
-  font-size="13px"
-  inner-padding="10px 16px"
-  border-radius="6px"
-  width="100%"
-  align="center"
-  padding-top="8px"
->
-  Enviar por Gmail
-</mj-button>
+          <mj-button
+            href="mailto:mascotiendavgbpets@gmail.com?subject=Comprobante%20de%20transferencia%20-%20Orden%20${order.orderNumber}&body=Hola,%20adjunto%20el%20comprobante%20de%20la%20orden%20${order.orderNumber}."
+            background-color="#D44638"
+            color="#fff"
+            font-size="13px"
+            inner-padding="10px 16px"
+            border-radius="6px"
+            width="100%"
+            align="center"
+            padding-top="8px"
+          >
+            Enviar por Gmail
+          </mj-button>
 
-<mj-divider border-color="#e0e0e0" padding="16px 0" />
+          <mj-divider border-color="#e0e0e0" padding="16px 0" />
 
-<mj-text css-class="subtitle" padding-bottom="8px">
-  <strong>Importante:</strong><br/>
-  El pago deberá realizarse dentro de las 24 horas desde la compra.<br/>
-  De lo contrario, la orden será cancelada automáticamente.
-</mj-text>
+          <mj-text css-class="subtitle" padding-bottom="8px">
+            <strong>Importante:</strong><br/>
+            El pago deberá realizarse dentro de las 24 horas desde la compra.<br/>
+            De lo contrario, la orden será cancelada automáticamente.
+          </mj-text>
 
-<mj-text css-class="subtitle">
-  Cuando confirmemos tu pago, te enviaremos un email de confirmación.<br/>
-  Luego recibirás otro correo cuando el pedido sea despachado.
-</mj-text>
+          <mj-text css-class="subtitle">
+            Cuando confirmemos tu pago, te enviaremos un email de confirmación.<br/>
+            Luego recibirás otro correo cuando el pedido sea despachado.
+          </mj-text>
+        </mj-column>
+      </mj-section>
     </mj-body>
   </mjml>
   `;
 
   return mjml2html(mjml).html;
 };
+
 
 export const generateLowStockAlertEmailTemplate = (
   name: string,

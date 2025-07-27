@@ -103,6 +103,7 @@ export interface Order {
   payment: Payment;
   createdAt: string;
   updatedAt: string;
+  coupon?: Coupon | null;
 }
 
 
@@ -116,13 +117,18 @@ export interface CartItemInput {
   color: string;
   size: string;
 }
-
+type Coupon = {
+  type: "fixed" | "percentage" | "free_shipping";
+  value: number;
+};
 export interface CreateOrderInput {
   cartItems: CartItemInput[];
   addressId: string | null;
   shippingMethod: 'domicilio' | 'sucursal' | null;
   paymentMethod: 'transferencia' | 'mercadopago' | null;
   totalAmount: number;
+  couponId?: string | null;
+  coupon?: Coupon | null;
 }
 export const crearOrder = async (
   data: CreateOrderInput

@@ -62,11 +62,34 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-    if (paymentMethod === 'transferencia') {
-      return +(subtotal * 0.8).toFixed(2);
+
+    const shippingCost = 15000;
+
+    // Descuento por transferencia
+    const transferenciaDiscount =
+      paymentMethod === 'transferencia' ? subtotal * 0.2 : 0;
+
+    // Descuento por cupón
+    let cuponDiscount = 0;
+    let envioFinal = shippingCost;
+
+    if (cupon) {
+      switch (cupon.discountType) {
+        case 'percentage':
+          cuponDiscount = (subtotal * cupon.value) / 100;
+          break;
+        case 'fixed':
+          cuponDiscount = cupon.value;
+          break;
+        case 'free_shipping':
+          envioFinal = 0;
+          break;
+      }
     }
-    return subtotal;
-  }, [cartItems, paymentMethod]);
+
+    const total = Math.max(0, subtotal - transferenciaDiscount - cuponDiscount + envioFinal);
+    return +total.toFixed(2);
+  }, [cartItems, paymentMethod, cupon]);
 
   useEffect(() => {
     console.log('cartItems', cartItems);

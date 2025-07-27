@@ -18,7 +18,7 @@ import stockNotificationRoutes from "./routes/stockNotification.Routes";
 import anonCartRoutes from './routes/anonCart.Routes';
 import notifications from './routes/notificacion.Routes';
 import couponRoutes from './routes/coupon.Routes'
-
+import wishlistRoutes from './routes/wishlist.Routes';
 
 dotenv.config();
 
@@ -52,6 +52,7 @@ app.use('/orders', orderRoutes);
 app.use('/anon-cart', anonCartRoutes);
 app.use('/coupons', couponRoutes);
 app.use("/mercadopago", mercadoPagoRoutes)
+app.use('/wishlist', wishlistRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/stock-notifications", stockNotificationRoutes);
 app.use("/notifications", notifications);

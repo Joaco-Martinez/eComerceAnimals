@@ -80,7 +80,7 @@ export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState<string | null>(null);
-  const { setCartItems, paymentMethod, totalAmount, shippingMethod, addressId, setCartWasCleared, couponId } = useCheckoutContext();
+  const { setCartItems, paymentMethod, totalAmount, shippingMethod, addressId, setCartWasCleared, couponId, cupon } = useCheckoutContext();
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const discount = subtotal * 0.2;
   const [ showTransferencia, setShowTransferencia ] = useState(false);
@@ -175,7 +175,7 @@ useEffect(() => {
 
   // Quantity handler
 
-  const handleContinuar = async () => {
+const handleContinuar = async () => {
   if (cart.length === 0) {
     toast.error("El carrito está vacío");
     return;
@@ -200,82 +200,115 @@ useEffect(() => {
   }
 
   if (isAuth && step === 3) {
-  setShowTransferencia(paymentMethod === "transferencia");
+    setShowTransferencia(paymentMethod === "transferencia");
 
-  if (!addressId || !shippingMethod || !paymentMethod) {
-    toast.error("Faltan datos del checkout");
-    return;
-  }
+    if (!addressId || !shippingMethod || !paymentMethod) {
+      toast.error("Faltan datos del checkout");
+      return;
+    }
 
-  if (paymentMethod === "efectivo") {
-    toast.error("Este método de pago no está disponible");
-    return;
-  }
+    if (paymentMethod === "efectivo") {
+      toast.error("Este método de pago no está disponible");
+      return;
+    }
 
-  setLoadingOrder(true);
+    setLoadingOrder(true);
 
-  const payload: CreateOrderInput = {
-    cartItems: cart.map(item => {
-      const basePrice = item.price;
-      const finalPrice = paymentMethod === "transferencia"
-        ? +(basePrice * 0.8).toFixed(2)
-        : basePrice;
-
-      return {
+    const payload: CreateOrderInput = {
+      cartItems: cart.map(item => ({
         productId: item.productId,
         quantity: item.quantity,
-        price: finalPrice,
+        price: item.price,
         color: item.color,
         size: item.size,
-      };
-    }),
-    addressId,
-    shippingMethod,
-    paymentMethod,
-    totalAmount,
-  };
+      })),
+      addressId,
+      shippingMethod,
+      paymentMethod,
+      totalAmount,
+      couponId,
+    };
 
-  try {
-    const order = await crearOrder(payload);
-    await cleanCart();
-    setCart([]);
-    setCartItems([]);
-    setCartWasCleared(true);
-    setNumeroOrder(order.orderNumber);
-    toast.success(`Orden creada con éxito`);
+    try {
+      const order = await crearOrder(payload);
+      await cleanCart();
+      setCart([]);
+      setCartItems([]);
+      setCartWasCleared(true);
+      setNumeroOrder(order.orderNumber);
+      toast.success(`Orden creada con éxito`);
 
-    console.log(paymentMethod)
-    if (paymentMethod === "mercadopago") {
-      const mpPayload = {
-        items: order.items.map(item => ({
+      if (paymentMethod === "mercadopago") {
+        const shippingCost = 15000;
+
+        const items = order.items.map(item => ({
           id: item.productId,
           title: item.product.name,
           quantity: item.quantity,
-          unit_price: item.unitPrice,
-        })),
-        payer: {
-          email: order.user.email,
-          name: order.user.name || "",
-        },
-        metadata: {
-          orderNumber: order.orderNumber,
-          shippingMethod: order.shippingMethod,
-          address: order.address,
-        },
-      };
+          unit_price: typeof item.unitPrice === "number" ? item.unitPrice : parseFloat(item.unitPrice),
+        }));
 
-      const initPoint = await mercadoPagoService.createCheckout(mpPayload);
-      window.location.href = initPoint; // 🔁 Redirección a pago
-      return; // 👈 Detener ejecución, no pasar a step 4
+        const isFreeShipping = cupon?.discountType === "free_shipping";
+        if (!isFreeShipping) {
+          items.push({
+            id: "shipping",
+            title: "Costo de envío",
+            quantity: 1,
+            unit_price: shippingCost,
+          });
+        }
+
+        const productTotal = order.items.reduce((sum, item) => {
+          const price = typeof item.unitPrice === "number" ? item.unitPrice : parseFloat(item.unitPrice);
+          return sum + price * item.quantity;
+        }, 0);
+
+        if (cupon?.discountType === "fixed" && cupon.value > 0) {
+          const discountAmount = Math.min(cupon.value, productTotal);
+          items.push({
+            id: "discount",
+            title: `Descuento $${cupon.value}`,
+            quantity: 1,
+            unit_price: -discountAmount,
+          });
+        }
+
+        if (cupon?.discountType === "percentage" && cupon.value > 0) {
+          const discountAmount = Math.floor((productTotal * cupon.value) / 100);
+          items.push({
+            id: "discount",
+            title: `Descuento ${cupon.value}%`,
+            quantity: 1,
+            unit_price: -discountAmount,
+          });
+        }
+
+        const mpPayload = {
+          items,
+          payer: {
+            email: order.user.email,
+            name: order.user.name || "",
+          },
+          metadata: {
+            orderNumber: order.orderNumber,
+            shippingMethod: order.shippingMethod,
+            address: order.address,
+          },
+        };
+
+        const initPoint = await mercadoPagoService.createCheckout(mpPayload);
+        window.location.href = initPoint;
+        return;
+      }
+
+      setStep(4);
+    } catch (error) {
+      console.error("Error al crear orden:", error);
+      toast.error("Hubo un problema al crear la orden");
     }
-
-    setStep(4); // solo si no fue Mercado Pago
-  } catch (error) {
-    console.error("Error al crear orden:", error);
-    toast.error("Hubo un problema al crear la orden");
   }
-}
 };
+
   const updateQuantity = async (id: string, delta: number) => {
     const item = cart.find((item) => item.id === id);
     if (!item) return;

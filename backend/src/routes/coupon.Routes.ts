@@ -99,6 +99,26 @@ router.post('/apply', authMiddleware, couponController.applyCouponController);
 
 /**
  * @swagger
+ * /coupons:
+ *   get:
+ *     summary: Obtener todos los cupones (requiere admin)
+ *     tags: [Coupons]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de cupones
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Coupon'
+ */
+router.get('/', authMiddleware, isAdmin, couponController.getAllCouponsController);
+
+/**
+ * @swagger
  * /coupons/{id}:
  *   delete:
  *     summary: Eliminar un cupón

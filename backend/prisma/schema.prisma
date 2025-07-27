@@ -12,6 +12,8 @@ enum Role {
   admin
 }
 
+
+
 enum OrderStatus {
   pending     // Todavía no pagó
   paid        // Pagó, esperando envío
@@ -75,6 +77,7 @@ model User {
   orders         Order[]
   reviews        Review[]
   coupons        UserCoupon[]
+  wishlist WishlistItem[]
   notifications  Notification[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -119,6 +122,7 @@ model Product {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   orderItems  OrderItem[]
+  wishlist WishlistItem[]
   anonCartItems AnonCartItem[]
 }
 
@@ -166,6 +170,7 @@ model CartItem {
   quantity  Int
 }
 
+
 model Order {
   id             String         @id @default(uuid())
   orderNumber    String         @unique
@@ -178,6 +183,7 @@ model Order {
   couponId       String?
   items          OrderItem[]
   payment        Payment?
+  priceDetail    Json   
   totalAmount    Float
   trackingNumber String?        // Número de seguimiento del envío
   status         OrderStatus    @default(pending)
@@ -284,4 +290,15 @@ model AnonCartItem {
   size      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId]) // No se repite el mismo producto en la wishlist
 }

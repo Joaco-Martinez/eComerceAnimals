@@ -7,7 +7,9 @@ import {
   generateTransferEmailTemplate,
   generateLowStockAlertEmailTemplate,
 } from '../utils/emailTemplates';
-import { ShippingMethod } from '@prisma/client';
+import { calculateOrderTotals } from '../utils/calculateOrderTotals';
+import { buildVisualItems } from '../utils/buildVisualItems';
+
 
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
 
@@ -73,18 +75,26 @@ export const createOrder = async (
     couponId?: string;
   }
 ) => {
-  const totalAmount = data.cartItems.reduce((acc, item) => {
-    if (typeof item.price !== 'number' || isNaN(item.price)) {
-      throw new Error(`Precio inválido en item con producto ${item.productId}`);
-    }
-    return acc + item.price * item.quantity;
-  }, 0);
+  console.log("DATAAA", data, )
+  console.log("cuponId",data.couponId)
+  const coupon = data.couponId
+    ? await prisma.coupon.findUnique({ where: { id: data.couponId } })
+    : null;
+  
+  const {
+    productSubtotal,
+    transferenciaDiscount,
+    transferDiscountValue,
+    couponDiscountValue,
+    shippingCost,
+    totalAmount,
+  } = calculateOrderTotals({
+    cartItems: data.cartItems,
+    paymentMethod: data.paymentMethod,
+    coupon,
+  });
 
-  const orderNumber = `ORD-${new Date()
-    .toISOString()
-    .slice(0, 10)
-    .replace(/-/g, '')}-${nanoid()}`;
-
+  const orderNumber = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${nanoid()}`;
   const lowStockAlerts: {
     id: string;
     name: string;
@@ -93,7 +103,6 @@ export const createOrder = async (
   }[] = [];
 
   const order = await prisma.$transaction(async (tx) => {
-    // Verificación de stock
     for (const item of data.cartItems) {
       const product = await tx.product.findUnique({
         where: { id: item.productId },
@@ -123,7 +132,25 @@ export const createOrder = async (
       }
     }
 
-    // Crear orden
+    const priceDetail = {
+      subtotal: productSubtotal,
+      shippingCost,
+      discountTransfer: {
+        applied: transferenciaDiscount > 0,
+        percentage: transferenciaDiscount,
+        value: transferDiscountValue,
+      },
+      discountCoupon: coupon
+        ? {
+            applied: true,
+            type: coupon.discountType,
+            value: coupon.value,
+            amount: couponDiscountValue,
+          }
+        : { applied: false },
+      total: totalAmount,
+    };
+
     return await tx.order.create({
       data: {
         userId,
@@ -133,6 +160,7 @@ export const createOrder = async (
         totalAmount,
         couponId: data.couponId,
         status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+        priceDetail,
         items: {
           create: data.cartItems.map((item) => ({
             productId: item.productId,
@@ -179,6 +207,13 @@ export const createOrder = async (
     });
   });
 
+  const visualItems = buildVisualItems(order.items, {
+    shippingCost,
+    coupon,
+    couponDiscountValue,
+    transferDiscountValue,
+  });
+
   const orderForEmail = {
     orderNumber: order.orderNumber,
     totalAmount: order.totalAmount,
@@ -187,20 +222,8 @@ export const createOrder = async (
       name: order.user.name,
       email: order.user.email,
     },
-    items: order.items.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      color: item.color,
-      size: item.size,
-      product: { name: item.product.name },
-    })),
-    address: {
-      calle: order.address.calle,
-      localidad: order.address.localidad,
-      provincia: order.address.provincia,
-      postalCode: order.address.postalCode,
-    },
+    address: order.address,
+    items: visualItems,
   };
 
   await sendEmail({
@@ -218,7 +241,12 @@ export const createOrder = async (
         to: 'mascotiendavgbpets@gmail.com',
         subject: `⚠️ Stock bajo: ${product.name}`,
         html: mjml2html(
-          generateLowStockAlertEmailTemplate(product.name, product.sku, product.id, product.newStock)
+          generateLowStockAlertEmailTemplate(
+            product.name,
+            product.sku,
+            product.id,
+            product.newStock
+          )
         ).html,
       })
     )
@@ -226,6 +254,9 @@ export const createOrder = async (
 
   return order;
 };
+
+
+
 
 export const getOrdersByUser = async (userId: string) => {
   const orders = await prisma.order.findMany({

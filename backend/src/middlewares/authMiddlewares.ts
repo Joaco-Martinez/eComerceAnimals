@@ -22,7 +22,7 @@ export const authMiddleware = async (
     return res.status(401).json({ message: 'Token inválido' });
   }
 
-  // 🧾 opcional: log para debug
+  // // 🧾 opcional: log para debug
   // console.log("🔍 Token:", token);
   // console.log("🔍 Payload:", payload);
 

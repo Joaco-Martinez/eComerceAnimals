@@ -4,7 +4,7 @@ import { mercadoPagoService } from "../services/mercadoPago.service";
 export const mercadoPagoController = {
   async submit(req: Request, res: Response) {
     const { items, metadata } = req.body;
-
+    console.log(req.body)
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: "Debes enviar al menos un producto en 'items'" });
     }

@@ -1,3 +1,10 @@
+import Coupons from '@/components/AaPanelAdmin/Coupons/Coupons';
+import  CrearCouponForm   from '@/components/AaPanelAdmin/Coupons/components/CrearCouponForm';
 export default function AdminCouponsPage() {
-  return <h1 className="text-2xl font-semibold">Cupones de descuento</h1>
+  return (
+    <>
+    <CrearCouponForm />
+    <Coupons />
+    </>
+  )
 }

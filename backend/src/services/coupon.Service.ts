@@ -11,6 +11,8 @@ interface CreateCouponInput {
   expirationDate?: string;
 }
 
+export const getAllCoupons = async () => prisma.coupon.findMany();
+
 
 export const applyCoupon = async (userId: string, code: string) => {
   const coupon = await prisma.coupon.findUnique({ where: { code } });
@@ -59,7 +61,16 @@ export const applyCoupon = async (userId: string, code: string) => {
 };
 
 export const deleteCoupon = async (id: string) => {
-  return prisma.coupon.delete({ where: { id } });
+  const existingOrders = await prisma.order.findMany({
+    where: { couponId: id },
+    select: { id: true },
+  });
+
+  if (existingOrders.length > 0) {
+    throw new Error('No se puede eliminar: el cupón está siendo usado en órdenes existentes.');
+  }
+
+  return await prisma.coupon.delete({ where: { id } });
 };
 
 

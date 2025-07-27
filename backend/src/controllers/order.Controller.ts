@@ -6,6 +6,7 @@ export const createOrderController = async (req: AuthRequest, res: Response) => 
   try {
     const userId = req.userId;
     if(!userId) return res.status(401).json({ message: 'No autenticado' });
+    console.log(req.body)
     const order = await createOrder(userId, req.body);
     res.status(201).json({ success: true, content: order });
   } catch (err) {

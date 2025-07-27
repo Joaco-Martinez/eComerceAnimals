@@ -1,10 +1,19 @@
 // controllers/coupon.controller.ts
 import { Request, Response } from 'express';
-import { createCouponService, applyCoupon, deleteCoupon } from '../services/coupon.Service';
+import { createCouponService, applyCoupon, deleteCoupon, getAllCoupons } from '../services/coupon.Service';
 
 interface AuthRequest extends Request {
   userId?: string;
 }
+
+export const getAllCouponsController = async (req: Request, res: Response) => {
+  try {
+    const coupons = await getAllCoupons();
+    res.status(200).json(coupons);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los cupones' });
+  }
+};
 
 export const applyCouponController = async (req: AuthRequest, res: Response) => {
   const { code } = req.body;
@@ -12,7 +21,7 @@ export const applyCouponController = async (req: AuthRequest, res: Response) => 
   if (!userId) {
     return res.status(401).json({ message: 'No autenticado' });
   }
-  console.log("CODIGOOOOOOOOO",code)
+
   try {
     const result = await applyCoupon(userId, code);
     res.status(200).json(result);
@@ -22,6 +31,7 @@ export const applyCouponController = async (req: AuthRequest, res: Response) => 
 };
 
 export const deleteCouponController = async (req: Request, res: Response) => {
+  console.log(req.params);
   const { id } = req.params;
     if (!id) {
       return res.status(400).json({ message: 'Faltan campos obligatorios' });

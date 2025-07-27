@@ -12,7 +12,7 @@ import FavoritesButton from "./FavoritesButton";
 export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-
+  const [ wishlistOpen, setWishlistOpen ] = useState(false);
 
   return (
     <>
@@ -32,7 +32,7 @@ export default function Navbar() {
             {/* Acciones a la derecha */}
             <div className="flex items-center lg:gap-2">
               <UserDropdown userOpen={userOpen} setUserOpen={setUserOpen} />
-              <FavoritesButton />
+              <FavoritesButton wishlistOpen={wishlistOpen} setWishlistOpen={setWishlistOpen} />
               <CartButton cartOpen={cartOpen} setCartOpen={setCartOpen} />
             </div>
           </div>
