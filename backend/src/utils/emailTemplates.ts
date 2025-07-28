@@ -271,7 +271,7 @@ export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => 
 
 export const generateLowStockAlertEmailTemplate = (
   name: string,
-  sku: string,
+  sku: string | null,
   id: string,
   stock: number
 ) => {

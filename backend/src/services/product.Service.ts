@@ -1,5 +1,9 @@
 import { prisma } from '../db/db';
 import cloudinary from '../utils/cloudinary';
+import { StockNotificationService } from './stockNotification.Service';
+import sendEmail from '../utils/sendEmail'; 
+import { generateBackInStockEmailTemplate } from '../utils/generateBackInStockTemplate'; // si tenés template
+import mjml2html from 'mjml';
 export const getAllProducts = () => prisma.product.findMany({
   include: { category: true, images: true }
 });
@@ -94,7 +98,10 @@ export const createProduct = async (data: {
     },
   });
 };
-export const updateProduct = (
+
+
+
+export const updateProduct = async (
   id: string,
   data: Partial<{
     name: string;
@@ -102,14 +109,74 @@ export const updateProduct = (
     price: number;
     stock: number;
     weight: number;
-    size: string[];  
-    color: string[]; 
+    size: string[];
+    color: string[];
     categoryId: string;
     sku: string;
     isActive: boolean;
     petType: 'dog' | 'cat' | 'both';
   }>
-) => prisma.product.update({ where: { id }, data });
+) => {
+  const existingProduct = await prisma.product.findUnique({
+    where: { id },
+    include: { images: true },
+  });
+
+  if (!existingProduct) throw new Error('Producto no encontrado');
+
+  
+  const filteredData = Object.fromEntries(
+    Object.entries(data).filter(([_, v]) => v !== undefined)
+  );
+
+  // 🔐 Validaciones manuales
+  if ('stock' in filteredData && typeof filteredData.stock === 'number' && filteredData.stock < 0) {
+    throw new Error('El stock no puede ser menor a 0');
+  }
+
+  if ('price' in filteredData && typeof filteredData.price === 'number' && filteredData.price < 0) {
+    throw new Error('El precio no puede ser menor a 0');
+  }
+
+  if ('weight' in filteredData && typeof filteredData.weight === 'number' && filteredData.weight < 0) {
+    throw new Error('El peso no puede ser menor a 0');
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id },
+    data: filteredData,
+    include: { images: true },
+  });
+
+  // 📦 Notificación si volvió al stock
+  const wasOutOfStock = existingProduct.stock === 0;
+  const isNowInStock = typeof updatedProduct.stock === 'number' && updatedProduct.stock > 0;
+
+  if (wasOutOfStock && isNowInStock) {
+    const subscribers = await StockNotificationService.getUnnotifiedSubscribers(id);
+    const productImage = updatedProduct.images?.[0]?.url || 'https://via.placeholder.com/600x400';
+
+    for (const sub of subscribers) {
+      const emailHtml = mjml2html(
+        generateBackInStockEmailTemplate({
+          name: updatedProduct.name,
+          image: productImage,
+          productUrl: `https://punkypet.com/products/${updatedProduct.id}`,
+        })
+      ).html;
+
+      await sendEmail({
+        to: sub.email,
+        subject: `¡${updatedProduct.name} está de nuevo en stock!`,
+        html: emailHtml,
+      });
+    }
+
+    await StockNotificationService.markAsNotified(subscribers.map((s) => s.id));
+  }
+
+  return updatedProduct;
+};
 
 export const deleteProduct = async (id: string) => {
   // 1. Eliminás los CartItems que tienen ese producto (para evitar errores de FK y carritos huérfanos)

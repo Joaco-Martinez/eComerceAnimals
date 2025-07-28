@@ -102,9 +102,9 @@ export const update = async (req: Request, res: Response) => {
     const updatedProduct = await productService.updateProduct(id, {
       name,
       description,
-      price: price ? parseFloat(price) : undefined,
-      stock: stock ? parseInt(stock) : undefined,
-      weight: weight ? parseFloat(weight) : undefined,
+      price: price !== undefined ? parseFloat(price) : undefined,
+      stock: stock !== undefined ? parseInt(stock) : undefined,
+      weight: weight !== undefined ? parseFloat(weight) : undefined,
       size: typeof size === 'string' ? size.split(',') : size,
       color: typeof color === 'string' ? color.split(',') : color,
       categoryId: categoryId || undefined,

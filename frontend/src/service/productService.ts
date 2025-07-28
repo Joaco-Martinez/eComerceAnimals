@@ -91,3 +91,11 @@ export const updateProduct = async (
   const res = await api.put(`/products/${id}`, data)
   return res
 }
+
+export const checkViewProduct = async (id: string) => {
+  try {
+    await api.post(`/admin/stats/products/${id}/view`, undefined);
+  } catch (error) {
+    console.error('Error al registrar la vista del producto:', error);
+  }
+};

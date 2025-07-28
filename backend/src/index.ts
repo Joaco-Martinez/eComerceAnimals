@@ -19,6 +19,7 @@ import anonCartRoutes from './routes/anonCart.Routes';
 import notifications from './routes/notificacion.Routes';
 import couponRoutes from './routes/coupon.Routes'
 import wishlistRoutes from './routes/wishlist.Routes';
+import statsRoutes from './routes/stats.Routes';
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use("/categories", categoryRoutes);
 app.use("/stock-notifications", stockNotificationRoutes);
 app.use("/notifications", notifications);
 app.use('/addresses', addressRoutes);
+app.use('/admin/stats', statsRoutes);
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 app.listen(PORT, '0.0.0.0', () => {

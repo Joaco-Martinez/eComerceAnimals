@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import toast from "react-hot-toast";
 import { useAnonCart } from "@/context/anonCartContext";
 import {addToCart} from "@/service/cartService";
+import {checkViewProduct} from "@/service/productService";
 import { useAuthContext } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 import NotifyStockModal from "../NotifyStockModal/NotifyStockModal";
@@ -59,12 +60,19 @@ const ProductDetail = ({ product }: Props) => {
   const { addItem } = useAnonCart();
   const [currentImage, setCurrentImage] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
-
+  const hasViewed = useRef(false);
   // Cálculos de precios dinámicos
   const originalPrice = product.price;
   const transferPrice = Math.round(originalPrice * 0.8);
   const installment = Math.round(originalPrice / 3);
 
+
+  useEffect(() => {
+  if (!hasViewed.current) {
+    checkViewProduct(product.id);
+    hasViewed.current = true;
+  }
+  }, [product.id]);
   const format = (value: number) =>
     value.toLocaleString("es-AR", { minimumFractionDigits: 0 });
 
@@ -96,18 +104,13 @@ const ProductDetail = ({ product }: Props) => {
       );
   
       toast.success("Producto agregado al carrito");
-  
-      console.log("Producto agregado al carrito:", {
-        productId: product.id,
-        color: selectedVariant.color,
-        size: selectedVariant.size,
-      });
+
     } catch (error) {
       toast.error("Ocurrió un error al agregar el producto");
       console.error("Error al agregar al carrito:", error);
     }
   } 
-  console.log("isAuth:", isAuth);
+
   if (isAuth === true) {
     try {
       await addToCart(

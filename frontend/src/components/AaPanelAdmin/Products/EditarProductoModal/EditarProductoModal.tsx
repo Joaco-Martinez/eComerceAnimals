@@ -78,7 +78,20 @@ export default function EditarProductoModal({
   const handleSubmit = async () => {
     if (!form) return
     try {
-      const {  ...data } = form
+      const data = {
+  name: form.name,
+  sku: form.sku,
+  price: form.price,
+  stock: form.stock,
+  weight: form.weight,
+  size: form.size,
+  color: form.color,
+  petType: form.petType,
+  description: form.description,
+  categoryId: form.category.id,
+  isActive: form.isActive,
+};
+console.log(data)
       const updated = await updateProduct(form.id, data)
       onSave({ ...form, ...updated })
       toast.success("Producto actualizado correctamente")
