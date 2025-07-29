@@ -1,5 +1,13 @@
 import { prisma } from '../db/db';
-import { subDays, startOfDay, startOfMonth, startOfYear } from 'date-fns';
+import {
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  format,
+  endOfDay,
+  getDaysInMonth
+} from 'date-fns';
+import { es } from 'date-fns/locale';
 export const getOverviewStatsService = async () => {
   const paidOrders = await prisma.order.findMany({
     where: {
@@ -51,7 +59,13 @@ export const getPetTypeSalesService = async () => {
     petTypeCount[type] = (petTypeCount[type] || 0) + item.quantity;
   }
 
-  return petTypeCount;
+  // ✅ Convertimos el objeto en array
+  const formatted = Object.entries(petTypeCount).map(([petType, cantidad]) => ({
+    petType,
+    cantidad,
+  }));
+
+  return formatted;
 };
 
 export const getTopCategoriesSalesService = async () => {
@@ -176,7 +190,7 @@ export const getTopProductsSalesService = async () => {
         select: {
           id: true,
           name: true,
-          images: { take: 1 }, // opcional para mostrar imagen
+          images: { take: 1 },
         },
       },
     },
@@ -197,6 +211,7 @@ export const getTopProductsSalesService = async () => {
       productCount[id] = {
         name,
         quantity: 0,
+        imageUrl: images[0]?.url ?? null,
       };
     }
     productCount[id].quantity += item.quantity;
@@ -238,12 +253,10 @@ export const getUnconvertedProductsSerrvice = async () => {
     ventas.map((v) => [v.productId, v._sum.quantity ?? 0])
   );
 
+  // Filtrar productos sin ventas y ordenar por vistas descendente
   const unconverted = views
     .filter((v) => (ventasMap.get(v.productId) ?? 0) === 0)
-    .map((v) => ({
-      productId: v.productId,
-      views: v._count.productId,
-    }));
+    .sort((a, b) => b._count.productId - a._count.productId);
 
   const result = await prisma.product.findMany({
     where: {
@@ -256,13 +269,13 @@ export const getUnconvertedProductsSerrvice = async () => {
     },
   });
 
-  return result.map((prod) => {
-    const views = unconverted.find((v) => v.productId === prod.id)?.views ?? 0;
+  return unconverted.map((u) => {
+    const prod = result.find((p) => p.id === u.productId);
     return {
-      productId: prod.id,
-      name: prod.name,
-      views,
-      imageUrl: prod.images[0]?.url ?? null,
+      productId: prod?.id ?? u.productId,
+      name: prod?.name ?? 'Producto desconocido',
+      views: u._count.productId,
+      imageUrl: prod?.images[0]?.url ?? null,
     };
   });
 };
@@ -277,36 +290,60 @@ export const registerProductViewService = async (productId: string, userId?: str
 };
 
 
-export const getEarningsByPeriodService = async () => {
-  const now = new Date();
+export const getEarningsByYearService = async (year: number) => {
+  const months = Array.from({ length: 12 }, (_, i) => i); // 0 (enero) a 11 (diciembre)
 
-  const [daily, monthly, yearly] = await Promise.all([
-    prisma.order.aggregate({
-      where: {
-        status: 'paid',
-        createdAt: { gte: startOfDay(now) },
-      },
-      _sum: { totalAmount: true },
-    }),
-    prisma.order.aggregate({
-      where: {
-        status: 'paid',
-        createdAt: { gte: startOfMonth(now) },
-      },
-      _sum: { totalAmount: true },
-    }),
-    prisma.order.aggregate({
-      where: {
-        status: 'paid',
-        createdAt: { gte: startOfYear(now) },
-      },
-      _sum: { totalAmount: true },
-    }),
-  ]);
+  const earnings = await Promise.all(
+    months.map(async (month) => {
+      const start = new Date(year, month, 1);
+      const end = endOfMonth(start);
 
-  return {
-    daily: daily._sum.totalAmount ?? 0,
-    monthly: monthly._sum.totalAmount ?? 0,
-    yearly: yearly._sum.totalAmount ?? 0,
-  };
+      const result = await prisma.order.aggregate({
+        where: {
+          status: 'paid',
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+        },
+        _sum: { totalAmount: true },
+      });
+
+      return {
+        mes: month + 1, // Para mostrar como "1 = enero"
+        total: result._sum.totalAmount ?? 0,
+      };
+    })
+  );
+
+  return earnings;
+};
+
+export const getEarningsByMonthService = async (year: number, month: number) => {
+  const days = Array.from({ length: getDaysInMonth(new Date(year, month - 1)) }, (_, i) => i + 1);
+
+  const earnings = await Promise.all(
+    days.map(async (day) => {
+      const start = new Date(year, month - 1, day, 0, 0, 0);
+      const end = endOfDay(start);
+
+      const result = await prisma.order.aggregate({
+        where: {
+          status: 'paid',
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+        },
+        _sum: { totalAmount: true },
+      });
+
+      return {
+        dia: day,
+        total: result._sum.totalAmount ?? 0,
+      };
+    })
+  );
+
+  return earnings;
 };

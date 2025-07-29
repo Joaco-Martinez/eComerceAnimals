@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 const hexRegex = /^([0-9A-Fa-f]{6})$/
-export const validSizes = ['XS', 'S', 'M', 'L', 'XL'] as const
+export const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'U'] as const
 export type ValidSize = typeof validSizes[number]
 export const productSchema = yup.object({
   name: yup.string().required('Nombre obligatorio'),

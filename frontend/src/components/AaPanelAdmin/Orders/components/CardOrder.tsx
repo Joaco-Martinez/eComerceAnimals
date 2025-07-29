@@ -28,7 +28,7 @@ export const CardOrder = ({ order }: CardOrderProps) => {
   return (
     <div
       onClick={handleOrderClick}
-      className="bg-[#FFFFFF] rounded-2xl shadow border border-[#2C4B4D] p-4 cursor-pointer hover:shadow-lg transition-all"
+      className="bg-[#FFFFFF] rounded-2xl shadow  border-[#2C4B4D] p-4 cursor-pointer hover:shadow-lg transition-all"
     >
       <p className="text-sm font-semibold text-[#2C4B4D]">
         Pedido #{order.orderNumber}

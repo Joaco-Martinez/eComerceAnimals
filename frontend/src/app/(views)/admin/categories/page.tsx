@@ -32,7 +32,6 @@ export default function AdminCategoriesPage() {
     setCategories(prev => prev.filter(c => c.id !== id))
   }
 
-  
   const filteredCategories = categories.filter(category => {
     const matchesName = category.name.toLowerCase().includes(search.toLowerCase())
     const matchesPetType = filterPetType === 'all' || category.petType === filterPetType
@@ -40,26 +39,27 @@ export default function AdminCategoriesPage() {
   })
 
   return (
-    <div className="p-6 space-y-8">
-      <h1 className="text-2xl font-bold">Gestión de categorías</h1>
+    <div className="p-6 space-y-10">
+      {/* Formulario de creación centrado */}
+      <div className="max-w-2xl mx-auto flex items-center justify-center  p-6 rounded-xl ">
 
-      {/* Formulario de creación */}
-      <CategoryForm />
+        <CategoryForm />
+      </div>
 
       {/* Filtros */}
-      <div className="flex flex-col md:flex-row gap-4 items-center">
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
         <input
           type="text"
           placeholder="Buscar por nombre..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded w-full md:w-1/2"
+          className="border px-3 py-2 rounded w-full md:w-1/2 shadow-sm"
         />
 
         <select
           value={filterPetType}
           onChange={e => setFilterPetType(e.target.value as 'all' | 'dog' | 'cat' | 'both')}
-          className="border px-3 py-2 rounded"
+          className="border px-3 py-2 rounded shadow-sm"
         >
           <option value="all">Todas las mascotas</option>
           <option value="dog">Solo perros</option>
@@ -71,10 +71,10 @@ export default function AdminCategoriesPage() {
       {/* Lista de categorías existentes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCategories.length === 0 ? (
-          <p className="text-gray-500 col-span-full">No se encontraron categorías</p>
+          <p className="text-gray-500 col-span-full text-center">No se encontraron categorías</p>
         ) : (
           filteredCategories.map(category => (
-            <div key={category.id} className="border p-4 rounded-xl shadow space-y-4">
+            <div key={category.id} className="bg-white  p-4 rounded-xl shadow-lg space-y-4">
               <CategoryUpdateForm category={category} />
               <DeleteCategoryButton categoryId={category.id} onDeleted={() => handleDeleted(category.id)} />
             </div>

@@ -48,15 +48,28 @@ const OrderDetailPage = () => {
       <section>
         <h2 className="text-lg font-semibold text-punky-mauve mb-2">Productos</h2>
         <ul className="space-y-1 text-sm text-gray-800">
-          {order.items.map((item, i) => (
-            <li key={i}>
-              {item.quantity} x {item.product.name} ({item.size}, {item.color}) - $
-              {typeof item.product.price === 'number'
-                ? item.product.price.toFixed(2)
-                : 'Precio no disponible'}
-            </li>
-          ))}
-        </ul>
+  {order.items.map((item, i) => (
+    <li key={i} className="flex items-center gap-2">
+      <span>
+        {item.quantity} x {item.product.name} ({item.size})
+      </span>
+
+      {/* Círculo del color */}
+      <span
+        className="w-4 h-4 rounded-full border border-gray-300"
+        style={{ backgroundColor: item.color }}
+        title={item.color}
+      />
+
+      <span>
+        - $
+        {typeof item.product.price === 'number'
+          ? item.product.price.toFixed(2)
+          : 'Precio no disponible'}
+      </span>
+    </li>
+  ))}
+</ul>
       </section>
 
       <p className="text-sm text-gray-600">Total: ${order.totalAmount.toFixed(2)}</p>

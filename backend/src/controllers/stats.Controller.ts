@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getOverviewStatsService, getPaymentMethodsStatsService, getPetTypeSalesService, getTopCategoriesSalesService, getTopColorsSalesService, getTopProductsSalesService, getTopSizesSalesService, getOrdersByStatusService, registerProductViewService, getUnconvertedProductsSerrvice, getEarningsByPeriodService } from '../services/stats.Service';
+import { getOverviewStatsService, getPaymentMethodsStatsService, getPetTypeSalesService, getTopCategoriesSalesService, getTopColorsSalesService, getTopProductsSalesService, getTopSizesSalesService, getOrdersByStatusService, registerProductViewService, getUnconvertedProductsSerrvice, getEarningsByYearService, getEarningsByMonthService } from '../services/stats.Service';
 
 export const getOverview = async (req: Request, res: Response) => {
   const data = await getOverviewStatsService();
@@ -66,7 +66,32 @@ export const getUnconvertedProducts = async (req: Request, res: Response) => {
   }
 };
 
-export const earningsByPeriodController = async (req: Request, res: Response) => {
-  const data = await getEarningsByPeriodService();
-  res.json({ ok: true, content: data });
+export const getEarningsByYearController = async (req: Request, res: Response) => {
+  const year = parseInt(req.params.year);
+  if (isNaN(year)) return res.status(400).json({ error: 'Año inválido' });
+
+  try {
+    const data = await getEarningsByYearService(year);
+    res.json(data);
+  } catch (error) {
+    console.error('Error al obtener ingresos por año:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+export const getEarningsByMonthController = async (req: Request, res: Response) => {
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month);
+
+  if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
+    return res.status(400).json({ error: 'Año o mes inválido' });
+  }
+
+  try {
+    const data = await getEarningsByMonthService(year, month);
+    res.json(data);
+  } catch (error) {
+    console.error('Error al obtener ingresos por mes:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };

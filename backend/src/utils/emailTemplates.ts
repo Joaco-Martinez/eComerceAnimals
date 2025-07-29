@@ -147,7 +147,6 @@ export const generateOrderEmailTemplate = (order: OrderEmailTemplateData) => {
 
 // Template para orden con transferencia
 export const generateTransferEmailTemplate = (order: OrderEmailTemplateData) => {
-  console.log("🚀 ~ file: emailTemplates.ts:305 ~ generateTransferEmailTemplate ~ order:", order)
   const itemsRows = order.items
     .map(item => `
       <tr style="border-bottom:1px solid #ccc;">

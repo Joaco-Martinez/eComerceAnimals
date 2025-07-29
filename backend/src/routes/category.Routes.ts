@@ -1,7 +1,7 @@
 // src/routes/category.routes.ts
 import { Router } from "express";
 import * as categoryController from "../controllers/category.Controller";
-import uploadProductImages  from "../middlewares/upload";
+import {uploadProductImages, uploadCategoryImage}  from "../middlewares/upload";
 const router = Router();
 import { isAdmin } from '../middlewares/isAdmin'
 import { authMiddleware } from '../middlewares/authMiddlewares';
@@ -50,7 +50,7 @@ import { authMiddleware } from '../middlewares/authMiddlewares';
  */
 
 
-router.post("/",   authMiddleware, isAdmin, uploadProductImages, categoryController.createCategory);
+router.post("/",   authMiddleware, isAdmin, uploadCategoryImage, categoryController.createCategory);
 
 /**
  * @swagger

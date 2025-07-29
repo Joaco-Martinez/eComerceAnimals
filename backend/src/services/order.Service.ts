@@ -7,6 +7,7 @@ import {
   generateTransferEmailTemplate,
   generateLowStockAlertEmailTemplate,
 } from '../utils/emailTemplates';
+import { generateOrderEmailForSellerTemplate,  generateTransferEmailForSellerTemplate } from '../utils/generateSellerOrderTemplate';
 import { calculateOrderTotals } from '../utils/calculateOrderTotals';
 import { buildVisualItems } from '../utils/buildVisualItems';
 
@@ -75,8 +76,7 @@ export const createOrder = async (
     couponId?: string;
   }
 ) => {
-  console.log("DATAAA", data, )
-  console.log("cuponId",data.couponId)
+
   const coupon = data.couponId
     ? await prisma.coupon.findUnique({ where: { id: data.couponId } })
     : null;
@@ -226,6 +226,8 @@ export const createOrder = async (
     items: visualItems,
   };
 
+
+
   await sendEmail({
     to: order.user.email,
     subject: 'Punky Pet - Orden creada',
@@ -234,6 +236,14 @@ export const createOrder = async (
         ? generateTransferEmailTemplate(orderForEmail)
         : generateOrderEmailTemplate(orderForEmail),
   });
+
+  await sendEmail({
+  to: "mascotiendavgbpets@gmail.com",
+  subject: `🛍️ Nueva orden #${order.orderNumber}`,
+  html: data.paymentMethod === 'transferencia'
+    ? generateTransferEmailForSellerTemplate(orderForEmail)
+    : generateOrderEmailForSellerTemplate(orderForEmail)
+});
 
   await Promise.all(
     lowStockAlerts.map((product) =>

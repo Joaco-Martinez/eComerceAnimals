@@ -55,7 +55,7 @@ export default function CategoryUpdateForm({ category }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-4 transition-all duration-300"
+      className="p-4 flex flex-col gap-4 transition-all duration-300"
     >
       <h2 className="text-lg font-bold text-[#2C4B4D]">Editar categoría</h2>
 

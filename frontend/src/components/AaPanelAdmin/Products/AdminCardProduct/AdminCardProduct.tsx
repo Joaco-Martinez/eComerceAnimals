@@ -36,7 +36,7 @@ export interface Product {
 export interface Props {
   product: Product
   onEdit?: () => void
-  onDelete?: () => void // para recargar o actualizar lista después de borrar
+  onDelete?: () => void
 }
 
 export default function AdminProductCard({ product, onEdit, onDelete }: Props) {
@@ -61,14 +61,14 @@ export default function AdminProductCard({ product, onEdit, onDelete }: Props) {
   return (
     <>
       {/* Card del producto */}
-      <div className="bg-white rounded-2xl shadow-md p-4 flex flex-col sm:flex-row gap-4 border border-[#e5e7eb]">
+      <div className="bg-white rounded-2xl shadow-md p-4 flex flex-col md:flex-col gap-4 border border-[#e5e7eb] max-w-5xl mx-auto w-full">
         {/* Imagen */}
-        <div className="w-full sm:w-32 h-32 flex-shrink-0 overflow-hidden rounded-xl border">
+        <div className="w-full md:w-40 h-40 flex-shrink-0 overflow-hidden rounded-xl border">
           <Image
             src={product.images[0]?.url || '/placeholder.png'}
             alt={product.name}
-            width={128}
-            height={128}
+            width={160}
+            height={160}
             className="object-cover w-full h-full"
           />
         </div>
@@ -76,23 +76,27 @@ export default function AdminProductCard({ product, onEdit, onDelete }: Props) {
         {/* Info */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-semibold">{product.name}</h3>
+            <h3 className="text-xl font-semibold text-[#2C4B4D]">{product.name}</h3>
             <p className="text-sm text-gray-600">SKU: {product.sku}</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-1">
               Categoría: <span className="font-medium">{product.category.name}</span> — Tipo:{' '}
               <span className="capitalize">{product.petType}</span>
             </p>
             <p className="text-sm mt-1 text-gray-700">
-              Precio: <span className="font-medium">${product.price.toLocaleString()}</span> • Stock:{' '}
+              Precio:{' '}
+              <span className="font-medium text-[#2C4B4D]">${product.price.toLocaleString()}</span> • Stock:{' '}
               <span className={product.stock === 0 ? 'text-red-600 font-bold' : 'font-medium'}>
                 {product.stock}
               </span>
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-2 items-center">
+          <div className="flex flex-wrap gap-2 mt-3 items-center">
             {product.size.map((size) => (
-              <span key={size} className="text-xs border rounded px-2 py-0.5 bg-gray-100">
+              <span
+                key={size}
+                className="text-xs border rounded px-2 py-0.5 bg-gray-100 text-gray-800"
+              >
                 {size}
               </span>
             ))}
@@ -120,8 +124,11 @@ export default function AdminProductCard({ product, onEdit, onDelete }: Props) {
             </span>
           </div>
 
-          <div className="mt-2 flex gap-2">
-            <button onClick={onEdit} className="text-sm text-[#2C4B4D] font-semibold hover:underline">
+          <div className="mt-4 flex gap-3">
+            <button
+              onClick={onEdit}
+              className="text-sm text-[#2C4B4D] font-semibold hover:underline"
+            >
               Editar
             </button>
             <button

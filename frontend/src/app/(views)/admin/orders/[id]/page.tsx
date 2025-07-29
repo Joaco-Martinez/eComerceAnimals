@@ -26,7 +26,7 @@ const OrderDetailPage = () => {
   if (!order) return <p className="p-4 text-[#918283]">Cargando orden...</p>;
 
   return (
-    <div className="p-6 sm:p-8 max-w-4xl mx-auto bg-[#E0DED1] rounded-2xl shadow-lg space-y-8">
+    <div className="p-6 sm:p-8 max-w-4xl mx-auto bg-white rounded-2xl shadow-lg space-y-8">
       <h1 className="text-2xl sm:text-3xl font-bold text-[#2C4B4D]">
         Detalles del pedido #{order.orderNumber}
       </h1>
@@ -72,7 +72,16 @@ const OrderDetailPage = () => {
             <tbody>
               {order.items.map((item, index) => (
                 <tr key={index} className="border-t border-gray-200 hover:bg-[#fefefe]">
-                  <td className="p-3 whitespace-nowrap text-[#2C4B4D]">{item.color}</td>
+                  <td className="p-3 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-4 h-4 rounded-full border border-gray-300"
+                        style={{ backgroundColor: item.color }}
+                        title={item.color}
+                      />
+                      <span className="text-sm text-[#2C4B4D]">{item.color}</span>
+                    </div>
+                  </td>
                   <td className="p-3 whitespace-nowrap">
                     <div className="flex flex-col">
                       <span className="text-[#2C4B4D]">{item.product.name}</span>

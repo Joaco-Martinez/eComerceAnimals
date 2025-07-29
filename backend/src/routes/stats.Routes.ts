@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getOverview, getPetTypeSales, getTopCategories, getTopColors, getTopSizes, getPaymentMethods, getTopProducts, getOrdersByStatus, earningsByPeriodController,getUnconvertedProducts, registerProductView } from '../controllers/stats.Controller';
+import { getOverview, getPetTypeSales, getTopCategories, getTopColors, getTopSizes, getPaymentMethods, getTopProducts, getOrdersByStatus, getEarningsByYearController,getUnconvertedProducts, registerProductView, getEarningsByMonthController  } from '../controllers/stats.Controller';
 import { isAdmin } from '../middlewares/isAdmin';
 import { authMiddleware } from '../middlewares/authMiddlewares';
 
@@ -346,33 +346,87 @@ router.post('/products/:id/view', registerProductView);
 
 router.get('/unconverted-products', getUnconvertedProducts);
 
+
 /**
  * @swagger
- * /admin/stats/earnings-period:
+ * /admin/stats/earnings/year/{year}:
  *   get:
- *     summary: Ingresos por día, mes y año
+ *     summary: Obtener ingresos por mes en un año dado
  *     tags:
  *       - Admin / Estadísticas
+ *     parameters:
+ *       - in: path
+ *         name: year
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Año (por ejemplo, 2024)
  *     responses:
  *       200:
- *         description: Monto total de ingresos en los distintos períodos
+ *         description: Lista de ingresos por mes
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 ok:
- *                   type: boolean
- *                 content:
- *                   type: object
- *                   properties:
- *                     daily:
- *                       type: number
- *                     monthly:
- *                       type: number
- *                     yearly:
- *                       type: number
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   mes:
+ *                     type: integer
+ *                     example: 3
+ *                   total:
+ *                     type: number
+ *                     format: float
+ *                     example: 15000.5
+ *       400:
+ *         description: Año inválido
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/earnings/year/:year', getEarningsByYearController);
+
+/**
+ * @swagger
+ * /admin/stats/earnings/month/{year}/{month}:
+ *   get:
+ *     summary: Obtener ingresos diarios de un mes específico
+ *     tags:
+ *       - Admin / Estadísticas
+ *     parameters:
+ *       - in: path
+ *         name: year
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Año (por ejemplo, 2024)
+ *       - in: path
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Mes (1 = enero, 12 = diciembre)
+ *     responses:
+ *       200:
+ *         description: Lista de ingresos por día del mes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   dia:
+ *                     type: integer
+ *                     example: 15
+ *                   total:
+ *                     type: number
+ *                     format: float
+ *                     example: 2000
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error interno del servidor
  */
 
-router.get('/earnings-period', earningsByPeriodController);
+router.get('/earnings/month/:year/:month', getEarningsByMonthController);
 export default router;

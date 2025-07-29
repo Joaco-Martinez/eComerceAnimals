@@ -1,3 +1,5 @@
+import DashboardStatsPage from "@/components/AaPanelAdmin/Stats/DashboardStatsPage"
+
 export default function AdminStatsPage() {
-  return <h1 className="text-2xl font-semibold">Estadísticas</h1>
+  return <><DashboardStatsPage /></>
 }

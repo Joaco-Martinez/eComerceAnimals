@@ -21,4 +21,6 @@ const storage = new CloudinaryStorage({
 // exportás un middleware que acepta varias imágenes en el campo `images`
 export const uploadProductImages = multer({ storage }).array('images', 6) // hasta 6 imágenes
 
+export const uploadCategoryImage = multer({ storage }).single('image')
+
 export default uploadProductImages

@@ -81,26 +81,28 @@ export const EditarProductos = () => {
 
   return (
     <section className="p-4">
-      <h2 className="text-xl font-bold mb-4">Editar Productos</h2>
-
-      <ProductFilters
-        categories={uniqueCategories}
-        onFilterChange={setFilters}
-      />
-
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <AdminProductCard
-              key={product.id}
-              product={product}
-              onEdit={() => handleOpenEdit(product)}
-            />
-          ))
-        ) : (
-          <p className="col-span-full text-gray-500">No se encontraron productos.</p>
-        )}
+      <div className="flex items-center justify-center">        
+        <ProductFilters
+          categories={uniqueCategories}
+          onFilterChange={setFilters}
+        />
       </div>
+
+      <div className="grid gap-y-6 gap-x-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto mt-6 px-4">
+  {filteredProducts.length > 0 ? (
+    filteredProducts.map((product) => (
+      <AdminProductCard
+        key={product.id}
+        product={product}
+        onEdit={() => handleOpenEdit(product)}
+      />
+    ))
+  ) : (
+    <p className="col-span-full text-gray-500 text-center text-base">
+      No se encontraron productos.
+    </p>
+  )}
+</div>
 
       <EditarProductoModal
         product={selectedProduct}
