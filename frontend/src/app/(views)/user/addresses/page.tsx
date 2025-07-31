@@ -56,14 +56,7 @@ const handleDeleteAddress = async () => {
       setAddresses(updated);
 
       // opcional: seleccionar automáticamente la nueva dirección
-      const nueva = updated.find(
-        (addr) =>
-          addr.nombre.toLowerCase() === values.nombre.toLowerCase() &&
-          addr.apellido.toLowerCase() === values.apellido.toLowerCase() &&
-          addr.calle.toLowerCase() === values.calle.toLowerCase() &&
-          addr.postalCode === values.postalCode
-      );
-      if (nueva) console.log("📦 Dirección agregada:", nueva.userId);
+      
 
       setIsModalOpen(false);
     } catch (err) {
@@ -85,7 +78,7 @@ const handleDeleteAddress = async () => {
         {addresses.length < 3 ? (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2C4B4D] text-white rounded-lg shadow-md hover:bg-[#203637] transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2C4B4D] text-white rounded-lg shadow-md hover:bg-[#203637] transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Agregar dirección
@@ -118,7 +111,7 @@ const handleDeleteAddress = async () => {
               <button
                 title="Eliminar"
                 onClick={() => handleQuestionAddress(addr.id!)}
-                className="text-red-500 hover:text-red-700 transition"
+                className="text-red-500 hover:text-red-700 transition cursor-pointer"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

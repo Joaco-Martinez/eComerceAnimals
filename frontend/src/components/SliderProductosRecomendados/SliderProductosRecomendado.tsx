@@ -1,15 +1,14 @@
 'use client';
 
+import CardProductDesktop from '../CardProduct/ProductCardDesktop';
+import CardProduct from '../CardProduct/CardProduct';
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import Loader from '../Loader/Loader';
-
-import CardProduct from '../CardProduct/CardProduct';
 import { getProductByPetType } from '../../service/productService';
-
 import type { ProductCardProps } from '../CardProduct/CardProduct';
 
 interface Props {
@@ -23,8 +22,8 @@ export default function SliderProductosDestacados({ petType }: Props) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getProductByPetType(petType); 
-        setFeaturedProducts(data.slice(0, 4)); // Mostrar los primeros 4
+        const data = await getProductByPetType(petType);
+        setFeaturedProducts(data.slice(0, 4));
       } catch (error) {
         console.error('Error al cargar productos:', error);
       } finally {
@@ -50,24 +49,34 @@ export default function SliderProductosDestacados({ petType }: Props) {
 
   return (
     <section className="py-6 px-4 sm:px-8 w-full max-w-screen-lg mx-auto">
-      <h2 className="text-xl sm:text-2xl font-light  text-center text-[#918283] mb-4">
-        NUESTROS <p className="text-[#918283] font-bold inline">
-          RECOMENDADOS
-          </p>
+      <h2 className="text-xl sm:text-2xl font-light text-center text-[#918283] mb-4">
+        NUESTROS <span className="text-[#918283] font-bold">RECOMENDADOS</span>
       </h2>
 
       <Swiper
         modules={[Autoplay]}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
-        loop={featuredProducts.length > 2}
+        loop={featuredProducts.length > 4}
         spaceBetween={16}
         slidesPerView={2}
-        className="w-full rounded-2xl overflow-hidden "
+        breakpoints={{
+          640: { slidesPerView: 2 },
+          768: { slidesPerView: 3 },
+          1024: { slidesPerView: 4 },
+        }}
+        className="w-full rounded-2xl overflow-hidden"
       >
-        {featuredProducts.map(product => (
+        {featuredProducts.map((product) => (
           <SwiperSlide key={product.sku}>
-            <div className=" py-6">
-              <CardProduct {...product} />
+            <div className="py-6">
+              {/* Mobile */}
+              <div className="block md:hidden">
+                <CardProduct {...product} />
+              </div>
+              {/* Desktop */}
+              <div className="hidden md:block">
+                <CardProductDesktop {...product} />
+              </div>
             </div>
           </SwiperSlide>
         ))}

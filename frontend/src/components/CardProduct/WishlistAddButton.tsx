@@ -22,21 +22,24 @@ export default function WishlistAddButton({ productId }: Props) {
       await toggleWishlistItem(productId);
       toast.success('Producto agregado a la wishlist');
     } catch (error) {
-      console.log(error)
-        toast.error('Error al agregar a la wishlist');
+      console.log(error);
+      toast.error('Error al agregar a la wishlist');
     }
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <button onClick={handleAdd}>
-        <Image
-          src="/icons/corazon.png"
-          alt="Favorito"
-          width={32}
-          height={28}
-          className="sm:w-[45px] sm:h-[45px]"
-        />
+    <div className="flex items-center justify-center cursor-pointer">
+      <button onClick={handleAdd} className="p-1">
+        <div className="relative w-8 h-7 sm:w-11 sm:h-11">
+          <Image
+            src="/icons/corazon.png"
+            alt="Favorito"
+            fill
+            sizes="(max-width: 640px) 32px, 45px"
+            className="object-contain"
+            priority
+          />
+        </div>
       </button>
     </div>
   );

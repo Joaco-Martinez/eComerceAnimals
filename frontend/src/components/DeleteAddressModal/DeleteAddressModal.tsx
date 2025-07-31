@@ -23,13 +23,13 @@ const DeleteAddressModal: FC<Props> = ({ isOpen, onClose, onConfirm }) => {
         <div className="flex justify-center gap-3">
           <button
             onClick={onConfirm}
-            className="bg-[#918283] hover:bg-[#7a6e6e] text-white text-sm font-medium px-4 py-2 rounded-full transition"
+            className="bg-[#918283] hover:bg-[#7a6e6e] text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer"
           >
             Sí, eliminar
           </button>
           <button
             onClick={onClose}
-            className="text-[#918283] border border-gray-300 text-sm font-medium px-4 py-2 rounded-full hover:bg-gray-100 transition"
+            className="text-[#918283] border border-gray-300 text-sm font-medium px-4 py-2 rounded-full hover:bg-gray-100 transition cursor-pointer"
           >
             Cancelar
           </button>

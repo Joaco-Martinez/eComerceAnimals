@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import ProductDetail from "@/components/ProductDetail/ProductDetail";
+
 import { getProductById } from "@/service/productService";
 import Loader from "@/components/Loader/Loader";
 import SliderProductosRecomendados from "@/components/SliderProductosRecomendados/SliderProductosRecomendado";
-
+import ProductDetailSelector from "@/components/ProductDetail/ProductDetailSelector";
 interface ProductImage {
   id: string;
   url: string;
@@ -51,7 +51,7 @@ export default function ProductDetailPage() {
 
   return (
           <>
-              <ProductDetail product={product} />
+              <ProductDetailSelector product={product} />
               <SliderProductosRecomendados petType={product.petType} />
           </>
 

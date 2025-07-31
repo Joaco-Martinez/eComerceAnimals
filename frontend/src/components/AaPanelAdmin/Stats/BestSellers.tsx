@@ -14,7 +14,6 @@ export const BestSellers = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const fetchProducts = async () => {
     await getTopProducts().then((res) => {
-        console.log(res)
         setProducts(res);
     });
   }

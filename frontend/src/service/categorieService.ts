@@ -2,7 +2,11 @@ import api from "./apiService";
 
 
 
-export const getAllCategories = async () => await api.get("/categories");
+export const getAllCategories = async () => {
+  const res = await api.get("/categories");
+  console.log(" Categorias recibidas:", res);
+  return res;
+};
 
 export const postCategory = async (data: FormData) =>
   await api.post("/categories", data, true, true, true, {

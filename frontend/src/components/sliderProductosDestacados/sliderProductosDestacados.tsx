@@ -8,6 +8,7 @@ import 'swiper/css/autoplay';
 import Loader from '../Loader/Loader';
 // import ProductCardSlide from '../productCardSlide/ProductCardSlide'; 
 import CardProduct from '../CardProduct/CardProduct';
+import CardProductDesktop from '../CardProduct/ProductCardDesktop';
 import { getAllProducts } from '../../service/productService';
 
 import type { ProductCardProps } from '../CardProduct/CardProduct';
@@ -15,7 +16,14 @@ import type { ProductCardProps } from '../CardProduct/CardProduct';
 export default function SliderProductosDestacados() {
   const [featuredProducts, setFeaturedProducts] = useState<ProductCardProps[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  useEffect(() => {
+  const checkDevice = () => setIsDesktop(window.innerWidth >= 768);
+  checkDevice();
+  window.addEventListener('resize', checkDevice);
+  return () => window.removeEventListener('resize', checkDevice);
+}, []);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -58,15 +66,27 @@ export default function SliderProductosDestacados() {
         loop={featuredProducts.length > 2}
         spaceBetween={16}
         slidesPerView={2}
-        className="w-full rounded-2xl overflow-hidden "
+        breakpoints={{
+          768: {
+            slidesPerView: 3,
+          },
+          1024: {
+            slidesPerView: 4,
+          },
+        }}
+        className="w-full rounded-2xl overflow-hidden"
       >
         {featuredProducts.map(product => (
-          <SwiperSlide key={product.sku}>
-            <div className=" py-6">
-              <CardProduct {...product} />
-            </div>
-          </SwiperSlide>
-        ))}
+  <SwiperSlide key={product.sku}>
+    <div className="py-6">
+      {isDesktop ? (
+        <CardProductDesktop {...product} />
+      ) : (
+        <CardProduct {...product} />
+      )}
+    </div>
+  </SwiperSlide>
+))}
       </Swiper>
     </section>
   );

@@ -6,12 +6,12 @@ const navItems = [
 
 export default function DesktopNavItems() {
   return (
-    <ul className="hidden lg:flex items-center gap-6 md:gap-8 py-3">
+    <ul className="hidden lg:flex items-center gap-6 md:gap-8 py-3 cursor-pointer">
       {navItems.map((item) => (
         <li key={item.slug}>
           <a
             href={`/${item.slug}`}
-            className="hover:text-primary-700 dark:hover:text-primary-500"
+            className="text-[#C4BFAB] font-semibold"
           >
             {item.name}
           </a>

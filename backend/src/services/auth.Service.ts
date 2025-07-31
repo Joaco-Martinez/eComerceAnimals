@@ -1,3 +1,4 @@
+import { getUserById } from './user.Service';
 import { prisma } from '../db/db';
 import {
   hashPassword,
@@ -77,7 +78,10 @@ export const verifyEmailCode = async (email: string, code: string) => {
     },
   });
 
-  const token = generateToken(updatedUser.id, session.id);
+  const User = await getUserById(updatedUser.id);
+  if (!User) throw new Error('Usuario no encontrado');
+
+  const token = generateToken(updatedUser.id, session.id, User.role);
 
   await prisma.session.update({
     where: { id: session.id },
@@ -103,7 +107,11 @@ export const loginUser = async (email: string, password: string) => {
     },
   });
 
-  const token = generateToken(user.id, session.id);
+   const User = await getUserById(user.id);
+  if (!User) throw new Error('Usuario no encontrado');
+
+
+  const token = generateToken(user.id, session.id, User.role);
 
   await prisma.session.update({
     where: { id: session.id },

@@ -24,7 +24,7 @@ interface Category {
   image: string;
 }
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   description: string;
@@ -211,21 +211,23 @@ const ProductDetail = ({ product }: Props) => {
   ))}
 </div>
 
-<div className="flex items-center gap-1.5 mt-2">
-  {product.size.map((size) => (
-    <button
-      key={size}
-      type="button"
-      onClick={() => handleSizeSelect(size)}
-      className={`px-2 py-1 border-2 rounded-md cursor-pointer transition-all duration-150 ${
-        selectedSize === size
-          ? "border-[#C4BFAB] bg-[#C4BFAB] text-white"
-          : "border-gray-300"
-      }`}
-    >
-      {size}
-    </button>
-  ))}
+<div className="flex flex-wrap items-center gap-1.5 mt-2">
+  {["XS", "S", "M", "L", "XL", "U"]
+    .filter((t) => product.size.includes(t))
+    .map((size) => (
+      <button
+        key={size}
+        type="button"
+        onClick={() => handleSizeSelect(size)}
+        className={`px-2 py-1 border-2 rounded-md cursor-pointer transition-all duration-150 ${
+          selectedSize === size
+            ? "border-[#C4BFAB] bg-[#C4BFAB] text-white"
+            : "border-gray-300"
+        }`}
+      >
+        {size}
+      </button>
+    ))}
 </div>
         </div>
 

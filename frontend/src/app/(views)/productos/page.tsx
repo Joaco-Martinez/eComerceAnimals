@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "@/components/CardProduct/CardProduct";
-import LogicaSearchbar from "@/components/LogicaSearchbar/LogicaSearchbar";
+import DesktopTopBar from "@/components/MobileBottomBar/DesktopTopBar";
 import MobileBottomBar from "@/components/MobileBottomBar/MobileBottomBar";
 import FilterModal from "@/components/FilterModal/FilterModal";
 import SortModal from "@/components/SortModal/SortModal";
 import Loader from "@/components/Loader/Loader";
 import Pagination from "@/components/Pagination/Pagination";
+import ProductCardDesktop from "@/components/CardProduct/ProductCardDesktop";
+import { useIsMobile } from "@/components/CardProduct/useIsMobile";
 import {
   getAllProducts,
   getFilteredProducts,
@@ -16,6 +18,8 @@ import {
   searchProducts,
   getProductsByCategoryId,
 } from "@/service/productService";
+import DesktopFilterSidebar from "@/components/FilterModal/DesktopFilterSidebar";
+import SortModalDesktop from "@/components/SortModal/SortModalDesktop";
 
 // Tipos
 interface ProductImage {
@@ -67,7 +71,7 @@ const ProductsPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const isMobile = useIsMobile();
   const searchParams = useSearchParams();
   const q = searchParams.get("q");
   const router = useRouter();
@@ -185,9 +189,11 @@ const ProductsPage = () => {
 
   return (
     <div className="mb-3">
-      <div className="px-4 sm:px-8">
-        <LogicaSearchbar />
-      </div>
+      <DesktopTopBar
+        onFilterClick={() => setShowFilters(true)}
+        onSortClick={() => setIsSortOpen(true)}
+        currentSort={currentSort}
+      />
 
       {products.length === 0 ? (
         <div className="flex justify-center items-center h-[60vh] text-gray-500">
@@ -202,11 +208,15 @@ const ProductsPage = () => {
             onNext={handleNextPage}
           />
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-3 py-6 max-w-[1280px] mx-auto">
-            {paginatedProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-3 py-6 max-w-[1280px] mx-auto">
+  {paginatedProducts.map((product) =>
+    isMobile ? (
+      <ProductCard key={product.id} {...product} />
+    ) : (
+      <ProductCardDesktop key={product.id} {...product} />
+    )
+  )}
+</div>
 
           <Pagination
             currentPage={currentPage}
@@ -223,13 +233,25 @@ const ProductsPage = () => {
         currentSort={currentSort}
       />
 
+      
+      <DesktopFilterSidebar
+        open={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleFilterChange}
+        categories={categories}
+      />
       <FilterModal
         open={showFilters}
         onClose={() => setShowFilters(false)}
         onApply={handleFilterChange}
         categories={categories}
       />
-
+      <SortModalDesktop
+        isOpen={isSortOpen}
+        onClose={() => setIsSortOpen(false)}
+        currentSort={currentSort}
+        onSelect={(value) => setCurrentSort(value)}
+      />
       <SortModal
         isOpen={isSortOpen}
         onClose={() => setIsSortOpen(false)}

@@ -18,6 +18,7 @@ export default function DiscountInput() {
       const discountType = result.type, value = result.value;
       setCupon({ discountType, value });
       setCouponId(result.id);
+      toast.success("Cupón aplicado con éxito");
     } catch (error) {
       console.error("Error al aplicar el código de descuento:", error);
     }
@@ -38,7 +39,7 @@ export default function DiscountInput() {
     />
     <button
       onClick={handleCoupon}
-      className="whitespace-nowrap text-sm font-semibold text-[#918283] border border-[#918283] rounded-full px-4 py-1.5"
+      className="whitespace-nowrap text-sm font-semibold text-[#918283] border border-[#918283] rounded-full px-4 py-1.5 cursor-pointer"
     >
       APLICAR
     </button>

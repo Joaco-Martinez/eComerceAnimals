@@ -36,5 +36,5 @@ export const  updateCartItem= async (data: UpdateCartBody) => {
 };
 
 export const applyCoupon = async (code: string) => {
-  return await apiService.post("/coupons/apply", { code }, true, true, true);
+  return await apiService.post("/coupons/apply", { code }, true, false, true);
 };

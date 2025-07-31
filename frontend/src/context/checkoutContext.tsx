@@ -5,7 +5,7 @@ import {
   useContext,
   useState,
   ReactNode,
-  useEffect,
+  // useEffect,
   useMemo,
 } from 'react';
 
@@ -91,14 +91,14 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
     return +total.toFixed(2);
   }, [cartItems, paymentMethod, cupon]);
 
-  useEffect(() => {
-    console.log('cartItems', cartItems);
-    console.log('shippingMethod', shippingMethod);
-    console.log('addressId', addressId);
-    console.log('paymentMethod', paymentMethod);
-    console.log('couponId', couponId);
-    console.log('discount', cupon);
-  }, [cartItems, shippingMethod, addressId, paymentMethod, couponId, cupon]);
+  // useEffect(() => {
+  //   console.log('cartItems', cartItems);
+  //   console.log('shippingMethod', shippingMethod);
+  //   console.log('addressId', addressId);
+  //   console.log('paymentMethod', paymentMethod);
+  //   console.log('couponId', couponId);
+  //   console.log('discount', cupon);
+  // }, [cartItems, shippingMethod, addressId, paymentMethod, couponId, cupon]);
 
   const clearCheckout = () => {
     setAddressId(null);

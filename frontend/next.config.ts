@@ -1,17 +1,23 @@
-import type { NextConfig } from "next";
+import withPWA from 'next-pwa';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
+  reactStrictMode: true,
   images: {
     domains: ['res.cloudinary.com'],
   },
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
-        destination: "http://localhost:3000/:path*", // ⚠️ ojo: no pongas /api en el destino
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}`,
       },
     ];
   },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+})(nextConfig);

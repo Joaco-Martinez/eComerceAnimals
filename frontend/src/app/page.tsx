@@ -1,30 +1,31 @@
+
 import EnvioGratis from "@/components/EnvioGratis/enviogratis";
-import SliderPrincipal from "@/components/sliderPrincipal/sliderPrincipal";
+import  SliderSelector  from "@/components/sliderPrincipal/SliderSelector";
 import ShopNow from "@/components/ShopNow/ShopNow";
-import { SliderCategories } from "@/components/sliderCategories/SliderCategories";
-import { SeccionPerrosYGatos } from "@/components/seccionPerrosYGatos/seccionPerrosYGatos";
-import InstagramFeed from "@/components/redes/redes";
+import SliderCategoriesSelector from "@/components/sliderCategories/SliderCategoriesSelector";
+import {SeccionPerrosYGatosSelector} from "@/components/seccionPerrosYGatos/SeccionPerrosYGatosSelector";
+// import InstagramFeed from "@/components/redes/redes";
 import RedesSociales from "@/components/RedesSociales/RedesSociales";
 import SliderProductosDestacados from "@/components/sliderProductosDestacados/sliderProductosDestacados";
-import LogicaSearchbar from "@/components/LogicaSearchbar/LogicaSearchbar";
 import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
+import RedesSocialesDesktop from "@/components/RedesSociales/RedesSocialesDesktop";
+
 
 export default function Home() {
   return (
     <main>
       <section className="min-h-screen flex flex-col items-center justify-start ">
 
-      <LogicaSearchbar />
 
       <div className="my-1"></div> {/* Separation between sections */}
 
-
-      <SliderPrincipal />
-
+        <SliderSelector />
       
       <div className="my-1"></div> {/* Separation between sections */}
       
-        <EnvioGratis />
+        <div className="md:hidden">
+          <EnvioGratis />
+        </div>
 
         <div className="my-1"></div> {/* Separation between sections */}
 
@@ -32,11 +33,11 @@ export default function Home() {
 
       <div className="my-1"></div>  {/* Separation between sections */}
 
-        <SliderCategories />
+        <SliderCategoriesSelector />
 
       <div className="my-2"></div>  {/* Separation between sections */}
 
-    <SeccionPerrosYGatos />
+      <SeccionPerrosYGatosSelector />
 
       <div className="my-2"></div>  {/* Separation between sections */}
 
@@ -44,12 +45,16 @@ export default function Home() {
 
       <div className="my-2"></div>  {/* Separation between sections */}
 
-        <RedesSociales />
+        <>
+          <div className="block md:hidden">
+            <RedesSociales />
+          </div>
+          <div className="hidden md:block">
+            <RedesSocialesDesktop />
+          </div>
+        </>
 
-      <div className="my-1"></div>  {/* Separation between sections */}
 
-
-      <InstagramFeed />
 
       </section>
               <WhatsappLink />

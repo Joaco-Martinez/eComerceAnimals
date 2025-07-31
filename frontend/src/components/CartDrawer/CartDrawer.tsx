@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import {updateAnonCartItem, removeFromAnonCart} from "@/service/anonCartService";
 import { getCart } from "@/service/cartService";
 import { useCheckoutContext } from "@/context/checkoutContext";
-type CartItem = {
+export type CartItem = {
   id: string;
   productId: string;
   quantity: number;
@@ -268,7 +268,7 @@ export default function CartDrawer({ isOpen, onClose }: Props) {
           <div className="flex items-center justify-center w-full">
             <h2 className="text-lg font-bold text-[#918283]">CARRITO</h2>
           </div>
-          <button onClick={onClose} className="flex justify-end">
+          <button onClick={onClose} className="flex justify-end cursor-pointer">
             <X />
           </button>
         </div>
@@ -313,14 +313,14 @@ export default function CartDrawer({ isOpen, onClose }: Props) {
                 <div className="flex items-center border-gray-300 border-2 rounded-3xl gap-1">
                   <button
                     onClick={() => updateQuantity(item.id, -1)}
-                    className="p-1"
+                    className="p-1 cursor-pointer"
                     >
                     <Minus size={14} />
                   </button>
                   <span className="text-sm">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item.id, 1)}
-                    className="p-1"
+                    className="p-1 cursor-pointer"
                     >
                     <Plus size={14} />
                   </button>
@@ -363,10 +363,10 @@ export default function CartDrawer({ isOpen, onClose }: Props) {
           
           <button 
           onClick={() => { goToCart(); onClose(); }}
-          className="bg-[#8D7B74] text-white py-2 rounded-full">
+          className="bg-[#8D7B74] text-white py-2 rounded-full cursor-pointer">
             Ir al carrito
           </button>
-          <button className="border border-gray-400 py-2 rounded-full text-gray-700">
+          <button className="border border-gray-400 py-2 rounded-full text-gray-700 cursor-pointer">
             Seguir comprando
           </button>
         </div>
@@ -381,13 +381,13 @@ export default function CartDrawer({ isOpen, onClose }: Props) {
       <div className="flex justify-center gap-3">
         <button
           onClick={handleConfirmDelete}
-          className="bg-[#918283] hover:bg-[#7a6e6e] text-white text-sm font-medium px-4 py-2 rounded-full transition"
+          className="bg-[#918283] hover:bg-[#7a6e6e] text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer"
         >
           Sí, eliminar
         </button>
         <button
           onClick={handleCancelDelete}
-          className="text-[#918283] border border-gray-300 text-sm font-medium px-4 py-2 rounded-full hover:bg-gray-100 transition"
+          className="text-[#918283] border border-gray-300 text-sm font-medium px-4 py-2 rounded-full hover:bg-gray-100 transition cursor-pointer"
         >
           Cancelar
         </button>

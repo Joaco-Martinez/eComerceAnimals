@@ -22,7 +22,6 @@ const DashboardStatsPage = () => {
     const fetchStats = async () => {
       try {
         const stats = await getOverview();
-        console.log("STATS",stats)
         setTotalIncome(stats.totalRevenue ?? 0);
         setOrdersCount(stats.totalOrders ?? 0);
         setAvgTicket(stats.avgTicket ?? 0);

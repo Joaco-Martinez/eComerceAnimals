@@ -42,7 +42,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/overview',  getOverview);
+router.get('/overview', authMiddleware, isAdmin,  getOverview);
 
 /**
  * @swagger
@@ -72,7 +72,7 @@ router.get('/overview',  getOverview);
  *       500:
  *         description: Error interno
  */
-router.get('/pet-type-sales',  getPetTypeSales);
+router.get('/pet-type-sales', authMiddleware, isAdmin,  getPetTypeSales);
 /**
  * @swagger
  * /admin/stats/top-categories:
@@ -106,7 +106,7 @@ router.get('/pet-type-sales',  getPetTypeSales);
  *       500:
  *         description: Error interno
  */
-router.get('/top-categories',  getTopCategories);
+router.get('/top-categories', authMiddleware, isAdmin,  getTopCategories);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ router.get('/top-categories',  getTopCategories);
  *       500:
  *         description: Error interno
  */
-router.get('/top-colors',  getTopColors);
+router.get('/top-colors', authMiddleware, isAdmin,  getTopColors);
 
 
 /**
@@ -173,7 +173,7 @@ router.get('/top-colors',  getTopColors);
  *       500:
  *         description: Error interno
  */
-router.get('/top-sizes',  getTopSizes);
+router.get('/top-sizes', authMiddleware, isAdmin,  getTopSizes);
 
 /**
  * @swagger
@@ -209,7 +209,7 @@ router.get('/top-sizes',  getTopSizes);
  *         description: Error interno
  */
 
-router.get('/payment-methods',  getPaymentMethods);
+router.get('/payment-methods', authMiddleware, isAdmin,  getPaymentMethods);
 
 /**
  * @swagger
@@ -248,7 +248,7 @@ router.get('/payment-methods',  getPaymentMethods);
  *         description: Error interno
  */
 
-router.get('/top-products',  getTopProducts);
+router.get('/top-products', authMiddleware, isAdmin,  getTopProducts);
 
 /**
  * @swagger
@@ -283,7 +283,7 @@ router.get('/top-products',  getTopProducts);
  *         description: Error interno
  */
 
-router.get('/orders-by-status',  getOrdersByStatus);
+router.get('/orders-by-status', authMiddleware, isAdmin, getOrdersByStatus);
 
 
 /**
@@ -344,7 +344,7 @@ router.post('/products/:id/view', registerProductView);
  *         description: Error interno del servidor
  */
 
-router.get('/unconverted-products', getUnconvertedProducts);
+router.get('/unconverted-products', authMiddleware, isAdmin, getUnconvertedProducts);
 
 
 /**
@@ -383,7 +383,7 @@ router.get('/unconverted-products', getUnconvertedProducts);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/earnings/year/:year', getEarningsByYearController);
+router.get('/earnings/year/:year', authMiddleware, isAdmin, getEarningsByYearController);
 
 /**
  * @swagger
@@ -428,5 +428,5 @@ router.get('/earnings/year/:year', getEarningsByYearController);
  *         description: Error interno del servidor
  */
 
-router.get('/earnings/month/:year/:month', getEarningsByMonthController);
+router.get('/earnings/month/:year/:month', authMiddleware, isAdmin, getEarningsByMonthController);
 export default router;

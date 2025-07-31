@@ -83,7 +83,7 @@ const seguirComprando = () => {
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-3 border-b border-gray-300">
         <h2 className="text-lg font-bold text-[#918283]">MIS FAVORITOS</h2>
-        <button onClick={onClose}>
+        <button onClick={onClose} className='cursor-pointer'>
           <X />
         </button>
       </div>
@@ -116,7 +116,7 @@ const seguirComprando = () => {
               </div>
               <button
                 onClick={() => removeFromWishlist(item.productId)}
-                className="text-red-500 hover:text-red-700"
+                className="text-red-500 hover:text-red-700 cursor-pointer" 
               >
                 <Trash size={18} />
               </button>
@@ -133,7 +133,7 @@ const seguirComprando = () => {
       <div className="p-4">
         <button
           onClick={seguirComprando}
-          className="w-full border border-gray-400 py-2 rounded-full text-gray-700"
+          className="w-full border border-gray-400 py-2 rounded-full text-gray-700 cursor-pointer"
         >
           Seguir comprando
         </button>

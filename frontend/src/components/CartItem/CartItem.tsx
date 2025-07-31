@@ -44,11 +44,11 @@ export default function CartItem({ item, onIncrease, onDecrease }: Props) {
           </span>
         </div>
         <div className="flex items-center border-gray-300 border-2 rounded-3xl gap-1">
-          <button onClick={onDecrease} className="p-1">
+          <button onClick={onDecrease} className="p-1 cursor-pointer">
             <Minus size={14} />
           </button>
           <span className="text-sm">{item.quantity}</span>
-          <button onClick={onIncrease} className="p-1">
+          <button onClick={onIncrease} className="p-1 cursor-pointer">
             <Plus size={14} />
           </button>
         </div>

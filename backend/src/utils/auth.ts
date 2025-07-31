@@ -6,12 +6,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'mi_secreto';
 interface TokenPayload {
   userId: string;
   sessionId: string;
+  userRole: string;
   iat: number;
   exp: number;
 }
 
-export const generateToken = (userId: string, sessionId: string) => {
-  return jwt.sign({ userId, sessionId }, JWT_SECRET, {
+export const generateToken = (userId: string, sessionId: string, role: string) => {
+  return jwt.sign({ userId, sessionId, role }, JWT_SECRET, {
     expiresIn: '7d',
   });
 };

@@ -17,7 +17,6 @@ export const MostViewedNoSales = () => {
     const fetchProducts = async () => {
       try {
         const res = await getUncovertedProducts();
-        console.log(res)
         setProducts(res ?? []);
       } catch (error) {
         console.error('Error al obtener los productos:', error);

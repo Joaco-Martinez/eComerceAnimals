@@ -22,13 +22,13 @@ export default function CartActions({ step, onContinuar, onBack, loadingOrder }:
         <>
           <button
             onClick={onContinuar}
-            className="bg-[#918283] text-white py-2 rounded-full"
+            className="bg-[#918283] text-white py-2 rounded-full cursor-pointer"
           >
             Pagar
           </button>
           <button
             onClick={handleSeguirCompra}
-            className="border border-gray-400 py-2 rounded-full text-gray-700"
+            className="border border-gray-400 py-2 rounded-full text-gray-700 cursor-pointer"
           >
             Seguir comprando
           </button>
@@ -39,13 +39,13 @@ export default function CartActions({ step, onContinuar, onBack, loadingOrder }:
         <>
           <button
             onClick={onContinuar}
-            className="bg-[#918283] text-white py-2 rounded-full"
+            className="bg-[#918283] text-white py-2 rounded-full cursor-pointer"
           >
             Confirmar dirección
           </button>
           <button
             onClick={onBack}
-            className="border border-gray-400 py-2 rounded-full text-gray-700"
+            className="border border-gray-400 py-2 rounded-full text-gray-700 cursor-pointer"
           >
             Volver atrás
           </button>
@@ -57,13 +57,13 @@ export default function CartActions({ step, onContinuar, onBack, loadingOrder }:
           {loadingOrder && <Loader />}
           {!loadingOrder && <button
             onClick={onContinuar}
-            className="bg-[#918283] text-white py-2 rounded-full"
+            className="bg-[#918283] text-white py-2 rounded-full cursor-pointer"
           >
             Confirmar método de pago
           </button>}
           <button
             onClick={onBack}
-            className="border border-gray-400 py-2 rounded-full text-gray-700"
+            className="border border-gray-400 py-2 rounded-full text-gray-700 cursor-pointer"
           >
             Volver atrás
           </button>

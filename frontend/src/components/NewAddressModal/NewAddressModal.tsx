@@ -4,13 +4,12 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import { X } from 'lucide-react';
 
-
 export interface Address {
   id: string;
   postalCode: string;
   nombre: string;
   apellido: string;
-  telefono: string; // <-- CORREGIDO: antes estaba como number
+  telefono: string;
   dni: string;
   provincia: string;
   localidad: string;
@@ -29,6 +28,7 @@ export interface NewAddressInput {
   calle: string;
   piso?: string;
 }
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -54,12 +54,16 @@ export default function NewAddressModal({ isOpen, onClose, initialName, initialS
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-6 relative shadow-xl">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-          <X size={20} />
+      <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl">
+        {/* Botón cerrar */}
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+          <X size={22} />
         </button>
 
-        <h2 className="text-lg font-semibold text-center mb-4">Agregar nueva dirección</h2>
+        {/* Título */}
+        <h2 className="text-xl font-semibold text-[#2C4B4D] text-center mb-6">
+          Nueva dirección de envío
+        </h2>
 
         <Formik
           initialValues={{
@@ -77,48 +81,48 @@ export default function NewAddressModal({ isOpen, onClose, initialName, initialS
           onSubmit={(values, { setSubmitting }) => {
             onSubmit(values);
             setSubmitting(false);
-            onClose(); // cerrar modal después de enviar
+            onClose();
           }}
         >
           {({ isSubmitting }) => (
             <Form className="space-y-4 text-sm">
               <div>
-                <Field name="postalCode" placeholder="Código postal" className="input-field" />
-                <ErrorMessage name="postalCode" component="p" className="text-xs text-red-500" />
+                <Field name="postalCode" placeholder="Código postal" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+                <ErrorMessage name="postalCode" component="p" className="text-xs text-red-500 mt-1" />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <div>
-                  <Field name="nombre" placeholder="Nombre" className="input-field" />
-                  <ErrorMessage name="nombre" component="p" className="text-xs text-red-500" />
+                  <Field name="nombre" placeholder="Nombre" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+                  <ErrorMessage name="nombre" component="p" className="text-xs text-red-500 mt-1" />
                 </div>
                 <div>
-                  <Field name="apellido" placeholder="Apellido" className="input-field" />
-                  <ErrorMessage name="apellido" component="p" className="text-xs text-red-500" />
+                  <Field name="apellido" placeholder="Apellido" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+                  <ErrorMessage name="apellido" component="p" className="text-xs text-red-500 mt-1" />
                 </div>
               </div>
 
-              <Field name="telefono" placeholder="Teléfono" className="input-field" />
-              <ErrorMessage name="telefono" component="p" className="text-xs text-red-500" />
+              <Field name="telefono" placeholder="Teléfono" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+              <ErrorMessage name="telefono" component="p" className="text-xs text-red-500 mt-1" />
 
-              <Field name="dni" placeholder="DNI" className="input-field" />
-              <ErrorMessage name="dni" component="p" className="text-xs text-red-500" />
+              <Field name="dni" placeholder="DNI" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+              <ErrorMessage name="dni" component="p" className="text-xs text-red-500 mt-1" />
 
-              <Field name="provincia" placeholder="Provincia" className="input-field" />
-              <ErrorMessage name="provincia" component="p" className="text-xs text-red-500" />
+              <Field name="provincia" placeholder="Provincia" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+              <ErrorMessage name="provincia" component="p" className="text-xs text-red-500 mt-1" />
 
-              <Field name="localidad" placeholder="Localidad" className="input-field" />
-              <ErrorMessage name="localidad" component="p" className="text-xs text-red-500" />
+              <Field name="localidad" placeholder="Localidad" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+              <ErrorMessage name="localidad" component="p" className="text-xs text-red-500 mt-1" />
 
-              <Field name="calle" placeholder="Calle y número" className="input-field" />
-              <ErrorMessage name="calle" component="p" className="text-xs text-red-500" />
+              <Field name="calle" placeholder="Calle y número" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
+              <ErrorMessage name="calle" component="p" className="text-xs text-red-500 mt-1" />
 
-              <Field name="piso" placeholder="Piso, depto, etc. (opcional)" className="input-field" />
+              <Field name="piso" placeholder="Piso, depto (opcional)" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4BFAB] transition-all" />
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-2 py-2 rounded-full bg-[#a18c89] text-white font-medium"
+                className="w-full mt-2 py-2 rounded-full bg-[#a18c89] text-white font-medium hover:bg-[#8d7571] transition-colors"
               >
                 {isSubmitting ? 'Guardando...' : 'Guardar dirección'}
               </button>

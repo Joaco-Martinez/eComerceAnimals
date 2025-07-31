@@ -14,7 +14,6 @@ export const TopColors = () => {
     const fetchColors = async () => {
       try {
         const response = await getTopColor();
-        console.log("TOP COLOR",response)
         setColors(response ?? []);
       } catch (error) {
         console.error('Error al obtener los datos:', error);

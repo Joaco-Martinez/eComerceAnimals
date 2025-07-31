@@ -33,7 +33,7 @@ export default function UserDropdown({ userOpen, setUserOpen }: Props) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setUserOpen(!userOpen)}
-        className="inline-flex items-center p-2 rounded-lg text-[#E0DED1]"
+        className="inline-flex items-center p-2 rounded-lg text-[#E0DED1] cursor-pointer"
       >
         <Image src="/icons/perfil.png" alt="User" width={22} height={25} />
       </button>
@@ -99,7 +99,7 @@ export default function UserDropdown({ userOpen, setUserOpen }: Props) {
         {user ? (
           <button
             onClick={handleLogout}
-            className="block px-4 py-2 rounded-lg text-sm font-semibold text-red-400 hover:bg-red-100 transition-colors"
+            className="block px-4 py-2 rounded-lg text-sm font-semibold text-red-400 hover:bg-red-100 transition-colors cursor-pointer"
           >
             Cerrar sesión
           </button>
@@ -108,14 +108,14 @@ export default function UserDropdown({ userOpen, setUserOpen }: Props) {
             <Link
               href="/login"
               onClick={() => setUserOpen(false)}
-              className="block px-4 py-2 rounded-lg text-sm hover:bg-[#C4BFAB]/40"
+              className="block px-4 py-2 rounded-lg text-sm hover:bg-[#C4BFAB]/40 cursor-pointer"
             >
               Iniciar sesión
             </Link>
             <Link
               href="/register"
               onClick={() => setUserOpen(false)}
-              className="block px-4 py-2 rounded-lg text-sm hover:bg-[#C4BFAB]/40"
+              className="block px-4 py-2 rounded-lg text-sm hover:bg-[#C4BFAB]/40 cursor-pointer"
             >
               Registrarse
             </Link>
