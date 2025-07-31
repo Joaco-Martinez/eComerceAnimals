@@ -48,7 +48,7 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const { user, token } = await authService.loginUser(email, password);
-
+    console.log(token)
     res
       .cookie('token', token, {
         httpOnly: true,

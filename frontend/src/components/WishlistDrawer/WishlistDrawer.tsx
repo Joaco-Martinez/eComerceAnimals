@@ -9,6 +9,7 @@ import { getWishlist, toggleWishlistItem } from '@/service/wishlistService';
 import { useAuthContext } from '@/context/authContext';
 import { useRouter } from 'next/navigation';
 import BannerCarrito from '../BannerCarrito/BannerCarrito';
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -27,14 +28,17 @@ interface WishlistItem {
 
 export default function WishlistDrawer({ isOpen, onClose }: Props) {
   const { isAuth } = useAuthContext();
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | undefined>(undefined);
   const router = useRouter();
 
   useEffect(() => {
     if (isOpen && isAuth) {
       getWishlist()
         .then((res) => setWishlistItems(res))
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          setWishlistItems([]);
+        });
     }
 
     if (isOpen) {
@@ -49,20 +53,18 @@ export default function WishlistDrawer({ isOpen, onClose }: Props) {
   const removeFromWishlist = async (productId: string) => {
     try {
       await toggleWishlistItem(productId);
-      setWishlistItems((prev) =>
-        prev.filter((item) => item.productId !== productId)
-      );
+      setWishlistItems((prev) => prev?.filter((item) => item.productId !== productId));
       toast.success('Producto eliminado de favoritos');
     } catch (error) {
-      console.log(error)
+      console.error(error);
       toast.error('Error al eliminar de wishlist');
     }
   };
 
-const seguirComprando = () => {
-  router.push('/productos');
-  onClose();
-};
+  const seguirComprando = () => {
+    router.push('/productos');
+    onClose();
+  };
 
   const goToProduct = (id: string) => {
     router.push(`/product/${id}`);
@@ -76,21 +78,21 @@ const seguirComprando = () => {
         isOpen ? 'translate-x-0' : 'translate-x-full'
       )}
     >
+      <div className="text-white flex justify-between items-center px-4 py-2">
+        <BannerCarrito />
+      </div>
 
-        <div className="text-white flex justify-between items-center px-4 py-2">
-                <BannerCarrito />
-              </div>
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-3 border-b border-gray-300">
         <h2 className="text-lg font-bold text-[#918283]">MIS FAVORITOS</h2>
-        <button onClick={onClose} className='cursor-pointer'>
+        <button onClick={onClose} className="cursor-pointer">
           <X />
         </button>
       </div>
 
       {/* Contenido */}
       <div className="p-4 space-y-4 overflow-y-auto max-h-[80vh]">
-        {wishlistItems.length > 0 ? (
+        {Array.isArray(wishlistItems) && wishlistItems.length > 0 ? (
           wishlistItems.map((item) => (
             <div
               key={item.id}
@@ -116,7 +118,7 @@ const seguirComprando = () => {
               </div>
               <button
                 onClick={() => removeFromWishlist(item.productId)}
-                className="text-red-500 hover:text-red-700 cursor-pointer" 
+                className="text-red-500 hover:text-red-700 cursor-pointer"
               >
                 <Trash size={18} />
               </button>
@@ -124,7 +126,9 @@ const seguirComprando = () => {
           ))
         ) : (
           <p className="text-center text-gray-500 text-sm">
-            No tenés productos en tu wishlist.
+            {Array.isArray(wishlistItems)
+              ? 'No tenés productos en tu wishlist.'
+              : 'Cargando tus favoritos...'}
           </p>
         )}
       </div>

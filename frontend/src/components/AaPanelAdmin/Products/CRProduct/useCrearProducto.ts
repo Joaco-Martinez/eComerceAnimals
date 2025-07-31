@@ -48,7 +48,6 @@ export function useCrearProducto() {
   }
 
   const onSubmit = async (data: ProductFormValues) => {
-   console.log('SUBMIT OK', data)
     if (imageFiles.length === 0) {
       toast.error('Debés subir al menos una imagen del producto')
       return

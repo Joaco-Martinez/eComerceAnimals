@@ -31,7 +31,7 @@ export const addItem = async (req: Request, res: Response) => {
 
       // Setear cookie con el ID del nuevo carrito
       res.cookie("AnonCart_id", AnonCartId, {
-        httpOnly: false,
+        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
         sameSite: "lax",
         secure: false, // poné true si estás en producción con HTTPS

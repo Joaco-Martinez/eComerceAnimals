@@ -22,7 +22,7 @@ export default function WishlistAddButton({ productId }: Props) {
       await toggleWishlistItem(productId);
       toast.success('Producto agregado a la wishlist');
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error('Error al agregar a la wishlist');
     }
   };

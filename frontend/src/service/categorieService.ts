@@ -4,7 +4,6 @@ import api from "./apiService";
 
 export const getAllCategories = async () => {
   const res = await api.get("/categories");
-  console.log(" Categorias recibidas:", res);
   return res;
 };
 

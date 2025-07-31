@@ -110,9 +110,9 @@ export const loginUser = async (email: string, password: string) => {
    const User = await getUserById(user.id);
   if (!User) throw new Error('Usuario no encontrado');
 
-
+  console.log("user",User)
   const token = generateToken(user.id, session.id, User.role);
-
+  console.log("token",token)
   await prisma.session.update({
     where: { id: session.id },
     data: { token },

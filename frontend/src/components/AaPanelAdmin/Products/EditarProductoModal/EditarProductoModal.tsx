@@ -91,7 +91,6 @@ export default function EditarProductoModal({
   categoryId: form.category.id,
   isActive: form.isActive,
 };
-console.log(data)
       const updated = await updateProduct(form.id, data)
       onSave({ ...form, ...updated })
       toast.success("Producto actualizado correctamente")

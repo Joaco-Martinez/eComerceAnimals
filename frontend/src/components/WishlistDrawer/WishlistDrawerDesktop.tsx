@@ -26,12 +26,9 @@ export default function WishlistDrawerDesktop({ isOpen, onClose }: Props) {
     isOpen ? "translate-x-0" : "translate-x-full"
   )}
 >
-  <div
-    className="hidden md:block h-full"
-    onClick={(e) => e.stopPropagation()}
-  >
-    <WishlistDrawer isOpen={isOpen} onClose={onClose} />
-  </div>
+  <div className="h-full">
+  <WishlistDrawer isOpen={isOpen} onClose={onClose} />
+</div>
 </div>
     </>
   );

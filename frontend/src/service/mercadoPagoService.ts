@@ -17,7 +17,6 @@ type OrderPayload = {
 export const mercadoPagoService = {
   async createCheckout(order: OrderPayload): Promise<string> {
     const response = await api.post("/mercadopago/submit", order);
-    console.log(response)
     return response.init_point; 
   },
 };

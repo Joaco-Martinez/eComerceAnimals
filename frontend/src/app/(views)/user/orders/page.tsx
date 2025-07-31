@@ -43,7 +43,6 @@ export default function OrdersPage() {
           ...order,
           status: traducirStatus(order.status),
         }));
-        console.log(ordersWithStatus)
         setOrders(ordersWithStatus);
       };
       fetchOrders();

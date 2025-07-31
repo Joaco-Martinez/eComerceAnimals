@@ -8,6 +8,7 @@ import { AuthProvider } from '../context/authContext';
 import { AnonCartProvider } from '../context/anonCartContext';
 import { CheckoutProvider } from '@/context/checkoutContext';
 import CookieBanner from '@/components/CookieBanner/CookieBanner'
+import SWRegister from "@/components/SWRegister.tsx/SWRegister";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
         <Toaster />
         {/* <WhatsappLink /> */}
         <CookieBanner />
+        <SWRegister />
         </CheckoutProvider>
         </AnonCartProvider>
         </AuthProvider>
