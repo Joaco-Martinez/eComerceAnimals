@@ -1,17 +1,14 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/auth.Service';
 import { prisma } from '../db/db';
+const isProduction = process.env.MODE === 'production';
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
     const { user, token } = await authService.registerUser(name, email, password);
 
     res
-      .cookie('token', token, {
-  httpOnly: true,
-  secure: false,         // ⚠️ en desarrollo, NO puede ser true
-  sameSite: 'lax',       // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
-})
       .status(200)
       .json({ id: user.id, name: user.name, email: user.email });
   } catch (error) {
@@ -27,7 +24,7 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
     res
       .cookie('token', token, {
   httpOnly: true,
-  secure: false,         // ⚠️ en desarrollo, NO puede ser true
+  secure: isProduction,         // ⚠️ en desarrollo, NO puede ser true
   sameSite: 'lax',       // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
 })
       .status(200)
@@ -37,6 +34,7 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role,
         },
       });
   } catch (error) {

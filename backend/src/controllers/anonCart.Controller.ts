@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as anonCartService from '../services/anonCart.Service';
-
+const isProduction = process.env.MODE === 'production';
 export const getCart = async (req: Request, res: Response) => {
   const AnonCartId = req.query.cartId as string;
 
@@ -33,8 +33,8 @@ export const addItem = async (req: Request, res: Response) => {
       res.cookie("AnonCart_id", AnonCartId, {
   httpOnly: true,
   maxAge: 1000 * 60 * 60 * 24 * 7,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
+  sameSite:"lax",
+  secure: isProduction,
 });
     }
 
