@@ -118,7 +118,7 @@ export const loginUser = async (email: string, password: string) => {
     where: { id: session.id },
     data: { token },
   });
-
+  console.log(session)
   return { user, token };
 };
 
