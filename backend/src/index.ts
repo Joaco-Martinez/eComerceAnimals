@@ -25,7 +25,7 @@ dotenv.config();
 export const app = express();
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.ORIGIN_URL || 'http://localhost:3000',
+  origin: ["https://www.punkypet.com.ar", "https://punkypet.com.ar"],
   credentials: true
 }));
 app.use(express.json());

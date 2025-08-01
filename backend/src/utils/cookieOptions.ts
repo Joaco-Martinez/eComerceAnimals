@@ -7,5 +7,4 @@ export const getCookieOptions = (): CookieOptions => ({
   secure: isProduction,
   sameSite: 'lax', // 'lax' es un valor válido
   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
-  domain: isProduction ? '.punkypet.com.ar' : undefined, // 👈 esto es clave
 });
