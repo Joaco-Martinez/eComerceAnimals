@@ -55,14 +55,14 @@ export const mercadoPagoService = {
     items: OrderItem[];
     orderId: string;
   }): Promise<string> {
-    const token = jwt.sign({ orderId }, process.env.JWT_SECRET!, { expiresIn: '10m' });
+    const tokenmp = jwt.sign({ orderId }, process.env.JWT_SECRET!, { expiresIn: '10m' });
 
     const preference = await new Preference(mercadopago).create({
       body: {
         items,
         external_reference: orderId,
         back_urls: {
-          success: `${process.env.URLSUCCESSMP}?orderId=${orderId}&token=${token}`,
+          success: `${process.env.URLSUCCESSMP}?orderId=${orderId}&token=${tokenmp}`,
           failure: process.env.URLFAILEDMP,
           pending: process.env.URLPENDINGMP,
         },

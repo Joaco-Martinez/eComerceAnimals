@@ -11,8 +11,8 @@ export default function PaymentSuccessPage() {
   const router = useRouter();
 
   const orderId = searchParams.get('orderId');
-  const token = searchParams.get('token');
-
+  const token = searchParams.get('tokenmp');
+  console.log(token)
   const [loading, setLoading] = useState(true);
   const [valid, setValid] = useState(false);
 

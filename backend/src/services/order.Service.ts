@@ -41,14 +41,14 @@ export const getAllOrders = async () => {
   });
 };
 
-export const confirmPaymentService = async (orderId: string, token: string) => {
+export const confirmPaymentService = async (orderId: string, tokenmp: string) => {
   const secret = process.env.JWT_SECRET;
   if (!secret) throw new Error('Falta la variable JWT_SECRET');
 
   let decoded: any;
 
   try {
-    decoded = jwt.verify(token, secret);
+    decoded = jwt.verify(tokenmp, secret);
   } catch (err) {
     throw new Error('Token inválido o expirado');
   }
@@ -286,8 +286,16 @@ export const createOrder = async (
       })
     )
   );
+const tokenmp = jwt.sign(
+  { orderId: order.id },
+  process.env.JWT_SECRET!,
+  { expiresIn: '15m' }
+);
 
-  return order;
+  return {
+    ...order
+    , tokenmp
+  }
 };
 
 
