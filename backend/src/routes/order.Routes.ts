@@ -124,7 +124,7 @@ router.get("/", authMiddleware, isAdmin,  getAllOrdersController)
  *             schema:
  *               $ref: '#/components/schemas/Order'
  */
-router.get("/:orderId", authMiddleware, isAdmin,  getOrderByIdController)
+router.get("/:orderId", authMiddleware,  getOrderByIdController)
 
 
 

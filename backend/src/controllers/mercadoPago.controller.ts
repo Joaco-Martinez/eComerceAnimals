@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { handleMercadoPagoWebhook } from '../services/mercadoPago.service';
 import { mercadoPagoService } from "../services/mercadoPago.service";
 
 export const mercadoPagoController = {
@@ -17,4 +18,21 @@ export const mercadoPagoController = {
       res.status(500).json({ error: error.message || "Error al crear preferencia" });
     }
   },
+};
+
+
+
+export const mercadoPagoWebhookController = async (req: Request, res: Response) => {
+  try {
+    const { type, data } = req.body;
+
+    if (type === 'payment' && data?.id) {
+      await handleMercadoPagoWebhook(data.id);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error en webhook de Mercado Pago:', error);
+    res.sendStatus(500);
+  }
 };

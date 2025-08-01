@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Punky Pet",
-  description: "Tienda de productos para mascotas",
+  title: "Punky Pet - Estilo punk para el mundo pet",
+  description: "Productos con estilo para tu perro o gato. Envíos a todo el país. ¡Descubrí tu estilo punk!",
 };
 
 export default function RootLayout({

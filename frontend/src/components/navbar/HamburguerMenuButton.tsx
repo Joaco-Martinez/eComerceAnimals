@@ -8,7 +8,6 @@ import Link from "next/link";
 const navItems = [
   { name: "Home", slug: "" },
   { name: "Productos", slug: "productos" },
-  { name: "Contacto", slug: "contacto" },
   { name: "Carrito", slug: "cart" },
 
 ];

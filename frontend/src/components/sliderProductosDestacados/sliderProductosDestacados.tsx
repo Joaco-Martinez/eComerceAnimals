@@ -50,7 +50,7 @@ export default function SliderProductosDestacados() {
     );
   }
 
-  if (featuredProducts.length === 0) return null;
+ if (!loading && featuredProducts.length === 0) return null;
 
   return (
     <section className="py-6 px-4 sm:px-8 w-full max-w-screen-lg mx-auto">
@@ -76,17 +76,18 @@ export default function SliderProductosDestacados() {
         }}
         className="w-full rounded-2xl overflow-hidden"
       >
-        {featuredProducts.map(product => (
-  <SwiperSlide key={product.sku}>
-    <div className="py-6">
-      {isDesktop ? (
-        <CardProductDesktop {...product} />
-      ) : (
-        <CardProduct {...product} />
-      )}
-    </div>
-  </SwiperSlide>
-))}
+        {Array.isArray(featuredProducts) &&
+  featuredProducts.map((product) => (
+    <SwiperSlide key={product.sku}>
+      <div className="py-6">
+        {isDesktop ? (
+          <CardProductDesktop {...product} />
+        ) : (
+          <CardProduct {...product} />
+        )}
+      </div>
+    </SwiperSlide>
+  ))}
       </Swiper>
     </section>
   );

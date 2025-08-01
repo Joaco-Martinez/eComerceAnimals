@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { mercadoPagoController } from "../controllers/mercadoPago.controller";
+import { mercadoPagoController, mercadoPagoWebhookController } from "../controllers/mercadoPago.controller";
 
 const router = Router();
 
@@ -76,5 +76,7 @@ const router = Router();
  *                   example: "Error al crear preferencia"
  */
 router.post("/submit", mercadoPagoController.submit);
+
+router.post('/webhook', mercadoPagoWebhookController);
 
 export default router;

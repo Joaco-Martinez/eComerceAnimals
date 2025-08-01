@@ -1,7 +1,6 @@
 const navItems = [
   { name: "Home", slug: "" },
   { name: "Productos", slug: "productos" },
-  { name: "Contacto", slug: "contacto" },
 ];
 
 export default function DesktopNavItems() {

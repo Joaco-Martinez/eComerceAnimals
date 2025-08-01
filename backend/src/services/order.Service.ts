@@ -159,7 +159,7 @@ export const createOrder = async (
         orderNumber,
         totalAmount,
         couponId: data.couponId,
-        status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+        status:  'pending',
         priceDetail,
         items: {
           create: data.cartItems.map((item) => ({
@@ -173,7 +173,7 @@ export const createOrder = async (
         payment: {
           create: {
             method: data.paymentMethod,
-            status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+            status:  'pending',
             amount: totalAmount,
           },
         },
