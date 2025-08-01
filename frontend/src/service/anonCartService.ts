@@ -38,7 +38,7 @@ export const addToAnonCart = async (
   return await apiService.post(
     `/anon-cart/add`,
     { AnonCartId, productId, quantity, color, size },
-    false,
+    true,
     false,
     true
   );
