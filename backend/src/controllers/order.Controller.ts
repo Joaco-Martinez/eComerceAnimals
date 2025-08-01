@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createOrder, updateOrderStatus, getOrdersByUser, getAllOrders, getOrderById } from '../services/order.Service';
+import { createOrder, updateOrderStatus, getOrdersByUser, getAllOrders, getOrderById, confirmPaymentService } from '../services/order.Service';
 import { AuthRequest } from '../middlewares/authMiddlewares';
 import { me } from './auth.Controller';
 export const createOrderController = async (req: AuthRequest, res: Response) => {
@@ -12,6 +12,22 @@ export const createOrderController = async (req: AuthRequest, res: Response) => 
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'No se pudo crear la orden' });
+  }
+};
+
+export const confirmPaymentController = async (req: Request, res: Response) => {
+  const { orderId, token } = req.body;
+
+  if (!orderId || !token) {
+    return res.status(400).json({ error: 'Faltan datos: orderId o token' });
+  }
+
+  try {
+    const order = await confirmPaymentService(orderId, token);
+    return res.status(200).json(order);
+  } catch (error: any) {
+    console.error('Error al confirmar pago:', error.message);
+    return res.status(400).json({ error: error.message });
   }
 };
 

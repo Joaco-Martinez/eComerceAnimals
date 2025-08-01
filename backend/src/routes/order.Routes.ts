@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createOrderController, updateOrderStatusController, getOrdersByUserController, getAllOrdersController, getOrderByIdController } from '../controllers/order.Controller';
+import { createOrderController, updateOrderStatusController, getOrdersByUserController, confirmPaymentController,getAllOrdersController, getOrderByIdController } from '../controllers/order.Controller';
 import { authMiddleware } from '../middlewares/authMiddlewares';
 import { isAdmin } from '../middlewares/isAdmin';
 
@@ -127,5 +127,5 @@ router.get("/", authMiddleware, isAdmin,  getAllOrdersController)
 router.get("/:orderId", authMiddleware,  getOrderByIdController)
 
 
-
+router.post('/confirm-payment', confirmPaymentController);
 export default router;

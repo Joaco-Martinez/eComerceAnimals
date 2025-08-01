@@ -1,6 +1,7 @@
 import { prisma } from '../db/db';
 import { customAlphabet } from 'nanoid';
 import sendEmail from '../utils/sendEmail';
+import jwt from 'jsonwebtoken';
 import mjml2html from 'mjml';
 import {
   generateOrderEmailTemplate,
@@ -38,6 +39,30 @@ export const getAllOrders = async () => {
       createdAt: 'desc',
     },
   });
+};
+
+export const confirmPaymentService = async (orderId: string, token: string) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('Falta la variable JWT_SECRET');
+
+  let decoded: any;
+
+  try {
+    decoded = jwt.verify(token, secret);
+  } catch (err) {
+    throw new Error('Token inválido o expirado');
+  }
+
+  if (decoded.orderId !== orderId) {
+    throw new Error('Token no coincide con la orden');
+  }
+
+  const updatedOrder = await prisma.order.update({
+    where: { id: orderId },
+    data: { status: 'paid' },
+  });
+
+  return updatedOrder;
 };
 
 export const getOrderById = async (id: string) => prisma.order.findUnique({

@@ -4,48 +4,43 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import api from '@/service/apiService';
 import { CheckCircle } from 'lucide-react';
-
-interface Order {
-  id: string;
-  status: string;
-  // podés agregar más campos si querés mostrar detalles
-}
+import toast from 'react-hot-toast';
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const orderId = searchParams.get('orderId');
+  const token = searchParams.get('token');
+
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState<Order | null>(null);
+  const [valid, setValid] = useState(false);
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      if (!orderId) {
-        router.replace('/');
+    const confirmOrder = async () => {
+      if (!orderId || !token) {
+        console.log('No se proporcionaron orderId o token' + orderId + ' ' + token);
         return;
       }
 
       try {
-        const res = await api.get(`/order/${orderId}`);
-        if (res.status !== 'paid') {
-          router.replace('/');
-          return;
-        }
-        setOrder(res);
-      } catch (error) {
-        console.error('Error al obtener orden:', error);
+        // Validar el token y actualizar estado a "paid"
+        await api.post('/orders/confirm-payment', { orderId, token });
+        setValid(true);
+      } catch (err) {
+        console.error('Token inválido o expirado:', err);
+        toast.error('Token inválido o expirado');
         router.replace('/');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrder();
-  }, [orderId, router]);
+    confirmOrder();
+  }, [orderId, token, router]);
 
-  if (loading) return <p className="text-center py-10">Verificando orden...</p>;
-  if (!order) return null;
+  if (loading) return <p className="text-center py-10">Confirmando orden...</p>;
+  if (!valid) return null;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center text-center p-6" style={{ backgroundColor: '#FFFFFF' }}>
