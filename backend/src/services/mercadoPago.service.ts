@@ -62,7 +62,7 @@ export const mercadoPagoService = {
         items,
         external_reference: orderId,
         back_urls: {
-          success: `${process.env.URLSUCCESSMP}?orderId=${orderId}&token=${tokenmp}`,
+          success: `${process.env.URLSUCCESSMP}?orderId=${orderId}&token=${encodeURIComponent(tokenmp)}`,
           failure: process.env.URLFAILEDMP,
           pending: process.env.URLPENDINGMP,
         },
