@@ -2,44 +2,53 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-// Verificá que la variable esté definida
 const SECRET_STRING = process.env.JWT_SECRET;
 if (!SECRET_STRING) {
   throw new Error('Falta JWT_SECRET en el .env');
 }
-
 const SECRET = new TextEncoder().encode(SECRET_STRING);
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
-  // 👉 Si ya está logueado, bloquear acceso a login y register
+  console.log("🧩 Entró al middleware");
+  console.log("📍 Pathname:", pathname);
+  console.log("🍪 Token:", token ? "[TOKEN PRESENTE]" : "[NO TOKEN]");
+
+  // 🔁 Si está logueado e intenta ir a login o register, redirige al home
   if (token && (pathname === '/login' || pathname === '/register')) {
-    return NextResponse.redirect(new URL('/', request.url)); // o a /user o /admin según prefieras
+    console.log("🔒 Usuario logueado intenta ir a login/register → redirigiendo a /");
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // 👉 Si no hay token y entra a zonas privadas, redirigir a login
+  // 🚫 Si no hay token e intenta entrar a rutas privadas
   if (!token) {
     if (pathname.startsWith('/admin') || pathname.startsWith('/user')) {
+      console.log("⛔ No token en ruta protegida → redirigiendo a /login");
       return NextResponse.redirect(new URL('/login', request.url));
     }
+    console.log("✅ No token pero en ruta pública → dejando pasar");
     return NextResponse.next();
   }
 
-  // 👉 Verificar JWT y rol
+  // 🔐 Verificamos JWT y controlamos acceso por rol
   try {
     const { payload } = await jwtVerify(token, SECRET);
     const role = payload.role;
+    console.log("✅ JWT válido. Rol:", role);
 
     if (pathname.startsWith('/admin') && role !== 'admin') {
+      console.log("🚫 Usuario no es admin → redirigiendo a /404");
       return NextResponse.rewrite(new URL('/404', request.url));
     }
 
     if (pathname.startsWith('/user') && role !== 'customer') {
+      console.log("🚫 Usuario no es customer → redirigiendo a /404");
       return NextResponse.rewrite(new URL('/404', request.url));
     }
 
+    console.log("✅ Acceso permitido → dejando pasar");
     return NextResponse.next();
   } catch (err) {
     console.error('❌ JWT inválido:', err);
@@ -52,6 +61,6 @@ export const config = {
     '/admin/:path*',
     '/user/:path*',
     '/login',
-    '/register'
+    '/register',
   ],
 };
