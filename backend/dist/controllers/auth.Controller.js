@@ -92,6 +92,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
         const { user, token } = yield authService.loginUser(email, password);
+        console.log(token);
         res
             .cookie('token', token, {
             httpOnly: true,

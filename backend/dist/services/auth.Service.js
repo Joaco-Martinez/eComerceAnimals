@@ -94,7 +94,9 @@ const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, functio
     const User = yield (0, user_Service_1.getUserById)(user.id);
     if (!User)
         throw new Error('Usuario no encontrado');
+    console.log("user", User);
     const token = (0, auth_1.generateToken)(user.id, session.id, User.role);
+    console.log("token", token);
     yield db_1.prisma.session.update({
         where: { id: session.id },
         data: { token },

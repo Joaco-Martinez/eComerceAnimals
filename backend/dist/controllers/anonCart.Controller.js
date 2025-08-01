@@ -68,10 +68,10 @@ const addItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             AnonCartId = newCart.id;
             // Setear cookie con el ID del nuevo carrito
             res.cookie("AnonCart_id", AnonCartId, {
-                httpOnly: false,
-                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
-                sameSite: "lax",
-                secure: false, // poné true si estás en producción con HTTPS
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 7,
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+                secure: process.env.NODE_ENV === "production",
             });
         }
         const item = yield anonCartService.addToAnonCart(AnonCartId, productId, quantity, color, size);
