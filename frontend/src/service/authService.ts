@@ -8,7 +8,7 @@ export const loginUser = async (credentials: { email: string; password: string }
  
  const response = await apiService.post("/auth/login", credentials, true, false, true);
  console.log(response)
-  return 
+  return response
 };
 
 export const logoutUser = async () => {
