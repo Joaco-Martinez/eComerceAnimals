@@ -98,21 +98,22 @@ export const loginUser = async (email: string, password: string) => {
   const validPassword = await comparePassword(password, user.password);
   if (!validPassword) throw new Error('Credenciales inválidas');
 
-  // Crear sesión
+  const User = await getUserById(user.id);
+  if (!User) throw new Error('Usuario no encontrado');
+
+  // ✅ Primero generamos la sesión sin token para obtener el ID
   const session = await prisma.session.create({
     data: {
       userId: user.id,
-      token: '',
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60), // 1h
+      token: '', // temporal
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     },
   });
 
-   const User = await getUserById(user.id);
-  if (!User) throw new Error('Usuario no encontrado');
-
-  console.log("user",User)
+  // ✅ Generamos el token usando el session.id
   const token = generateToken(user.id, session.id, User.role);
-  console.log("token",token)
+
+  // ✅ Actualizamos la sesión con el token real
   await prisma.session.update({
     where: { id: session.id },
     data: { token },
