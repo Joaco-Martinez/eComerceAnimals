@@ -10,6 +10,7 @@ const SECRET = new TextEncoder().encode(SECRET_STRING);
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
+ console.log("🔍 Todas las cookies disponibles:", request.cookies.getAll());
   const { pathname } = request.nextUrl;
 
   console.log("🧩 Entró al middleware");
