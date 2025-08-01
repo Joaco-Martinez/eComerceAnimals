@@ -34,7 +34,7 @@ export const addItem = async (req: Request, res: Response) => {
   httpOnly: true,
   maxAge: 1000 * 60 * 60 * 24 * 7,
   sameSite:"lax",
-  secure: isProduction,
+  secure: true,
 });
     }
 

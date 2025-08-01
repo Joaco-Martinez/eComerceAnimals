@@ -24,7 +24,7 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
     res
       .cookie('token', token, {
   httpOnly: true,
-  secure: isProduction,         // ⚠️ en desarrollo, NO puede ser true
+  secure: true,         // ⚠️ en desarrollo, NO puede ser true
   sameSite: 'lax',       // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
 })
       .status(200)
@@ -50,7 +50,7 @@ export const login = async (req: Request, res: Response) => {
     res
       .cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // ✅ true solo en producción con HTTPS
+        secure: true, // ✅ true solo en producción con HTTPS
         sameSite: 'lax', // 🔥 permite cookies entre dominios en dev
         maxAge: 7 * 24 * 60 * 60 * 1000, // ✅ 7 días en milisegundos
       })
