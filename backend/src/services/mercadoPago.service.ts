@@ -56,7 +56,7 @@ export const mercadoPagoService = {
     orderId: string;
   }): Promise<string> {
     const tokenmp = jwt.sign({ orderId }, process.env.JWT_SECRET!, { expiresIn: '10m' });
-
+    console.log("orderId", orderId)
     const preference = await new Preference(mercadopago).create({
       body: {
         items,
