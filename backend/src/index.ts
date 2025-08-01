@@ -11,7 +11,7 @@ import cartRoutes from './routes/cart.Routes';
 import orderRoutes from './routes/order.Routes';
 import categoryRoutes from "./routes/category.Routes";
 import addressRoutes from './routes/address.Routes';
-import mercadoPagoRoutes from "./routes/mercadoPago.Routes";
+import mercadoPagoRoutes from "./routes/pagos.Routes";
 import { swaggerUiHandler, swaggerUiSetup } from './swaggerConfig';
 import stockNotificationRoutes from "./routes/stockNotification.Routes";
 import anonCartRoutes from './routes/anonCart.Routes';
