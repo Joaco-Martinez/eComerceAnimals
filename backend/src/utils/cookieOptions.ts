@@ -5,6 +5,6 @@ const isProduction = process.env.MODE === 'production';
 export const getCookieOptions = (): CookieOptions => ({
   httpOnly: true,
   secure: isProduction,
-  sameSite: 'lax', // 'lax' es un valor válido
+  sameSite: 'none', // 'lax' es un valor válido
   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
 });
