@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import EmailVerificationModal from '../EmailVerificationModal/EmailVerificationModal';
 import { registerUser } from '../../service/authService';
 import { useAuthContext } from '../../context/authContext';
-import { useRouter } from 'next/navigation';
+
 
 const schema = yup.object().shape({
   nombre: yup.string().required('El nombre es obligatorio'),
@@ -31,7 +31,6 @@ export default function RegisterForm() {
   const [showModal, setShowModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
   const { SaveUserData} = useAuthContext();
-  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -53,7 +52,6 @@ export default function RegisterForm() {
         toast.success('Usuario registrado correctamente');
         setRegisteredEmail(data.email);
         setShowModal(true);
-        router.push('/');
         reset();
       }
     } catch (error: any) {

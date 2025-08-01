@@ -4,6 +4,7 @@ import { FC, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { verifyEmailCode } from '../../service/authService';
 import { User } from '../../../interfaces/Types';
+import { useRouter } from 'next/navigation';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -14,7 +15,7 @@ interface Props {
 const EmailVerificationModal: FC<Props> = ({ isOpen, onClose, email, onVerified }) => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   if (!isOpen) return null;
 
   const handleVerify = async () => {
@@ -23,6 +24,7 @@ const EmailVerificationModal: FC<Props> = ({ isOpen, onClose, email, onVerified 
     const response = await verifyEmailCode(email, code); // debe devolver user
 
     onVerified(response.user);
+    router.push('/');
     onClose();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
