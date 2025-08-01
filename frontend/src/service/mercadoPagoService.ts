@@ -9,6 +9,7 @@ type OrderItem = {
 };
 
 type OrderPayload = {
+  orderId: string;
   items: OrderItem[];
   metadata?: Record<string, any>;
   totalAmount?: number;
