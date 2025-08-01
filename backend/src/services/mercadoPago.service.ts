@@ -52,8 +52,8 @@ export const mercadoPagoService = {
     items,
     metadata,
     back_urls: {
-      success: process.env.URLFAILEDMP,
-      failure: process.env.URLSUCCESSMP,
+      success: process.env.URLSUCCESSMP,
+      failure: process.env.URLFAILEDMP,
       pending: process.env.URLPENDINGMP,
     },
     auto_return: "approved",
