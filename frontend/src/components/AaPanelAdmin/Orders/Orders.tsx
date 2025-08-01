@@ -12,7 +12,6 @@ export const Orders: React.FC = () => {
     const fetchOrders = async () => {
       try {
         const data = await getAllOrders();
-        console.log("dataaa",data)
         setOrders(data);
       } catch (err) {
         console.error('Error al traer pedidos:', err);

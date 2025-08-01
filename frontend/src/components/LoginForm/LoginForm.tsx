@@ -47,6 +47,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
     const user = await getCurrentUser(); 
     
+    
     if (!user) {
       return
     }

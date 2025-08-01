@@ -24,7 +24,6 @@ const ProductCardSlide: FC<ProductCardSlideProps> = ({
 }) => {
   const formattedPrice = (price * 0.8).toLocaleString("es-AR");
   const originalPrice = price.toLocaleString("es-AR");
-    console.log('ProductCardSlide:', { name, description, price, images });
   return (
     <div className="w-[160px] bg-white rounded-xl shadow-md flex flex-col overflow-hidden">
       <div className="relative bg-gray-50 p-2">

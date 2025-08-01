@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { mercadoPagoController, mercadoPagoWebhookController } from "../controllers/mercadoPago.controller";
+import { mercadoPagoController } from "../controllers/mercadoPago.controller";
 
 const router = Router();
 
@@ -77,6 +77,7 @@ const router = Router();
  */
 router.post("/submit", mercadoPagoController.submit);
 
-router.post('/webhook', mercadoPagoWebhookController);
+
+router.post('/webhook', mercadoPagoController.webhook);
 
 export default router;

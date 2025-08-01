@@ -11,7 +11,6 @@ export default function PaymentStep() {
   const handleSelect = (method: 'transferencia' | 'mercadopago') => {
     setSelected(method);
     setPaymentMethod(method);
-    console.log('✅ Método de pago seleccionado:', method);
   };
 
   return (

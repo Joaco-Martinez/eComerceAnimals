@@ -56,7 +56,7 @@ export const EditarProductos = () => {
 
     fetchProducts()
   }, [])
-  console.log(products)
+
   const filteredProducts = products.filter((p) => {
     const matchesName = p.name.toLowerCase().includes(filters.search.toLowerCase())
     const matchesCategory = filters.categoryId ? p.category.id === filters.categoryId : true

@@ -72,17 +72,12 @@ export default function AddressStep() {
     setAddressId(selectedAddressId);
     setShippingMethod(method);
 
-    console.log("📦 CheckoutContext actualizado:", {
-      addressId: selectedAddressId,
-      shippingMethod: method,
-    });
   }
 }, [selectedAddressId, method, setAddressId, setShippingMethod]);
 
   const handleNewAddress = async (values: NewAddressInput) => {
     try {
       await createAddress(values); 
-      console.log(values);
       const updated = await getAddress();
       setAddresses(updated);
         const nueva = updated.find((addr: Address) =>
@@ -106,7 +101,6 @@ export default function AddressStep() {
     if (!addressToDelete) return;
     try {
       await deleteAddress(addressToDelete); 
-      console.log("Eliminando dirección", addressToDelete);
       const updated = await getAddress();
       setAddresses(updated);
       setSelectedAddressId(updated[0]?.id || null);

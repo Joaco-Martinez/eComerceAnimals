@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { prisma } from '../db/db';
+import jwt from 'jsonwebtoken';
 import axios from 'axios';
 type OrderItem = {
   id: string;
@@ -45,21 +46,31 @@ export const handleMercadoPagoWebhook = async (paymentId: number) => {
 };
 
 
+
 export const mercadoPagoService = {
-  async createPreference(items: OrderItem[], metadata?: Record<string, any>): Promise<string> {
-    const preference = await new Preference(mercadopago).create({
-  body: {
+  async createPreference({
     items,
-    metadata,
-    back_urls: {
-      success: process.env.URLSUCCESSMP,
-      failure: process.env.URLFAILEDMP,
-      pending: process.env.URLPENDINGMP,
-    },
-    auto_return: "approved",
-  },
-});
+    orderId,
+  }: {
+    items: OrderItem[];
+    orderId: string;
+  }): Promise<string> {
+    const token = jwt.sign({ orderId }, process.env.JWT_SECRET!, { expiresIn: '10m' });
+
+    const preference = await new Preference(mercadopago).create({
+      body: {
+        items,
+        external_reference: orderId,
+        back_urls: {
+          success: `${process.env.URLSUCCESSMP}?orderId=${orderId}&token=${token}`,
+          failure: process.env.URLFAILEDMP,
+          pending: process.env.URLPENDINGMP,
+        },
+        auto_return: "approved",
+      },
+    });
+
     if (!preference.init_point) throw new Error("No se pudo generar init_point");
-    return preference.init_point!;
+    return preference.init_point;
   },
 };
