@@ -8,7 +8,6 @@ import userRoutes from './routes/user.Routes';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/Auth.Routes';
 import cartRoutes from './routes/cart.Routes';
-import paymentsRouter from './routes/mercadoPago.Routes';
 import orderRoutes from './routes/order.Routes';
 import categoryRoutes from "./routes/category.Routes";
 import addressRoutes from './routes/address.Routes';
@@ -44,7 +43,6 @@ app.get('/', (_req, res) => {
   res.send('E-Commerce Backend funcionando!');
 });
 app.use('/api', swaggerUiHandler, swaggerUiSetup);
-app.use('/payments', paymentsRouter);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);
