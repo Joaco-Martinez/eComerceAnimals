@@ -6,14 +6,16 @@ const nextConfig = {
     domains: ['res.cloudinary.com'],
   },
   async rewrites() {
-  return [
-    {
-      source: '/api/:path*',
-      destination: `${process.env.NEXT_PUBLIC_API_URL}`,
-    },
-  ];
-}
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://ecomerceanimals.onrender.com/:path*', // 👈 proxy
+      },
+    ];
+  },
 };
+
+module.exports = nextConfig;
 
 export default withPWA({
   dest: 'public',
