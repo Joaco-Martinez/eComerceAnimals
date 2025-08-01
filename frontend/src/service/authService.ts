@@ -20,5 +20,5 @@ export const getCurrentUser = async () => {
 };
 
 export const verifyEmailCode = async (email: string, code: string) => {
-  return await apiService.post("/auth/verify-email", { email, code }, false,);
+  return await apiService.post("/auth/verify-email", { email, code }, true,);
 };

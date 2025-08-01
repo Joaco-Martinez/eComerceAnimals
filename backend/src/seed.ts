@@ -9,7 +9,7 @@ async function main() {
     update: {},
     create: {
       name: 'Punky Pet admin',
-      email: 'admin@punkypet.com',
+      email: 'mascotiendavgbpets@gmail.com',
       password: hashedPassword,
       role: 'admin', // ⚠️ Asegurate de tener un enum o string válido
       isEmailVerified: true,
