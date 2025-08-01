@@ -19,7 +19,8 @@ export default function PaymentSuccessPage() {
   useEffect(() => {
     const confirmOrder = async () => {
       if (!orderId || !token) {
-        console.log('No se proporcionaron orderId o token' + orderId + ' ' + token);
+        console.log('No se proporcionaron  token', token);
+        console.log('No se proporcionaron orderId', orderId);
         return;
       }
 
