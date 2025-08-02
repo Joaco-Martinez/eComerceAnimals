@@ -31,24 +31,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AuthProvider>
-        <AnonCartProvider>
+    <html lang="en" className="h-full">
+  <body className={`h-full flex flex-col ${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <AuthProvider>
+      <AnonCartProvider>
         <CheckoutProvider>
-        <Navbar /> 
-        {children}
-        <Toaster />
-        {/* <WhatsappLink /> */}
-        <CookieBanner />
-        <SWRegister />
-        <Footer />
+          <Navbar />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Toaster />
+          <CookieBanner />
+          <SWRegister />
+          <Footer />
         </CheckoutProvider>
-        </AnonCartProvider>
-        </AuthProvider>
-      </body>
-    </html>
+      </AnonCartProvider>
+    </AuthProvider>
+  </body>
+</html>
   );
 }

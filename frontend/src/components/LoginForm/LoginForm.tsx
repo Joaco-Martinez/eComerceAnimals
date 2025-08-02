@@ -9,10 +9,12 @@ import toast from 'react-hot-toast';
 import { loginUser, getCurrentUser } from '../../service/authService';
 import Cookies from 'js-cookie';
 import { useAuthContext } from '../../context/authContext';
-import {mergeAnonCart} from '../../service/userService';
+import { mergeAnonCart } from '../../service/userService';
 import ForgotPasswordModal from '../ForgotPassswordModal/ForgotPasswordModal';
-import { useRouter } from 'next/navigation';
 import ResetPasswordModal from '../ShopNow/ResetPasswordModal/ResetPasswordModal';
+import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
+
 const schema = yup.object().shape({
   email: yup.string().email('Email inválido').required('El email es obligatorio'),
   password: yup.string().required('La contraseña es obligatoria'),
@@ -30,6 +32,8 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [emailForReset, setEmailForReset] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -39,40 +43,36 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   });
 
   const onSubmit = async (data: FormData) => {
-  try {
-    await loginUser({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      await loginUser({
+        email: data.email,
+        password: data.password,
+      });
 
-    const user = await getCurrentUser(); 
-    
-    
-    if (!user) {
-      return
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      SaveUserData({ user });
+      toast.success('Inicio de sesión exitoso');
+
+      const anoncartId = Cookies.get('AnonCart_id');
+      if (anoncartId) {
+        mergeAnonCart(anoncartId);
+      }
+
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else {
+        router.push('/');
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.message
+          ? `Error al iniciar sesión: ${error.message}`
+          : 'Error al iniciar sesión'
+      );
     }
-
-    SaveUserData({ user });
-    toast.success("Inicio de sesión exitoso");
-
-    const anoncartId = Cookies.get("AnonCart_id");
-    if (anoncartId) {
-      mergeAnonCart(anoncartId);
-    }
-
-    if (onLoginSuccess) {
-      onLoginSuccess();
-    } else {
-      router.push('/');
-    }
-  } catch (error: any) {
-    toast.error(
-      error?.message
-        ? `Error al iniciar sesión: ${error.message}`
-        : "Error al iniciar sesión"
-    );
-  }
-};
+  };
 
   return (
     <div className="max-w-md mx-auto rounded-3xl shadow-lg p-8 bg-white">
@@ -91,22 +91,32 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
         <div>
           <label className="block font-medium">Contraseña</label>
-          <input
-            type="password"
-            {...register('password')}
-            placeholder="Ingresá tu contraseña"
-            className="w-full mt-1 p-2 bg-gray-100 rounded"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('password')}
+              placeholder="Ingresá tu contraseña"
+              className="w-full mt-1 p-2 bg-gray-100 rounded pr-10"
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+
           <div className="text-right mt-1">
-    <button
-    type="button"
-    onClick={() => setShowForgotModal(true)}
-    className="text-sm text-[#a18c89] hover:underline"
-  >
-    ¿Olvidaste tu contraseña?
-  </button>
-</div>
+            <button
+              type="button"
+              onClick={() => setShowForgotModal(true)}
+              className="text-sm text-[#a18c89] hover:underline"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
         </div>
 
         <button
@@ -132,20 +142,22 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
       >
         ← Volver atrás
       </button>
+
       <ForgotPasswordModal
-  isOpen={showForgotModal}
-  onClose={() => setShowForgotModal(false)}
-  onCodeSent={(email) => {
-    setEmailForReset(email);
-    setShowForgotModal(false);
-    setShowResetModal(true);
-  }}
-/>
-<ResetPasswordModal
-  isOpen={showResetModal}
-  onClose={() => setShowResetModal(false)}
-  defaultEmail={emailForReset}
-/>
+        isOpen={showForgotModal}
+        onClose={() => setShowForgotModal(false)}
+        onCodeSent={(email) => {
+          setEmailForReset(email);
+          setShowForgotModal(false);
+          setShowResetModal(true);
+        }}
+      />
+
+      <ResetPasswordModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        defaultEmail={emailForReset}
+      />
     </div>
   );
 }

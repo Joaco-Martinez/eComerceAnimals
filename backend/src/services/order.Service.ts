@@ -46,7 +46,7 @@ export const confirmPaymentService = async (orderId: string, tokenmp: string) =>
   if (!secret) throw new Error('Falta la variable JWT_SECRET');
 
   let decoded: any;
-
+  
   try {
     decoded = jwt.verify(tokenmp, secret);
   } catch (err) {

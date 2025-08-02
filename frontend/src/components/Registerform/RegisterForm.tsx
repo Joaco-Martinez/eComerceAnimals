@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import EmailVerificationModal from '../EmailVerificationModal/EmailVerificationModal';
 import { registerUser } from '../../service/authService';
 import { useAuthContext } from '../../context/authContext';
-
+import { Eye, EyeOff } from 'lucide-react';
 
 const schema = yup.object().shape({
   nombre: yup.string().required('El nombre es obligatorio'),
@@ -28,9 +28,12 @@ const schema = yup.object().shape({
 type FormData = yup.InferType<typeof schema>;
 
 export default function RegisterForm() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
-  const { SaveUserData} = useAuthContext();
+  const { SaveUserData } = useAuthContext();
+
   const {
     register,
     handleSubmit,
@@ -100,23 +103,41 @@ export default function RegisterForm() {
 
         <div>
           <label className="block font-medium">Contraseña</label>
-          <input
-            type="password"
-            {...register('password')}
-            placeholder="Ingresá tu contraseña"
-            className="w-full mt-1 p-2 bg-gray-100 rounded"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('password')}
+              placeholder="Ingresá tu contraseña"
+              className="w-full mt-1 p-2 bg-gray-100 rounded pr-10"
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
 
         <div>
           <label className="block font-medium">Repetir Contraseña</label>
-          <input
-            type="password"
-            {...register('repeatPassword')}
-            placeholder="Repetí tu contraseña"
-            className="w-full mt-1 p-2 bg-gray-100 rounded"
-          />
+          <div className="relative">
+            <input
+              type={showRepeatPassword ? 'text' : 'password'}
+              {...register('repeatPassword')}
+              placeholder="Repetí tu contraseña"
+              className="w-full mt-1 p-2 bg-gray-100 rounded pr-10"
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={() => setShowRepeatPassword((prev) => !prev)}
+            >
+              {showRepeatPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {errors.repeatPassword && (
             <p className="text-sm text-red-500">{errors.repeatPassword.message}</p>
           )}
@@ -130,12 +151,14 @@ export default function RegisterForm() {
           {isSubmitting ? 'Registrando...' : 'Registrarme'}
         </button>
       </form>
-          <p className="mt-4 text-center text-sm text-gray-600">
+
+      <p className="mt-4 text-center text-sm text-gray-600">
         ¿tenés cuenta?{' '}
         <a href="/login" className="text-[#a18c89] font-medium hover:underline">
-          Inicia sesión
+          Iniciá sesión
         </a>
       </p>
+
       <button
         type="button"
         className="w-full mt-6 py-2 rounded-full border border-gray-300 text-[#a18c89] font-medium"
@@ -145,15 +168,14 @@ export default function RegisterForm() {
       </button>
 
       <EmailVerificationModal
-  isOpen={showModal}
-  onClose={() => setShowModal(false)}
-  email={registeredEmail}
-  onVerified={(user) => {
-    SaveUserData({ user });        
-    toast.success('Correo validado y sesión iniciada');
-  }}
-/>
-
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        email={registeredEmail}
+        onVerified={(user) => {
+          SaveUserData({ user });
+          toast.success('Correo validado y sesión iniciada');
+        }}
+      />
     </div>
   );
 }

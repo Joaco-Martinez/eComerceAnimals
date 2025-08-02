@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "jest",
+    "test:cancel": "ts-node src/scripts/testCancel.ts",
     "seed": "ts-node ./src/seed.ts"
   },
   "keywords": [],
