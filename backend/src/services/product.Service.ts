@@ -161,7 +161,7 @@ export const updateProduct = async (
         generateBackInStockEmailTemplate({
           name: updatedProduct.name,
           image: productImage,
-          productUrl: `https://punkypet.com/products/${updatedProduct.id}`,
+          productUrl: `https://punkypet.com.ar/productos/${updatedProduct.id}`,
         })
       ).html;
 
@@ -179,20 +179,16 @@ export const updateProduct = async (
 };
 
 export const deleteProduct = async (id: string) => {
-  // 1. Eliminás los CartItems que tienen ese producto (para evitar errores de FK y carritos huérfanos)
-  await prisma.cartItem.deleteMany({
-    where: { productId: id },
-  });
+  try {
+    await prisma.cartItem.deleteMany({ where: { productId: id } });
+    await prisma.image.deleteMany({ where: { productId: id } });
+    await prisma.productView.deleteMany({ where: { productId: id } });
 
-  // 2. Eliminás las imágenes relacionadas al producto
-  await prisma.image.deleteMany({
-    where: { productId: id },
-  });
-
-  // 3. Finalmente eliminás el producto
-  return await prisma.product.delete({
-    where: { id },
-  });
+    return await prisma.product.delete({ where: { id } });
+  } catch (error) {
+    console.error('Error al eliminar el producto:', error);
+    throw new Error('No se pudo eliminar el producto');
+  }
 };
 
 
