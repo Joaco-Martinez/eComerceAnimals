@@ -180,11 +180,19 @@ export const updateProduct = async (
 
 export const deleteProduct = async (id: string) => {
   try {
+    // 1. Carritos (auth y anónimos)
     await prisma.cartItem.deleteMany({ where: { productId: id } });
+    await prisma.anonCartItem.deleteMany({ where: { productId: id } });
+
+    // 2. Imágenes
     await prisma.image.deleteMany({ where: { productId: id } });
+
+    // 3. Vistas
     await prisma.productView.deleteMany({ where: { productId: id } });
 
+    // 4. Producto
     return await prisma.product.delete({ where: { id } });
+
   } catch (error) {
     console.error('Error al eliminar el producto:', error);
     throw new Error('No se pudo eliminar el producto');
