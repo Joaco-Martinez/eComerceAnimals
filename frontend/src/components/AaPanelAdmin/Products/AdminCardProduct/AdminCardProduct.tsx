@@ -47,7 +47,6 @@ export default function AdminProductCard({ product, onEdit, onDelete }: Props) {
     try {
       setDeleting(true)
       await deleteProduct(product.id)
-      toast.success('Producto eliminado')
       setShowConfirm(false)
       onDelete?.()
     } catch (err) {

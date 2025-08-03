@@ -158,8 +158,24 @@ export const searchProducts = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error al buscar productos" });
   }
 };
+
 export const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
-  await productService.deleteProduct(id);
-  res.status(204).send();
+
+  try {
+    const result = await productService.deleteProduct(id);
+
+    const message = result.isActive === false
+      ? 'Producto eliminado correctamente'
+      : 'Producto desactivado porque ya tenía compras';
+
+    res.status(200).json({
+      message,
+      product: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || 'Ocurrió un error al eliminar el producto',
+    });
+  }
 };

@@ -180,20 +180,32 @@ export const updateProduct = async (
 
 export const deleteProduct = async (id: string) => {
   try {
-    // 1. Carritos (auth y anónimos)
+    // 0. Si el producto tiene compras, lo desactivamos en vez de borrarlo
+    const orderItemCount = await prisma.orderItem.count({
+      where: { productId: id }
+    });
+
+    if (orderItemCount > 0) {
+      return await prisma.product.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    }
+
+    // 1. Eliminar de carritos (logueados y anónimos)
     await prisma.cartItem.deleteMany({ where: { productId: id } });
     await prisma.anonCartItem.deleteMany({ where: { productId: id } });
 
-    // 2. Imágenes
+    // 2. Eliminar imágenes
     await prisma.image.deleteMany({ where: { productId: id } });
 
-    // 3. Vistas
+    // 3. Eliminar vistas
     await prisma.productView.deleteMany({ where: { productId: id } });
 
-    // 4. Producto
+    // 4. Eliminar producto
     return await prisma.product.delete({ where: { id } });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error al eliminar el producto:', error);
     throw new Error('No se pudo eliminar el producto');
   }

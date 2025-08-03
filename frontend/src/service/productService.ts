@@ -75,7 +75,7 @@ export const getFilteredProducts = async (filters: {
 
 export const getAllCategories = () => api.get("/categories");
 
-export const deleteProduct = async (id: string) => await api.del(`/products/${id}`);
+export const deleteProduct = async (id: string) => await api.del(`/products/${id}`, true , true, true);
 
 export const postProduct = async (data: FormData) => {
   return await api.post("/products", data, true, true, true, {
