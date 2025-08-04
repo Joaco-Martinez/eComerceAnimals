@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from '@vercel/analytics/next';
 import Navbar from "../components/navbar/Navbar";
 // import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
 import { AuthProvider } from '../context/authContext';
@@ -47,6 +48,7 @@ export default function RootLayout({
         </CheckoutProvider>
       </AnonCartProvider>
     </AuthProvider>
+    <Analytics />
   </body>
 </html>
   );
