@@ -43,3 +43,11 @@ export const getEarningsByYear = async (year: number) => {
 export const getEarningsByMonth = async (year: number, month: number) => {
   return await apiService.get(`/admin/stats/earnings/month/${year}/${month}`, true, false, false);
 };
+
+export const getAllProductsAdmin = async () => {
+  return await apiService.get("/products/admin", true, false, false);
+};
+
+export const getAllCategoriesAdmin = async () => {
+  return await apiService.get("/categories/admin", true, false, false);
+};

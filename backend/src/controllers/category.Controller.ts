@@ -47,20 +47,34 @@ export const getAllCategories = async (req: Request, res: Response) => {
   }
 };
 
+
+export const getAllCategoriesAdmin = async (req: Request, res: Response) => {
+  try {
+    const categories = await CategoryService.getAllCategoriesAdmin();
+    res.json(categories);
+  } catch (error) {
+    console.error("Error al obtener categorías:", error);
+    res.status(500).json({ error: "Error al obtener categorías" });
+  }
+};
+
 export const getCategoryById = async (req: Request, res: Response) => {
   const id = String(req.params.id);
   if (!id) return res.status(400).json({ error: "ID inválido" });
 
   try {
     const category = await CategoryService.getCategoryById(id);
-    if (!category) return res.status(404).json({ error: "Categoría no encontrada" });
+
+    if (!category || category.isActive === false) {
+      return res.status(404).json({ error: "Categoría no encontrada" });
+    }
+
     res.json(category);
   } catch (error) {
     console.error("Error al obtener categoría:", error);
     res.status(500).json({ error: "Error al obtener la categoría" });
   }
 };
-
 export const updateCategory = async (req: Request, res: Response) => {
   const id = String(req.params.id);
   if (!id) return res.status(400).json({ error: "ID inválido" });
@@ -84,8 +98,17 @@ export const deleteCategory = async (req: Request, res: Response) => {
   if (!id) return res.status(400).json({ error: "ID inválido" });
 
   try {
-    await CategoryService.deleteCategory(id);
-    res.status(204).send();
+    const result = await CategoryService.deleteCategory(id);
+
+    const message = result.isActive === false
+      ? "Categoría desactivada porque tiene productos asignados"
+      : "Categoría eliminada correctamente";
+
+    res.status(200).json({
+      message,
+      category: result,
+    });
+
   } catch (error) {
     console.error("Error al eliminar categoría:", error);
     res.status(500).json({ error: "Error al eliminar la categoría" });

@@ -26,6 +26,19 @@ router.get('/', productController.getAll);
 
 /**
  * @swagger
+ * /products/admin:
+ *   get:
+ *     summary: Obtener todos los productos (requiere admin)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de todos los productos
+ */
+router.get("/admin", authMiddleware, isAdmin, productController.getAllAdmin);
+/**
+ * @swagger
  * /products/pet/{petType}:
  *   get:
  *     summary: Obtener productos por tipo de mascota

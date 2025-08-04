@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://ecomerceanimals.onrender.com/:path*', // 👈 proxy
+        destination: 'http://localhost:3000/:path*', // 👈 proxy
       },
     ];
   },

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getAllCategories } from '@/service/categorieService'
+import { getAllCategoriesAdmin } from '@/service/adminService'
 import CategoryForm from '@/components/AaPanelAdmin/Category/CategoryForm'
 import CategoryUpdateForm from '@/components/AaPanelAdmin/Category/CategoryUpdateForm'
 import DeleteCategoryButton from '@/components/AaPanelAdmin/Category/DeleteCategoryButton'
@@ -12,15 +12,19 @@ interface Category {
   description: string
   petType: 'dog' | 'cat' | 'both'
   image: string
+  isActive: boolean
 }
+
+const ITEMS_PER_PAGE = 6
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
   const [filterPetType, setFilterPetType] = useState<'all' | 'dog' | 'cat' | 'both'>('all')
+  const [currentPage, setCurrentPage] = useState(1)
 
   const fetchCategories = async () => {
-    const data = await getAllCategories()
+    const data = await getAllCategoriesAdmin()
     setCategories(data)
   }
 
@@ -38,11 +42,22 @@ export default function AdminCategoriesPage() {
     return matchesName && matchesPetType
   })
 
-  return (
-    <div className="p-6 space-y-10">
-      {/* Formulario de creación centrado */}
-      <div className="max-w-2xl mx-auto flex items-center justify-center  p-6 rounded-xl ">
+  // Paginación
+  const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const paginatedCategories = filteredCategories.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+    }
+  }
+
+  return (
+    <div className="p-6 space-y-12 max-w-screen-xl mx-auto">
+
+      {/* Formulario */}
+      <div className="flex justify-center">
         <CategoryForm />
       </div>
 
@@ -52,14 +67,20 @@ export default function AdminCategoriesPage() {
           type="text"
           placeholder="Buscar por nombre..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded w-full md:w-1/2 shadow-sm"
+          onChange={e => {
+            setSearch(e.target.value)
+            setCurrentPage(1)
+          }}
+          className="border border-gray-300 px-4 py-2 rounded-md w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-punky-green"
         />
 
         <select
           value={filterPetType}
-          onChange={e => setFilterPetType(e.target.value as 'all' | 'dog' | 'cat' | 'both')}
-          className="border px-3 py-2 rounded shadow-sm"
+          onChange={e => {
+            setFilterPetType(e.target.value as 'all' | 'dog' | 'cat' | 'both')
+            setCurrentPage(1)
+          }}
+          className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-punky-green"
         >
           <option value="all">Todas las mascotas</option>
           <option value="dog">Solo perros</option>
@@ -68,19 +89,68 @@ export default function AdminCategoriesPage() {
         </select>
       </div>
 
-      {/* Lista de categorías existentes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCategories.length === 0 ? (
+      {/* Lista de categorías */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {paginatedCategories.length === 0 ? (
           <p className="text-gray-500 col-span-full text-center">No se encontraron categorías</p>
         ) : (
-          filteredCategories.map(category => (
-            <div key={category.id} className="bg-white  p-4 rounded-xl shadow-lg space-y-4">
+          paginatedCategories.map(category => (
+            <div
+              key={category.id}
+              className="bg-white border border-gray-200 p-6 rounded-xl shadow-md space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-800">{category.name}</h3>
+                <span
+                  className={`text-sm font-medium px-2 py-1 rounded-full ${
+                    category.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}
+                >
+                  {category.isActive ? 'Activa' : 'Inactiva'}
+                </span>
+              </div>
+              <p className="text-gray-500 text-sm">{category.description}</p>
+              <p className="text-sm text-gray-400 capitalize">Tipo de mascota: {category.petType}</p>
+
               <CategoryUpdateForm category={category} />
               <DeleteCategoryButton categoryId={category.id} onDeleted={() => handleDeleted(category.id)} />
             </div>
           ))
         )}
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded text-sm disabled:opacity-50 cursor-pointer"
+          >
+            Anterior
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goToPage(i + 1)}
+              className={`px-3 py-1 border rounded text-sm cursor-pointer ${
+                currentPage === i + 1 ? 'bg-punky-green text-white' : ''
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border rounded text-sm disabled:opacity-50 cursor-pointer"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -107,13 +107,13 @@ const OrderDetailPage = () => {
 
         <button
           onClick={() => setOpenModal(true)}
-          className="bg-[#2C4B4D] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#1e3435] transition-colors"
+          className="bg-[#2C4B4D] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#1e3435] transition-colors cursor-pointer"
         >
           Cambiar Estado
         </button>
         <button
           onClick={() => (setEnvioModal(true))}
-          className="bg-[#2C4B4D] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#1e3435] transition-colors"
+          className="bg-[#2C4B4D] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#1e3435] transition-colors cursor-pointer"
         >
           Enviar codigo de envio
         </button>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import AdminProductCard from "./AdminCardProduct/AdminCardProduct"
-import { getAllProducts } from "@/service/productService"
+import { getAllProductsAdmin } from "@/service/adminService"
 import ProductFilters from "./ProductFilter/ProductFilter"
 import EditarProductoModal from "./EditarProductoModal/EditarProductoModal"
 
@@ -47,7 +47,7 @@ export const EditarProductos = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getAllProducts()
+        const data = await getAllProductsAdmin()
         setProducts(data)
       } catch (error) {
         console.error("Error al cargar productos:", error)

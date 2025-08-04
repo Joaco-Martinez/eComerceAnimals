@@ -6,6 +6,13 @@ import { prisma } from "../db/db";
 
 export const getAll = async (_req: Request, res: Response) => {
   const products = await productService.getFilteredProducts({});
+  
+  res.json(products);
+};
+
+export const getAllAdmin = async (_req: Request, res: Response) => {
+  const products = await productService.getAllProductsAdmin();
+  
   res.json(products);
 };
 
@@ -135,7 +142,6 @@ export const searchProducts = async (req: Request, res: Response) => {
 
   console.log("Query recibida:", q);
 
-  // TEST MANUAL para ver si hay productos con "ajustable"
   const test = await prisma.product.findMany({
     where: {
       OR: [
@@ -144,7 +150,6 @@ export const searchProducts = async (req: Request, res: Response) => {
       ],
     },
   });
-  console.log("Resultados test:", test);
 
   if (typeof q !== "string" || q.trim() === "") {
     return res.status(400).json({ message: "Query inválida" });

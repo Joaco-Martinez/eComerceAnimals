@@ -5,17 +5,22 @@ import sendEmail from '../utils/sendEmail';
 import { generateBackInStockEmailTemplate } from '../utils/generateBackInStockTemplate'; // si tenés template
 import mjml2html from 'mjml';
 export const getAllProducts = () => prisma.product.findMany({
+  where: { isActive: true },
   include: { category: true, images: true }
 });
 
+export const getAllProductsAdmin = () => prisma.product.findMany({
+  include: { category: true, images: true }
+})
 export const getProductById = (id: string) => prisma.product.findUnique({
-  where: { id },
+  where: { id, isActive: true },
   include: { category: true, images: true }
 });
 
 export const searchProductsService = async (query: string) => {
   return await prisma.product.findMany({
     where: {
+      isActive: true,
       OR: [
         { name: { contains: query, mode: 'insensitive' } },
         { description: { contains: query, mode: 'insensitive' } },
@@ -35,17 +40,18 @@ export const getFilteredProducts = async (filters: {
 }) => {
   const { petType, categoryId, sortBy } = filters;
 
-  const where: any = {};
+  const where: any = {
+    isActive: true, 
+  };
 
   if (petType === "dog" || petType === "cat") {
-  where.petType = { in: [petType, "both"] };
-}
+    where.petType = { in: [petType, "both"] };
+  }
 
   if (categoryId) {
     where.categoryId = categoryId;
   }
 
-  
   const orderBy =
     sortBy === "priceAsc"
       ? { price: "asc" as const }

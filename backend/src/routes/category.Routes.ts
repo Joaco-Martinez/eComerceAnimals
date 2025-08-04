@@ -74,6 +74,31 @@ router.get("/", categoryController.getAllCategories);
 
 /**
  * @swagger
+ * /categories/admin:
+ *   get:
+ *     summary: Obtener todas las categorías (requiere admin)
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de categorías
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Category'
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/admin", authMiddleware, isAdmin, categoryController.getAllCategoriesAdmin);
+
+
+/**
+ * @swagger
  * /categories/{id}:
  *   get:
  *     summary: Obtener categoría por ID

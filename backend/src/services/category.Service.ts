@@ -10,8 +10,19 @@ export const createCategory = async (data: {
 };
 
 export const getAllCategories = async () => {
-  return prisma.category.findMany();
+  return await prisma.category.findMany({
+    where: {
+      isActive: true,
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  });
 };
+
+export const getAllCategoriesAdmin = async () => {
+  return await prisma.category.findMany();
+}
 
 export const getCategoryById = async (id: string) => {
   return prisma.category.findUnique({ where: { id } });
@@ -25,5 +36,26 @@ export const updateCategory = async (
 };
 
 export const deleteCategory = async (id: string) => {
-  return prisma.category.delete({ where: { id } });
+  try {
+    const productCount = await prisma.product.count({
+      where: { categoryId: id }
+    });
+
+    if (productCount > 0) {
+      // Si hay productos, se desactiva
+      return await prisma.category.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    }
+
+    // Si no hay productos, se elimina
+    return await prisma.category.delete({
+      where: { id },
+    });
+
+  } catch (error) {
+    console.error('Error al eliminar categoría:', error);
+    throw new Error('No se pudo eliminar la categoría');
+  }
 };
