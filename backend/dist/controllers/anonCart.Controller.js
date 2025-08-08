@@ -44,6 +44,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateItem = exports.clearCart = exports.removeItem = exports.addItem = exports.getCart = void 0;
 const anonCartService = __importStar(require("../services/anonCart.Service"));
+const cookieOptions_1 = require("../utils/cookieOptions");
 const getCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const AnonCartId = req.query.cartId;
     if (!AnonCartId)
@@ -67,12 +68,7 @@ const addItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const newCart = yield anonCartService.createAnonCart();
             AnonCartId = newCart.id;
             // Setear cookie con el ID del nuevo carrito
-            res.cookie("AnonCart_id", AnonCartId, {
-                httpOnly: true,
-                maxAge: 1000 * 60 * 60 * 24 * 7,
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                secure: process.env.NODE_ENV === "production",
-            });
+            res.cookie("AnonCart_id", AnonCartId, (0, cookieOptions_1.getCookieOptionsHttpOnlyFalse)());
         }
         const item = yield anonCartService.addToAnonCart(AnonCartId, productId, quantity, color, size);
         res.status(201).json(item);

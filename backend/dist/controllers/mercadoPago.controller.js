@@ -11,21 +11,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mercadoPagoController = void 0;
 const mercadoPago_service_1 = require("../services/mercadoPago.service");
+const mercadoPago_service_2 = require("../services/mercadoPago.service");
 exports.mercadoPagoController = {
+    // 🎯 POST /api/mercadopago/submit
     submit(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { items, metadata } = req.body;
-            console.log(req.body);
+            const { items, orderId } = req.body;
             if (!Array.isArray(items) || items.length === 0) {
                 return res.status(400).json({ error: "Debes enviar al menos un producto en 'items'" });
             }
+            if (!orderId) {
+                return res.status(400).json({ error: "Falta el 'orderId'" });
+            }
             try {
-                const initPoint = yield mercadoPago_service_1.mercadoPagoService.createPreference(items, metadata);
+                const initPoint = yield mercadoPago_service_2.mercadoPagoService.createPreference({ items, orderId });
                 res.json({ init_point: initPoint });
             }
             catch (error) {
+                console.error("Error al crear preferencia:", error);
                 res.status(500).json({ error: error.message || "Error al crear preferencia" });
             }
         });
     },
+    // 🎯 POST /api/mercadopago/webhook
+    webhook(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { type, data } = req.body;
+                if (type === 'payment' && (data === null || data === void 0 ? void 0 : data.id)) {
+                    yield (0, mercadoPago_service_1.handleMercadoPagoWebhook)(data.id);
+                }
+                res.sendStatus(200);
+            }
+            catch (error) {
+                console.error('Error en webhook de Mercado Pago:', error);
+                res.sendStatus(500);
+            }
+        });
+    }
 };

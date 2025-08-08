@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductImage = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getFilteredProducts = exports.searchProductsService = exports.getProductById = exports.getAllProducts = void 0;
+exports.deleteProductImage = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getFilteredProducts = exports.searchProductsService = exports.getProductById = exports.getAllProductsAdmin = exports.getAllProducts = void 0;
 const db_1 = require("../db/db");
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
 const stockNotification_Service_1 = require("./stockNotification.Service");
@@ -31,17 +31,23 @@ const sendEmail_1 = __importDefault(require("../utils/sendEmail"));
 const generateBackInStockTemplate_1 = require("../utils/generateBackInStockTemplate"); // si tenés template
 const mjml_1 = __importDefault(require("mjml"));
 const getAllProducts = () => db_1.prisma.product.findMany({
+    where: { isActive: true },
     include: { category: true, images: true }
 });
 exports.getAllProducts = getAllProducts;
+const getAllProductsAdmin = () => db_1.prisma.product.findMany({
+    include: { category: true, images: true }
+});
+exports.getAllProductsAdmin = getAllProductsAdmin;
 const getProductById = (id) => db_1.prisma.product.findUnique({
-    where: { id },
+    where: { id, isActive: true },
     include: { category: true, images: true }
 });
 exports.getProductById = getProductById;
 const searchProductsService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     return yield db_1.prisma.product.findMany({
         where: {
+            isActive: true,
             OR: [
                 { name: { contains: query, mode: 'insensitive' } },
                 { description: { contains: query, mode: 'insensitive' } },
@@ -56,7 +62,9 @@ const searchProductsService = (query) => __awaiter(void 0, void 0, void 0, funct
 exports.searchProductsService = searchProductsService;
 const getFilteredProducts = (filters) => __awaiter(void 0, void 0, void 0, function* () {
     const { petType, categoryId, sortBy } = filters;
-    const where = {};
+    const where = {
+        isActive: true,
+    };
     if (petType === "dog" || petType === "cat") {
         where.petType = { in: [petType, "both"] };
     }
@@ -132,7 +140,7 @@ const updateProduct = (id, data) => __awaiter(void 0, void 0, void 0, function* 
             const emailHtml = (0, mjml_1.default)((0, generateBackInStockTemplate_1.generateBackInStockEmailTemplate)({
                 name: updatedProduct.name,
                 image: productImage,
-                productUrl: `https://punkypet.com/products/${updatedProduct.id}`,
+                productUrl: `https://punkypet.com.ar/productos/${updatedProduct.id}`,
             })).html;
             yield (0, sendEmail_1.default)({
                 to: sub.email,
@@ -146,18 +154,31 @@ const updateProduct = (id, data) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.updateProduct = updateProduct;
 const deleteProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    // 1. Eliminás los CartItems que tienen ese producto (para evitar errores de FK y carritos huérfanos)
-    yield db_1.prisma.cartItem.deleteMany({
-        where: { productId: id },
-    });
-    // 2. Eliminás las imágenes relacionadas al producto
-    yield db_1.prisma.image.deleteMany({
-        where: { productId: id },
-    });
-    // 3. Finalmente eliminás el producto
-    return yield db_1.prisma.product.delete({
-        where: { id },
-    });
+    try {
+        // 0. Si el producto tiene compras, lo desactivamos en vez de borrarlo
+        const orderItemCount = yield db_1.prisma.orderItem.count({
+            where: { productId: id }
+        });
+        if (orderItemCount > 0) {
+            return yield db_1.prisma.product.update({
+                where: { id },
+                data: { isActive: false },
+            });
+        }
+        // 1. Eliminar de carritos (logueados y anónimos)
+        yield db_1.prisma.cartItem.deleteMany({ where: { productId: id } });
+        yield db_1.prisma.anonCartItem.deleteMany({ where: { productId: id } });
+        // 2. Eliminar imágenes
+        yield db_1.prisma.image.deleteMany({ where: { productId: id } });
+        // 3. Eliminar vistas
+        yield db_1.prisma.productView.deleteMany({ where: { productId: id } });
+        // 4. Eliminar producto
+        return yield db_1.prisma.product.delete({ where: { id } });
+    }
+    catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        throw new Error('No se pudo eliminar el producto');
+    }
 });
 exports.deleteProduct = deleteProduct;
 const deleteProductImage = (imageId) => __awaiter(void 0, void 0, void 0, function* () {

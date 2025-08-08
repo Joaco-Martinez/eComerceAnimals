@@ -45,16 +45,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.me = exports.logout = exports.login = exports.verifyEmailCode = exports.register = void 0;
 const authService = __importStar(require("../services/auth.Service"));
 const db_1 = require("../db/db");
+const cookieOptions_1 = require("../utils/cookieOptions");
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, password } = req.body;
         const { user, token } = yield authService.registerUser(name, email, password);
         res
-            .cookie('token', token, {
-            httpOnly: true,
-            secure: false, // ⚠️ en desarrollo, NO puede ser true
-            sameSite: 'lax', // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
-        })
             .status(200)
             .json({ id: user.id, name: user.name, email: user.email });
     }
@@ -68,11 +64,7 @@ const verifyEmailCode = (req, res) => __awaiter(void 0, void 0, void 0, function
         const { email, code } = req.body;
         const { user, token, message } = yield authService.verifyEmailCode(email, code);
         res
-            .cookie('token', token, {
-            httpOnly: true,
-            secure: false, // ⚠️ en desarrollo, NO puede ser true
-            sameSite: 'lax', // 🔥 importante para que la cookie cruce entre localhost:3000 y 4000
-        })
+            .cookie('token', token, (0, cookieOptions_1.getCookieOptions)())
             .status(200)
             .json({
             message,
@@ -80,6 +72,7 @@ const verifyEmailCode = (req, res) => __awaiter(void 0, void 0, void 0, function
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
             },
         });
     }
@@ -94,12 +87,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { user, token } = yield authService.loginUser(email, password);
         console.log(token);
         res
-            .cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // ✅ true solo en producción con HTTPS
-            sameSite: 'lax', // 🔥 permite cookies entre dominios en dev
-            maxAge: 7 * 24 * 60 * 60 * 1000, // ✅ 7 días en milisegundos
-        })
+            .cookie('token', token, (0, cookieOptions_1.getCookieOptions)())
             .json({
             id: user.id,
             name: user.name,

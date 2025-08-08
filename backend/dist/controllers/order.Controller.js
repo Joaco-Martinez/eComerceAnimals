@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrdersByUserController = exports.getAllOrdersController = exports.getOrderByIdController = exports.updateOrderStatusController = exports.createOrderController = void 0;
+exports.getOrdersByUserController = exports.getAllOrdersController = exports.getOrderByIdController = exports.updateOrderStatusController = exports.confirmPaymentController = exports.createOrderController = void 0;
 const order_Service_1 = require("../services/order.Service");
 const createOrderController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -26,6 +26,21 @@ const createOrderController = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.createOrderController = createOrderController;
+const confirmPaymentController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { orderId, token } = req.body;
+    if (!orderId || !token) {
+        return res.status(400).json({ error: 'Faltan datos: orderId o token' });
+    }
+    try {
+        const order = yield (0, order_Service_1.confirmPaymentService)(orderId, token);
+        return res.status(200).json(order);
+    }
+    catch (error) {
+        console.error('Error al confirmar pago:', error.message);
+        return res.status(400).json({ error: error.message });
+    }
+});
+exports.confirmPaymentController = confirmPaymentController;
 const updateOrderStatusController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { orderId } = req.params;

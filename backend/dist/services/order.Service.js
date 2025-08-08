@@ -12,16 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrderStatus = exports.getOrdersByUser = exports.createOrder = exports.getOrderById = exports.getAllOrders = void 0;
+exports.updateOrderStatus = exports.getOrdersByUser = exports.createOrder = exports.getOrderById = exports.confirmPaymentService = exports.getAllOrders = void 0;
 const db_1 = require("../db/db");
-const nanoid_1 = require("nanoid");
+import { customAlphabet } from 'nanoid';
 const sendEmail_1 = __importDefault(require("../utils/sendEmail"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mjml_1 = __importDefault(require("mjml"));
 const emailTemplates_1 = require("../utils/emailTemplates");
 const generateSellerOrderTemplate_1 = require("../utils/generateSellerOrderTemplate");
 const calculateOrderTotals_1 = require("../utils/calculateOrderTotals");
 const buildVisualItems_1 = require("../utils/buildVisualItems");
-const nanoid = (0, nanoid_1.customAlphabet)('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
+const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
 const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
     return db_1.prisma.order.findMany({
         include: {
@@ -47,6 +48,27 @@ const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getAllOrders = getAllOrders;
+const confirmPaymentService = (orderId, tokenmp) => __awaiter(void 0, void 0, void 0, function* () {
+    const secret = process.env.JWT_SECRET;
+    if (!secret)
+        throw new Error('Falta la variable JWT_SECRET');
+    let decoded;
+    try {
+        decoded = jsonwebtoken_1.default.verify(tokenmp, secret);
+    }
+    catch (err) {
+        throw new Error('Token inválido o expirado');
+    }
+    if (decoded.orderId !== orderId) {
+        throw new Error('Token no coincide con la orden');
+    }
+    const updatedOrder = yield db_1.prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'paid' },
+    });
+    return updatedOrder;
+});
+exports.confirmPaymentService = confirmPaymentService;
 const getOrderById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return db_1.prisma.order.findUnique({
         where: { id },
@@ -135,7 +157,7 @@ const createOrder = (userId, data) => __awaiter(void 0, void 0, void 0, function
                 orderNumber,
                 totalAmount,
                 couponId: data.couponId,
-                status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+                status: 'pending',
                 priceDetail,
                 items: {
                     create: data.cartItems.map((item) => ({
@@ -149,7 +171,7 @@ const createOrder = (userId, data) => __awaiter(void 0, void 0, void 0, function
                 payment: {
                     create: {
                         method: data.paymentMethod,
-                        status: data.paymentMethod === 'transferencia' ? 'pending' : 'paid',
+                        status: 'pending',
                         amount: totalAmount,
                     },
                 },
@@ -218,7 +240,8 @@ const createOrder = (userId, data) => __awaiter(void 0, void 0, void 0, function
         subject: `⚠️ Stock bajo: ${product.name}`,
         html: (0, mjml_1.default)((0, emailTemplates_1.generateLowStockAlertEmailTemplate)(product.name, product.sku, product.id, product.newStock)).html,
     })));
-    return order;
+    const tokenmp = jsonwebtoken_1.default.sign({ orderId: order.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    return Object.assign(Object.assign({}, order), { tokenmp });
 });
 exports.createOrder = createOrder;
 const getOrdersByUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {

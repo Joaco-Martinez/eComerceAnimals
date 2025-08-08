@@ -16,7 +16,7 @@ const cart_Routes_1 = __importDefault(require("./routes/cart.Routes"));
 const order_Routes_1 = __importDefault(require("./routes/order.Routes"));
 const category_Routes_1 = __importDefault(require("./routes/category.Routes"));
 const address_Routes_1 = __importDefault(require("./routes/address.Routes"));
-const mercadoPago_Routes_1 = __importDefault(require("./routes/mercadoPago.Routes"));
+const pagos_Routes_1 = __importDefault(require("./routes/pagos.Routes"));
 const swaggerConfig_1 = require("./swaggerConfig");
 const stockNotification_Routes_1 = __importDefault(require("./routes/stockNotification.Routes"));
 const anonCart_Routes_1 = __importDefault(require("./routes/anonCart.Routes"));
@@ -28,8 +28,17 @@ dotenv_1.default.config();
 exports.app = (0, express_1.default)();
 exports.app.use((0, cookie_parser_1.default)());
 exports.app.use((0, cors_1.default)({
-    origin: ['http://localhost:3001', 'http://localhost:4001', "http://192.168.0.174:3001"],
-    credentials: true
+    origin: (origin, callback) => {
+        const allowedOrigins = ['https://www.punkypet.com.ar', 'https://punkypet.com.ar', "http://localhost:3001"];
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 exports.app.use(express_1.default.json());
 exports.app.use((req, res, next) => {
@@ -37,6 +46,17 @@ exports.app.use((req, res, next) => {
     next();
 });
 exports.app.use((0, morgan_1.default)("dev"));
+exports.app.use((req, res, next) => {
+    const start = Date.now();
+    res.on("finish", () => {
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`);
+    });
+    next();
+});
+exports.app.get('/healthz', (req, res) => {
+    res.status(200).send('OK');
+});
 exports.app.get('/', (_req, res) => {
     res.send('E-Commerce Backend funcionando!');
 });
@@ -48,7 +68,7 @@ exports.app.use('/cart', cart_Routes_1.default);
 exports.app.use('/orders', order_Routes_1.default);
 exports.app.use('/anon-cart', anonCart_Routes_1.default);
 exports.app.use('/coupons', coupon_Routes_1.default);
-exports.app.use("/mercadopago", mercadoPago_Routes_1.default);
+exports.app.use("/mercadopago", pagos_Routes_1.default);
 exports.app.use('/wishlist', wishlist_Routes_1.default);
 exports.app.use("/categories", category_Routes_1.default);
 exports.app.use("/stock-notifications", stockNotification_Routes_1.default);

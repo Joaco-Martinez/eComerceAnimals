@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCategory = exports.updateCategory = exports.getCategoryById = exports.getAllCategories = exports.createCategory = void 0;
+exports.deleteCategory = exports.updateCategory = exports.getCategoryById = exports.getAllCategoriesAdmin = exports.getAllCategories = exports.createCategory = void 0;
 const CategoryService = __importStar(require("../services/category.Service"));
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
 const validPetTypes = ["dog", "cat", "both"];
@@ -88,14 +88,26 @@ const getAllCategories = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getAllCategories = getAllCategories;
+const getAllCategoriesAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const categories = yield CategoryService.getAllCategoriesAdmin();
+        res.json(categories);
+    }
+    catch (error) {
+        console.error("Error al obtener categorías:", error);
+        res.status(500).json({ error: "Error al obtener categorías" });
+    }
+});
+exports.getAllCategoriesAdmin = getAllCategoriesAdmin;
 const getCategoryById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = String(req.params.id);
     if (!id)
         return res.status(400).json({ error: "ID inválido" });
     try {
         const category = yield CategoryService.getCategoryById(id);
-        if (!category)
+        if (!category || category.isActive === false) {
             return res.status(404).json({ error: "Categoría no encontrada" });
+        }
         res.json(category);
     }
     catch (error) {
@@ -127,8 +139,14 @@ const deleteCategory = (req, res) => __awaiter(void 0, void 0, void 0, function*
     if (!id)
         return res.status(400).json({ error: "ID inválido" });
     try {
-        yield CategoryService.deleteCategory(id);
-        res.status(204).send();
+        const result = yield CategoryService.deleteCategory(id);
+        const message = result.isActive === false
+            ? "Categoría desactivada porque tiene productos asignados"
+            : "Categoría eliminada correctamente";
+        res.status(200).json({
+            message,
+            category: result,
+        });
     }
     catch (error) {
         console.error("Error al eliminar categoría:", error);

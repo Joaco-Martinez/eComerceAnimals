@@ -14,7 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_cron_1 = __importDefault(require("node-cron"));
 const deleteUnverifiedUsers_1 = require("../scripts/deleteUnverifiedUsers");
+const cancelOldPendingOrders_1 = require("../scripts/cancelOldPendingOrders");
 // Ejecutar todos los días a las 3 AM
 node_cron_1.default.schedule('0 3 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, deleteUnverifiedUsers_1.deleteUnverifiedUsers)();
+}));
+node_cron_1.default.schedule('5 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, cancelOldPendingOrders_1.cancelOldPendingOrders)();
 }));

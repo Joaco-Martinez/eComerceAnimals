@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.remove = exports.searchProducts = exports.deleteProductImageController = exports.update = exports.create = exports.getById = exports.getByPetAndCategory = exports.getByCategory = exports.getByPetType = exports.getAll = void 0;
+exports.remove = exports.searchProducts = exports.deleteProductImageController = exports.update = exports.create = exports.getById = exports.getByPetAndCategory = exports.getByCategory = exports.getByPetType = exports.getAllAdmin = exports.getAll = void 0;
 const productService = __importStar(require("../services/product.Service"));
 const validPetTypes = ['dog', 'cat', 'both'];
 const validSortBy = ['relevance', 'priceAsc', 'priceDesc'];
@@ -52,6 +52,11 @@ const getAll = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(products);
 });
 exports.getAll = getAll;
+const getAllAdmin = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const products = yield productService.getAllProductsAdmin();
+    res.json(products);
+});
+exports.getAllAdmin = getAllAdmin;
 const getByPetType = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { petType } = req.params;
     if (!validPetTypes.includes(petType)) {
@@ -97,7 +102,7 @@ const getById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getById = getById;
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, description, price, stock, weight, size, color, categoryId, sku, petType } = req.body;
+        const { name, description, price, stock, weight, size, color, categoryId, sku, petType, shippingCost } = req.body;
         if (!petType || !validPetTypes.includes(petType)) {
             return res.status(400).json({ error: `petType debe ser uno de: ${validPetTypes.join(', ')}` });
         }
@@ -107,6 +112,7 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             description,
             price: parseFloat(price),
             stock: parseInt(stock),
+            shippingCost: parseFloat(shippingCost),
             weight: weight ? parseFloat(weight) : undefined,
             size: size ? JSON.parse(size) : [],
             color: color ? JSON.parse(color) : [],
@@ -164,7 +170,6 @@ exports.deleteProductImageController = deleteProductImageController;
 const searchProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { q } = req.query;
     console.log("Query recibida:", q);
-    // TEST MANUAL para ver si hay productos con "ajustable"
     const test = yield db_1.prisma.product.findMany({
         where: {
             OR: [
@@ -173,7 +178,6 @@ const searchProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
             ],
         },
     });
-    console.log("Resultados test:", test);
     if (typeof q !== "string" || q.trim() === "") {
         return res.status(400).json({ message: "Query inválida" });
     }
@@ -189,7 +193,20 @@ const searchProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.searchProducts = searchProducts;
 const remove = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    yield productService.deleteProduct(id);
-    res.status(204).send();
+    try {
+        const result = yield productService.deleteProduct(id);
+        const message = result.isActive === false
+            ? 'Producto eliminado correctamente'
+            : 'Producto desactivado porque ya tenía compras';
+        res.status(200).json({
+            message,
+            product: result,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error.message || 'Ocurrió un error al eliminar el producto',
+        });
+    }
 });
 exports.remove = remove;

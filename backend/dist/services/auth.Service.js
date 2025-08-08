@@ -83,24 +83,25 @@ const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, functio
     const validPassword = yield (0, auth_1.comparePassword)(password, user.password);
     if (!validPassword)
         throw new Error('Credenciales inválidas');
-    // Crear sesión
-    const session = yield db_1.prisma.session.create({
-        data: {
-            userId: user.id,
-            token: '',
-            expiresAt: new Date(Date.now() + 1000 * 60 * 60), // 1h
-        },
-    });
     const User = yield (0, user_Service_1.getUserById)(user.id);
     if (!User)
         throw new Error('Usuario no encontrado');
-    console.log("user", User);
+    // ✅ Primero generamos la sesión sin token para obtener el ID
+    const session = yield db_1.prisma.session.create({
+        data: {
+            userId: user.id,
+            token: '', // temporal
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+        },
+    });
+    // ✅ Generamos el token usando el session.id
     const token = (0, auth_1.generateToken)(user.id, session.id, User.role);
-    console.log("token", token);
+    // ✅ Actualizamos la sesión con el token real
     yield db_1.prisma.session.update({
         where: { id: session.id },
         data: { token },
     });
+    console.log(session);
     return { user, token };
 });
 exports.loginUser = loginUser;

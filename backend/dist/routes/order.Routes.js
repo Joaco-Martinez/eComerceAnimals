@@ -118,5 +118,6 @@ router.get("/", authMiddlewares_1.authMiddleware, isAdmin_1.isAdmin, order_Contr
  *             schema:
  *               $ref: '#/components/schemas/Order'
  */
-router.get("/:orderId", authMiddlewares_1.authMiddleware, isAdmin_1.isAdmin, order_Controller_1.getOrderByIdController);
+router.get("/:orderId", authMiddlewares_1.authMiddleware, order_Controller_1.getOrderByIdController);
+router.post('/confirm-payment', order_Controller_1.confirmPaymentController);
 exports.default = router;
