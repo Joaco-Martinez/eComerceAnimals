@@ -74,6 +74,7 @@ export const createProduct = async (data: {
   price: number;
   stock: number;
   weight?: number;
+  shippingCost: number;
   size?: string[]; // <-- array
   color?: string[]; // <-- array
   categoryId: string;
