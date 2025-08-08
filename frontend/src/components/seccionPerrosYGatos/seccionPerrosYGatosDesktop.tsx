@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const SeccionPerrosYGatosDesktop = () => {
   return (
-    <div className="hidden md:flex w-full gap-6 mt-6 px-6">
+    <div className="hidden md:flex w-full gap-6 mt-6 px-80">
       {/* Perros */}
       <Link
         href={{ pathname: "/productos", query: { petType: "dog" } }}
@@ -35,7 +35,7 @@ export const SeccionPerrosYGatosDesktop = () => {
           alt="Gatos"
           width={700}
           height={500}
-          className="object-cover h-full w-auto"
+          className="object-cover h-auto w-auto"
         />
       </Link>
     </div>
