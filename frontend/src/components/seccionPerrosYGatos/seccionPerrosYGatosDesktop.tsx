@@ -14,7 +14,7 @@ export const SeccionPerrosYGatosDesktop = () => {
           Perros
         </button>
         <Image
-          src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/retrato-grupo-adorables-cachorros_apidhx"
+          src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/retrato-grupo-adorables-cachorros_apidhx.png"
           alt="Perros"
           width={700}
           height={500}
