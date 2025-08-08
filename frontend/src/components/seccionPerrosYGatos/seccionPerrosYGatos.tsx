@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 
 export const SeccionPerrosYGatos = () => {
@@ -11,7 +11,7 @@ export const SeccionPerrosYGatos = () => {
             Perros
           </button>
 
-          <Image
+          <img
             src="https://res.cloudinary.com/dvndoqwfe/image/upload/v1720542290/retrato-grupo-adorables-cachorros_apidhx.png"
             alt="Perros"
             width={600}
@@ -30,7 +30,7 @@ export const SeccionPerrosYGatos = () => {
             Gatos
           </button>
 
-          <Image
+          <img
             src="https://res.cloudinary.com/dvndoqwfe/image/upload/c_crop,w_2000,h_1850/v1752545076/collaje-mascotas-muy-bonito-aislado_fbi6h2.png"
             alt="Gatos"
             width={600}
