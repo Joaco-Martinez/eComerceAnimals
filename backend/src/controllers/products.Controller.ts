@@ -65,7 +65,7 @@ export const getById = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
   try {
     const {
-      name, description, price, stock, weight, size, color, categoryId, sku, petType
+      name, description, price, stock, weight, size, color, categoryId, sku, petType, shippingCost
     } = req.body;
 
     if (!petType || !validPetTypes.includes(petType as any)) {
@@ -79,6 +79,7 @@ export const create = async (req: Request, res: Response) => {
       description,
       price: parseFloat(price),
       stock: parseInt(stock),
+      shippingCost: parseFloat(shippingCost),
       weight: weight ? parseFloat(weight) : undefined,
       size: size ? JSON.parse(size) : [],
       color: color ? JSON.parse(color) : [],
