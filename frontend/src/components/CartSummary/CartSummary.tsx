@@ -6,9 +6,11 @@ type Props = {
 };
 
 export default function CartSummary({ subtotal, discount }: Props) {
-  const { cupon } = useCheckoutContext();
+  const { cupon, cartItems } = useCheckoutContext();
 
-  const shippingCost = 15000;
+  const shippingCost = cartItems.length
+  ? Math.max(...cartItems.map((item) => item.shippingCost))
+  : 0;
   const envio = cupon?.discountType === "free_shipping" ? 0 : shippingCost;
 
   let cuponDiscount = 0;

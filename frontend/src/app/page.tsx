@@ -1,5 +1,6 @@
 
-import EnvioGratis from "@/components/EnvioGratis/enviogratis";
+import PromosMobileSlider from "@/components/EnvioGratis/PromosMobileSlider";
+
 import  SliderSelector  from "@/components/sliderPrincipal/SliderSelector";
 import ShopNow from "@/components/ShopNow/ShopNow";
 import SliderCategoriesSelector from "@/components/sliderCategories/SliderCategoriesSelector";
@@ -9,12 +10,11 @@ import RedesSociales from "@/components/RedesSociales/RedesSociales";
 import SliderProductosDestacados from "@/components/sliderProductosDestacados/sliderProductosDestacados";
 import WhatsappLink from "@/components/WhatsappLink/WhatsappLink";
 import RedesSocialesDesktop from "@/components/RedesSociales/RedesSocialesDesktop";
-
-
+import PromosBanner from "@/components/PromosBanner/PromosBanner";
 export default function Home() {
   return (
     <main>
-      <section className="min-h-screen flex flex-col items-center justify-start ">
+      <section className="flex flex-col items-center justify-start ">
 
 
       <div className="my-1"></div> {/* Separation between sections */}
@@ -24,8 +24,9 @@ export default function Home() {
       <div className="my-1"></div> {/* Separation between sections */}
       
         <div className="md:hidden">
-          <EnvioGratis />
+          <PromosMobileSlider />
         </div>
+
 
         <div className="my-1"></div> {/* Separation between sections */}
 
@@ -38,6 +39,12 @@ export default function Home() {
       <div className="my-2"></div>  {/* Separation between sections */}
 
       <SeccionPerrosYGatosSelector />
+
+      <div className="my-2"></div>  {/* Separation between sections */}
+        
+        <div className="hidden md:block">
+          <PromosBanner />
+        </div>
 
       <div className="my-2"></div>  {/* Separation between sections */}
 

@@ -20,6 +20,7 @@ export interface CheckoutCartItem {
   quantity: number;
   color: string;
   size: string;
+  shippingCost: number;
 }
 
 interface Discount {
@@ -63,13 +64,15 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       0
     );
 
-    const shippingCost = 15000;
+    // Shipping cost más alto entre los productos
+    const shippingCost = cartItems.reduce(
+      (max, item) => item.shippingCost > max ? item.shippingCost : max,
+      0
+    );
 
-    // Descuento por transferencia
     const transferenciaDiscount =
       paymentMethod === 'transferencia' ? subtotal * 0.2 : 0;
 
-    // Descuento por cupón
     let cuponDiscount = 0;
     let envioFinal = shippingCost;
 
@@ -86,11 +89,12 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
           break;
       }
     }
-
+      console.log(envioFinal)
     const total = Math.max(0, subtotal - transferenciaDiscount - cuponDiscount + envioFinal);
     return +total.toFixed(2);
   }, [cartItems, paymentMethod, cupon]);
 
+  // Debug opcional:
   // useEffect(() => {
   //   console.log('cartItems', cartItems);
   //   console.log('shippingMethod', shippingMethod);
@@ -98,7 +102,8 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
   //   console.log('paymentMethod', paymentMethod);
   //   console.log('couponId', couponId);
   //   console.log('discount', cupon);
-  // }, [cartItems, shippingMethod, addressId, paymentMethod, couponId, cupon]);
+  //   console.log("totalAmount", totalAmount);
+  // }, [cartItems, shippingMethod, addressId, paymentMethod, couponId, cupon,totalAmount]);
 
   const clearCheckout = () => {
     setAddressId(null);

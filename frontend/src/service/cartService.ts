@@ -6,7 +6,9 @@ interface UpdateCartBody {
 }
 
 export const getCart = async () => {
-  return await apiService.get(`/cart`, true, false, false);
+  const data = await apiService.get(`/cart`, true, false, false);
+  console.log("DATA CARRITO",data)
+  return data
 }
 
 export const addToCart = async (

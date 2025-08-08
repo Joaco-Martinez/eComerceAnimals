@@ -44,9 +44,22 @@ app.use((req, res, next) => {
 
 app.use(morgan("dev"));
 
+app.use((req, res, next) => {
+  const start = Date.now(); 
 
+  res.on("finish", () => {
+    const duration = Date.now() - start; 
+    console.log(
+      `[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`
+    );
+  });
 
+  next();
+});
 
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
 app.get('/', (_req, res) => {
   res.send('E-Commerce Backend funcionando!');
 });

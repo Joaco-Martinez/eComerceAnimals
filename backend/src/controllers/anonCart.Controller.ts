@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as anonCartService from '../services/anonCart.Service';
-import { getCookieOptions } from '../utils/cookieOptions';
+import { getCookieOptions, getCookieOptionsHttpOnlyFalse } from '../utils/cookieOptions';
 export const getCart = async (req: Request, res: Response) => {
   const AnonCartId = req.query.cartId as string;
 
@@ -30,7 +30,7 @@ export const addItem = async (req: Request, res: Response) => {
       AnonCartId = newCart.id;
 
       // Setear cookie con el ID del nuevo carrito
-      res.cookie("AnonCart_id", AnonCartId, getCookieOptions());
+      res.cookie("AnonCart_id", AnonCartId, getCookieOptionsHttpOnlyFalse());
     }
 
     const item = await anonCartService.addToAnonCart(

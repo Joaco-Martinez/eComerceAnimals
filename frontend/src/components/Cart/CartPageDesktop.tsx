@@ -49,6 +49,7 @@ type CartItem = {
     price: number;
     stock: number;
     image: string;
+    shippingCost: number;
   };
 };
 
@@ -67,6 +68,7 @@ type MappedAnonCartItem = {
     price: number;
     stock: number;
     images: { url: string }[];
+    shippingCost: number;
   };
 };
 
@@ -112,6 +114,7 @@ export default function CartPageDesktop  () {
             price: item.product.price,
             stock: item.product.stock,
             image: item.product.images?.[0]?.url || "/placeholder.jpg",
+            shippingCost: item.product.shippingCost
           },
         }));
       } catch (error) {
@@ -139,6 +142,8 @@ export default function CartPageDesktop  () {
             price: item.product.price,
             stock: item.product.stock,
             image: item.product.images?.[0]?.url || "/placeholder.jpg",
+            shippingCost: item.product.shippingCost
+
           },
         }));
       } catch (error) {
@@ -157,6 +162,7 @@ export default function CartPageDesktop  () {
         quantity: item.quantity,
         color: item.color,
         size: item.size,
+        shippingCost: item.product.shippingCost
       }))
     );
   };
@@ -424,7 +430,7 @@ const handleContinuar = async () => {
       </div>
     )}
 
-    <CartSummary subtotal={subtotal} discount={discount} />
+    {/* <CartSummary subtotal={subtotal} discount={discount} /> */}
 
     <CartActions
       step={step}

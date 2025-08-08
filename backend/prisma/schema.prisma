@@ -105,6 +105,7 @@ model Product {
   id          String     @id @default(uuid())
   name        String
   description String
+  shippingCost Float
   price       Float
   stock       Int
   weight      Float?

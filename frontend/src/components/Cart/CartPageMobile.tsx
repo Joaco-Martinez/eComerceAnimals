@@ -49,6 +49,7 @@ type CartItem = {
     price: number;
     stock: number;
     image: string;
+    shippingCost: number;
   };
 };
 
@@ -65,6 +66,7 @@ type MappedAnonCartItem = {
     name: string;
     description: string;
     price: number;
+    shippingCost: number;
     stock: number;
     images: { url: string }[];
   };
@@ -90,7 +92,7 @@ export default function CartPageMobile() {
   useEffect(() => {
   const fetchCart = async () => {
     let mappedItems: CartItem[] = [];
-
+    console.log("isAuth", isAuth);
     if (isAuth === false) {
       const anonCartId = Cookies.get("AnonCart_id");
       if (!anonCartId) return;
@@ -112,6 +114,7 @@ export default function CartPageMobile() {
             price: item.product.price,
             stock: item.product.stock,
             image: item.product.images?.[0]?.url || "/placeholder.jpg",
+            shippingCost: item.product.shippingCost
           },
         }));
       } catch (error) {
@@ -136,6 +139,7 @@ export default function CartPageMobile() {
             id: item.product.id,
             name: item.product.name,
             description: item.product.description,
+            shippingCost: item.product.shippingCost,
             price: item.product.price,
             stock: item.product.stock,
             image: item.product.images?.[0]?.url || "/placeholder.jpg",
@@ -157,6 +161,7 @@ export default function CartPageMobile() {
         quantity: item.quantity,
         color: item.color,
         size: item.size,
+        shippingCost: item.product.shippingCost,
       }))
     );
   };

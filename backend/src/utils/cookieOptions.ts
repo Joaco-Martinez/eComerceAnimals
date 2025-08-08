@@ -8,3 +8,11 @@ export const getCookieOptions = (): CookieOptions => ({
   sameSite: 'none', // 'lax' es un valor válido
   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
 });
+
+
+export const getCookieOptionsHttpOnlyFalse = (): CookieOptions => ({
+  httpOnly: false,
+  secure: true,
+  sameSite: 'none', // 'lax' es un valor válido
+  maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+});

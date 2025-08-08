@@ -48,6 +48,7 @@ export const getAllProductsAdmin = async () => {
   return await apiService.get("/products/admin", true, false, false);
 };
 
+
 export const getAllCategoriesAdmin = async () => {
   return await apiService.get("/categories/admin", true, false, false);
 };
