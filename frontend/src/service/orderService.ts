@@ -5,11 +5,7 @@ export interface GetOrderResponse {
   id: string;
   orderNumber: string;
   userId: string;
-  user: {
-    id: string;
-    email: string;
-    name: string; // obligatoria según lo que renderizás en CardOrder
-  };
+  user: { id: string; email: string; name: string };
   addressId: string;
   address: {
     id: string;
@@ -36,10 +32,12 @@ export interface GetOrderResponse {
     quantity: number;
     color: string;
     size: string;
+    unitPrice: number; // 👈 necesario para MP
     product: {
       name: string;
       price: number;
       sku: string;
+      shippingCost: number; // 👈 necesario para MP
     };
   }[];
 }
@@ -61,6 +59,7 @@ export interface OrderItem {
   quantity: number;
   product: {
     name: string;
+    shippingCost: number;
   }
   unitPrice: number;
   color: string;
@@ -112,7 +111,9 @@ export interface CartItemInput {
   quantity: number;
   product?: {
     name: string;
-  }
+    shippingCost: number;
+  },
+  shippingCost?: number;
   price: number;
   color: string;
   size: string;

@@ -8,6 +8,7 @@ export type FormData = {
   description: string
   price: number
   stock: number
+  shippingCost: number
   weight: number
   sizes: ("XS" | "S" | "M" | "L" | "XL")[]
   colors: string[]

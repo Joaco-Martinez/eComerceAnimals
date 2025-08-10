@@ -94,6 +94,9 @@ export const createOrder = async (
       price: number;
       color: string;
       size: string;
+      // puede venir en product o en raíz (por seguridad soportamos ambos)
+      product: { name: string; shippingCost?: number | string };
+      shippingCost?: number | string;
     }[];
     shippingMethod: 'domicilio' | 'sucursal';
     addressId: string;
@@ -101,33 +104,46 @@ export const createOrder = async (
     couponId?: string;
   }
 ) => {
-
   const coupon = data.couponId
     ? await prisma.coupon.findUnique({ where: { id: data.couponId } })
     : null;
-  
+
+  // Helpers chicos
+  const toNumber = (v: unknown, def = 0) => {
+    const n = typeof v === 'number' ? v : parseFloat(String(v ?? ''));
+    return Number.isFinite(n) ? n : def;
+  };
+  const getItemShipping = (it: (typeof data.cartItems)[number]) =>
+    toNumber(it.product?.shippingCost ?? it.shippingCost ?? 0, 0);
+
+  // 1) Shipping = máximo entre ítems (salvo free_shipping)
+  const isFreeShipping = coupon?.discountType === 'free_shipping';
+  const maxShippingCost = isFreeShipping
+    ? 0
+    : data.cartItems.reduce((max, it) => Math.max(max, getItemShipping(it)), 0);
+
+  // 2) Usamos tu calculateOrderTotals SOLO para subtotal y descuentos
   const {
     productSubtotal,
     transferenciaDiscount,
     transferDiscountValue,
     couponDiscountValue,
-    shippingCost,
-    totalAmount,
   } = calculateOrderTotals({
-    cartItems: data.cartItems,
+    cartItems: data.cartItems as any, // usa price/quantity; el shipping lo definimos nosotros
     paymentMethod: data.paymentMethod,
     coupon,
   });
 
+  // 3) Total con el shipping máximo
+  const shippingCost = maxShippingCost;
+  const totalAmount =
+    productSubtotal - transferDiscountValue - couponDiscountValue + shippingCost;
+
   const orderNumber = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${nanoid()}`;
-  const lowStockAlerts: {
-    id: string;
-    name: string;
-    sku: string;
-    newStock: number;
-  }[] = [];
+  const lowStockAlerts: { id: string; name: string; sku: string; newStock: number }[] = [];
 
   const order = await prisma.$transaction(async (tx) => {
+    // Control de stock
     for (const item of data.cartItems) {
       const product = await tx.product.findUnique({
         where: { id: item.productId },
@@ -141,9 +157,7 @@ export const createOrder = async (
 
       const updated = await tx.product.update({
         where: { id: item.productId },
-        data: {
-          stock: { decrement: item.quantity },
-        },
+        data: { stock: { decrement: item.quantity } },
         select: { stock: true },
       });
 
@@ -157,9 +171,10 @@ export const createOrder = async (
       }
     }
 
+    // Detalle de precios consistente
     const priceDetail = {
       subtotal: productSubtotal,
-      shippingCost,
+      shippingCost, // 👈 máximo
       discountTransfer: {
         applied: transferenciaDiscount > 0,
         percentage: transferenciaDiscount,
@@ -176,15 +191,16 @@ export const createOrder = async (
       total: totalAmount,
     };
 
+    // Crear orden
     return await tx.order.create({
       data: {
         userId,
         addressId: data.addressId,
         shippingMethod: data.shippingMethod,
         orderNumber,
-        totalAmount,
+        totalAmount,              // 👈 usa total ya recalculado
         couponId: data.couponId,
-        status:  'pending',
+        status: 'pending',
         priceDetail,
         items: {
           create: data.cartItems.map((item) => ({
@@ -193,13 +209,14 @@ export const createOrder = async (
             unitPrice: item.price,
             color: item.color,
             size: item.size,
+            // Si querés “congelar” shipping por ítem, agregá OrderItem.shippingCost aquí
           })),
         },
         payment: {
           create: {
             method: data.paymentMethod,
-            status:  'pending',
-            amount: totalAmount,
+            status: 'pending',
+            amount: totalAmount,   // 👈 consistente con la orden
           },
         },
       },
@@ -211,12 +228,7 @@ export const createOrder = async (
         status: true,
         user: { select: { email: true, name: true } },
         address: {
-          select: {
-            calle: true,
-            localidad: true,
-            provincia: true,
-            postalCode: true,
-          },
+          select: { calle: true, localidad: true, provincia: true, postalCode: true },
         },
         items: {
           select: {
@@ -225,7 +237,7 @@ export const createOrder = async (
             unitPrice: true,
             color: true,
             size: true,
-            product: { select: { name: true } },
+            product: { select: { name: true, shippingCost: true } }, // 👈 útil para MP (máximo ya decidido)
           },
         },
       },
@@ -233,7 +245,7 @@ export const createOrder = async (
   });
 
   const visualItems = buildVisualItems(order.items, {
-    shippingCost,
+    shippingCost,              // 👈 el que definimos arriba
     coupon,
     couponDiscountValue,
     transferDiscountValue,
@@ -243,15 +255,10 @@ export const createOrder = async (
     orderNumber: order.orderNumber,
     totalAmount: order.totalAmount,
     shippingMethod: order.shippingMethod,
-    user: {
-      name: order.user.name,
-      email: order.user.email,
-    },
+    user: { name: order.user.name, email: order.user.email },
     address: order.address,
     items: visualItems,
   };
-
-
 
   await sendEmail({
     to: order.user.email,
@@ -263,12 +270,13 @@ export const createOrder = async (
   });
 
   await sendEmail({
-  to: "mascotiendavgbpets@gmail.com",
-  subject: `🛍️ Nueva orden #${order.orderNumber}`,
-  html: data.paymentMethod === 'transferencia'
-    ? generateTransferEmailForSellerTemplate(orderForEmail)
-    : generateOrderEmailForSellerTemplate(orderForEmail)
-});
+    to: 'mascotiendavgbpets@gmail.com',
+    subject: `🛍️ Nueva orden #${order.orderNumber}`,
+    html:
+      data.paymentMethod === 'transferencia'
+        ? generateTransferEmailForSellerTemplate(orderForEmail)
+        : generateOrderEmailForSellerTemplate(orderForEmail),
+  });
 
   await Promise.all(
     lowStockAlerts.map((product) =>
@@ -286,17 +294,12 @@ export const createOrder = async (
       })
     )
   );
-const tokenmp = jwt.sign(
-  { orderId: order.id },
-  process.env.JWT_SECRET!,
-  { expiresIn: '15m' }
-);
 
-  return {
-    ...order
-    , tokenmp
-  }
+  const tokenmp = jwt.sign({ orderId: order.id }, process.env.JWT_SECRET!, { expiresIn: '15m' });
+
+  return { ...order, tokenmp };
 };
+
 
 
 

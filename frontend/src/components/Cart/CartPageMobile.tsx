@@ -226,6 +226,7 @@ const handleContinuar = async () => {
         price: item.price,
         color: item.color,
         size: item.size,
+        shippingCost: item.product.shippingCost
       })),
       addressId,
       shippingMethod,
@@ -244,68 +245,78 @@ const handleContinuar = async () => {
       toast.success(`Orden creada con éxito`);
 
       if (paymentMethod === "mercadopago") {
-        const shippingCost = 15000;
+  // 🔹 Calcular el shipping cost más alto de todos los productos
+  const maxShippingCost = order.items.reduce((max, item) => {
+    const cost = typeof item.product.shippingCost === "number" 
+      ? item.product.shippingCost 
+      : parseFloat(item.product.shippingCost);
+    return cost > max ? cost : max;
+  }, 0);
 
-        const items = order.items.map(item => ({
-          id: item.productId,
-          title: item.product.name,
-          quantity: item.quantity,
-          unit_price: typeof item.unitPrice === "number" ? item.unitPrice : parseFloat(item.unitPrice),
-        }));
+  const items = order.items.map(item => ({
+    id: item.productId,
+    title: item.product.name,
+    quantity: item.quantity,
+    unit_price: typeof item.unitPrice === "number" 
+      ? item.unitPrice 
+      : parseFloat(item.unitPrice),
+  }));
 
-        const isFreeShipping = cupon?.discountType === "free_shipping";
-        if (!isFreeShipping) {
-          items.push({
-            id: "shipping",
-            title: "Costo de envío",
-            quantity: 1,
-            unit_price: shippingCost,
-          });
-        }
+  const isFreeShipping = cupon?.discountType === "free_shipping";
+  if (!isFreeShipping && maxShippingCost > 0) {
+    items.push({
+      id: "shipping",
+      title: "Costo de envío",
+      quantity: 1,
+      unit_price: maxShippingCost, // ✅ El más alto de la orden
+    });
+  }
 
-        const productTotal = order.items.reduce((sum, item) => {
-          const price = typeof item.unitPrice === "number" ? item.unitPrice : parseFloat(item.unitPrice);
-          return sum + price * item.quantity;
-        }, 0);
+  const productTotal = order.items.reduce((sum, item) => {
+    const price = typeof item.unitPrice === "number" 
+      ? item.unitPrice 
+      : parseFloat(item.unitPrice);
+    return sum + price * item.quantity;
+  }, 0);
 
-        if (cupon?.discountType === "fixed" && cupon.value > 0) {
-          const discountAmount = Math.min(cupon.value, productTotal);
-          items.push({
-            id: "discount",
-            title: `Descuento $${cupon.value}`,
-            quantity: 1,
-            unit_price: -discountAmount,
-          });
-        }
+  if (cupon?.discountType === "fixed" && cupon.value > 0) {
+    const discountAmount = Math.min(cupon.value, productTotal);
+    items.push({
+      id: "discount",
+      title: `Descuento $${cupon.value}`,
+      quantity: 1,
+      unit_price: -discountAmount,
+    });
+  }
 
-        if (cupon?.discountType === "percentage" && cupon.value > 0) {
-          const discountAmount = Math.floor((productTotal * cupon.value) / 100);
-          items.push({
-            id: "discount",
-            title: `Descuento ${cupon.value}%`,
-            quantity: 1,
-            unit_price: -discountAmount,
-          });
-        }
+  if (cupon?.discountType === "percentage" && cupon.value > 0) {
+    const discountAmount = Math.floor((productTotal * cupon.value) / 100);
+    items.push({
+      id: "discount",
+      title: `Descuento ${cupon.value}%`,
+      quantity: 1,
+      unit_price: -discountAmount,
+    });
+  }
 
-        const mpPayload = {
-          orderId: order.id,
-          items,
-          payer: {
-            email: order.user.email,
-            name: order.user.name || "",
-          },
-          metadata: {
-            orderNumber: order.orderNumber,
-            shippingMethod: order.shippingMethod,
-            address: order.address,
-          },
-        };
+  const mpPayload = {
+    orderId: order.id,
+    items,
+    payer: {
+      email: order.user.email,
+      name: order.user.name || "",
+    },
+    metadata: {
+      orderNumber: order.orderNumber,
+      shippingMethod: order.shippingMethod,
+      address: order.address,
+    },
+  };
 
-        const initPoint = await mercadoPagoService.createCheckout(mpPayload);
-        window.location.href = initPoint;
-        return;
-      }
+  const initPoint = await mercadoPagoService.createCheckout(mpPayload);
+  window.location.href = initPoint;
+  return;
+}
 
       setStep(4);
     } catch (error) {

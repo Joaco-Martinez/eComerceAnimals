@@ -41,6 +41,9 @@ const watchedColors = watch('colors')
       <input type="number" {...register('stock')} placeholder="Stock" className="w-full border px-3 py-2 rounded" />
       {errors.stock && <p className="text-red-500 text-sm">{errors.stock.message}</p>}
 
+      <input {...register('shippingCost')} placeholder="Costo de envio" className="w-full border px-3 py-2 rounded" />
+      {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+
       <input type="number" step="0.01" {...register('weight')} placeholder="Peso (kg)" className="w-full border px-3 py-2 rounded" />
       {errors.weight && <p className="text-red-500 text-sm">{errors.weight.message}</p>}
 

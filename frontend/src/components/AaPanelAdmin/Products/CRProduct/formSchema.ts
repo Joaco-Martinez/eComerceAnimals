@@ -5,6 +5,7 @@ export const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'U'] as const
 export type ValidSize = typeof validSizes[number]
 export const productSchema = yup.object({
   name: yup.string().required('Nombre obligatorio'),
+  shippingCost: yup.number().typeError('Debe ser un número').required(),
   description: yup.string().required('Descripción obligatoria'),
   price: yup.number().typeError('Debe ser un número').required(),
   stock: yup.number().typeError('Debe ser un número').required(),
