@@ -3,7 +3,7 @@ import axios from "axios"
 import toast from "react-hot-toast"
 import type { AxiosRequestConfig } from "axios"
 const axiosRes = axios.create({
-    baseURL:  "/api" ,
+    baseURL:  process.env.NEXT_PUBLIC_API_URL ||"/api" ,
 })
 
 const get = async (url:string,credentials:boolean = false, showSuccess:boolean = false, showFail:boolean = false) =>{
