@@ -26,7 +26,7 @@ export const app = express();
 app.use(cookieParser());
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = ['https://www.punkypet.com.ar', 'https://punkypet.com.ar', "http://localhost:3001"];
+    const allowedOrigins = ['https://www.punkypet.com.ar', 'https://punkypet.com.ar', "http://localhost:3001",  "http://localhost:3000"];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -34,7 +34,7 @@ app.use(cors({
     }
   },
   credentials: true,
-   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'DELETE','OPTIONS'],
 }));
 app.use(express.json());
 app.use((req, res, next) => {

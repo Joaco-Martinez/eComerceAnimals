@@ -7,7 +7,6 @@ export const registerUser = async (userData: { name: string; email: string; pass
 export const loginUser = async (credentials: { email: string; password: string }) => {
  
  const response = await apiService.post("/auth/login", credentials, true, false, true);
- console.log(response)
   return response
 };
 
