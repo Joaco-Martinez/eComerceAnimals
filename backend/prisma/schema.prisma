@@ -15,12 +15,12 @@ enum Role {
 
 
 enum OrderStatus {
-  pending     // Todavía no pagó
-  paid        // Pagó, esperando envío
-  processing  // Preparando el pedido
-  shipped     // Enviado
-  delivered   // Entregado
-  cancelled   // Cancelado
+  pending
+  paid        
+  processing 
+  shipped     
+  delivered 
+  cancelled  
 }
 
 
