@@ -55,23 +55,22 @@ export const AnonCartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchCart = async (id: string) => {
-    try {
-      const data = await getAnonCart(id);
-      setItems(data.items || []);
-    } catch (error) {
-      console.error("Error al obtener el carrito:", error);
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchCart = async () => {
+  //   try {
+  //     const data = await getAnonCart();
+  //     setItems(data.items || []);
+  //   } catch (error) {
+  //     console.error("Error al obtener el carrito:", error);
+  //     setItems([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     const id = Cookies.get("AnonCart_id");
     if (id) {
       setCartId(id);
-      fetchCart(id);
     } else {
       setLoading(false); // No hay carrito todavía, se creará cuando se agregue el primer ítem
     }
@@ -85,18 +84,16 @@ export const AnonCartProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     await addToAnonCart(cartId || "", productId, quantity, color, size);
 
-    // Si el backend creó un nuevo carrito, ahora debe haber cookie
-    const newId = Cookies.get("AnonCart_id");
-    if (newId && newId !== cartId) setCartId(newId);
 
-    const updated = await getAnonCart(newId || cartId!);
+
+    const updated = await getAnonCart();
     setItems(updated.items || []);
   };
 
   const removeItem = async (productId: string) => {
     if (!cartId) return;
     await removeFromAnonCart(cartId, productId);
-    const updated = await getAnonCart(cartId);
+    const updated = await getAnonCart();
     setItems(updated.items || []);
   };
 
