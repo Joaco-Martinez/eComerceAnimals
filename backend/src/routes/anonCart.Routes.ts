@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as anonCartController from '../controllers/anonCart.Controller';
+import { ensureAnonCartCookie } from "../middlewares/AnonCartCookie";
 
 const router = Router();
 
@@ -71,6 +72,8 @@ router.get('/', anonCartController.getCart);
  *         description: Datos faltantes
  */
 router.post('/add', anonCartController.addItem);
+
+router.get("/CookieWithCart", ensureAnonCartCookie, anonCartController.getCartWithCookie);
 
 /**
  * @swagger

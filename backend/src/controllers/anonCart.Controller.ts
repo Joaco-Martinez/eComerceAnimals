@@ -1,6 +1,8 @@
-import { Request, Response } from 'express';
+import { Request, Response,  } from 'express';
 import * as anonCartService from '../services/anonCart.Service';
 import { getCookieOptions, getCookieOptionsHttpOnlyFalse } from '../utils/cookieOptions';
+
+const isProd = process.env.NODE_ENV === "production";
 export const getCart = async (req: Request, res: Response) => {
   const AnonCartId = req.query.cartId as string;
 
@@ -16,6 +18,24 @@ export const getCart = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error al obtener carrito anónimo' });
   }
 };
+
+
+export const getCartWithCookie = async (req: Request, res: Response) => {
+  try {
+    const anonCartId = (req as any).anonCartId as string; // viene del middleware
+
+    const cart = await anonCartService.getAnonCart(anonCartId);
+
+    // Si no existe en DB, devolvemos estructura mínima
+    return res.status(200).json(
+      cart ?? { id: anonCartId, items: [] }
+    );
+  } catch (error) {
+    console.error("❌ Error al obtener carrito anónimo", error);
+    return res.status(500).json({ message: "Error al obtener carrito anónimo" });
+  }
+};
+
 
 export const addItem = async (req: Request, res: Response) => {
   let { AnonCartId, productId, quantity, color, size } = req.body;

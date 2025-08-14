@@ -23,8 +23,8 @@ interface UpdateAnonCartItemData {
   size: string;
 }
 
-export const getAnonCart = async (AnonCartId: string) => {
-  return await apiService.get(`/anon-cart?cartId=${AnonCartId}` , true, false, true);
+export const getAnonCart = async () => {
+  return await apiService.get(`/anon-cart/CookieWithCart` , true, false, true);
 };
 
 
