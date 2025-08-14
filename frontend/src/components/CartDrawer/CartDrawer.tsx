@@ -74,7 +74,7 @@ export default function CartDrawer({ isOpen, onClose }: Props) {
           const anonCartId = Cookies.get("AnonCart_id");
           if (!anonCartId) return;
           try {
-            const anonCart = await getAnonCart(anonCartId);
+            const anonCart = await getAnonCart();
 
             if (anonCart?.items?.length > 0) {
               const mappedItems: CartItem[] = anonCart.items.map((item: MappedAnonCartItem) => ({

@@ -98,7 +98,7 @@ export default function CartPageDesktop  () {
       if (!anonCartId) return;
 
       try {
-        const anonCart = await getAnonCart(anonCartId);
+        const anonCart = await getAnonCart();
         if (!anonCart?.items?.length) return setCart([]);
 
         mappedItems = anonCart.items.map((item: MappedAnonCartItem) => ({
